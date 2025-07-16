@@ -1,0 +1,163 @@
+name: lit
+description: "A new Flutter project."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.8.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+  google_fonts: ^6.1.0
+  carousel_slider: ^4.2.1
+  cupertino_icons: ^1.0.8
+  dropdown_button2: ^2.3.9  # Or latest version
+  animations: ^2.0.11
+  provider: ^6.1.1
+  intl: ^0.20.2
+  audioplayers: ^5.2.1
+  shimmer: ^3.0.0
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets\images\blue-shoe.png
+    - assets\images\violet-shoe.png
+    - assets\images\men.png
+    - assets\images\women.png
+    - assets\images\newsletter-1.png
+    - assets\images\newsletter-2.png
+    - assets\images\newsletter-3.png
+    - assets\images\newsletter-4.png
+    - assets\images\logo.png
+    - assets\images\background.png
+    - assets\images\avatar.jpg
+    - assets\images\ir_icon.png
+    - assets\images\profile_icon.png
+    - assets\images\home_icon.png
+    - assets\images\newsletter_banner.png
+    - assets\images\sneaker1.png
+    - assets\images\sneaker2.png
+    - assets\images\sneaker3.png
+    - assets\images\n1.jpg
+    - assets\images\n2.jpg
+    - assets\images\n3.jpg
+    - assets\images\n4.jpg
+    - assets\images\n5.jpg
+    - assets\images\n6.jpg
+    - assets\images\n7.jpg
+    - assets\images\n8.jpg
+    - assets\images\d1.jpg
+    - assets\images\d2.jpg
+    - assets\images\d3.jpg
+    - assets\images\d4.jpg
+    - assets\images\d5.jpg
+    - assets\images\d6.jpg
+    - assets\images\d7.jpg
+    - assets\images\d8.jpg
+    - assets\images\cart_icon.png
+    - assets\images\men_collection.png
+    - assets\images\women_collection.png
+    - assets\images\diamond.png
+    - assets\images\heart.png
+    - assets\images\savings1.jpg
+    - assets\images\savings2.jpg
+    - assets\images\savings3.jpg
+    - assets\images\savings4.jpg
+    - assets\images\google.png
+    - assets\images\facebook.png
+    - assets\images\mode1.png
+    - assets\images\mode2.png
+    - assets\images\mode3.png
+    - assets\images\mode4.png
+    - assets\images\bag.png
+    - assets\images\clothing.png
+    - assets\images\shoes.png
+    - assets\images\accessories.png
+    - assets\images\purple_star.png
+    - assets\images\gold_star.png
+    - assets\images\avatar1.jpg
+    - assets\images\avatar2.jpg
+    - assets\images\avatar3.jpg
+    - assets\images\avatar4.jpg
+    - assets\images\avatar5.jpg
+    - assets\images\avatar6.jpg
+    - assets\images\avatar7.jpg
+    - assets\images\avatar8.jpg
+    - assets\images\avatar9.jpg
+    - assets\images\avatar10.jpg
+    - assets\images\avatar11.jpg
+    - assets\images\fire.png
+    - assets\images\shoe1.png
+    - assets\images\shoe2.png
+    - assets\images\india-flag.png
+    - assets\images\amature-badge.png
+    - assets\images\footwear-icon.png
+    - assets\images\clothing-icon.png
+    - assets\images\accessories-icon.png
+    - assets\images\bags-icon.png
+    - assets\images\beginner.png
+    - assets\images\amateur.png
+    - assets\images\connoisseur.png 
+    - assets\images\video-game.png
+    - assets\images\noti-footwear.jpg
+    - assets\images\noti-bags.jpg
+    - assets\images\noti-bags2.jpg
+    - assets\images\noti-clothing.jpg
+    - assets\images\noti-accessories.jpg
+    - assets\images\sbi.jpg
+    - assets\images\axis.png
+    - assets\images\hdfc.png
+    - assets\images\icic.png
+    - assets\images\gpay.png
+    - assets\images\paytm.png
+    - assets\images\phonepe.png
+    - assets\images\amazonpay.png
+    - assets\images\gems1.png
+    - assets\images\gems2.png
+    - assets\images\gems3.png
+    - assets\images\gems4.png
+    - assets\images\lives1.png
+    - assets\images\lives2.png
+    - assets\images\lives3.png
+    - assets\images\lives4.png
+    - assets\images\notification.wav
+    - assets\images\save-pro-icon.png
+    - assets\images\clap.png
+    - assets\images\mens-collection.jpg
+    - assets\images\womens-collection.jpg
+    - assets\images\fa1.jpg
+    - assets\images\fa2.jpg
+    - assets\images\fa3.jpg
+    - assets\images\fa4.jpg
+    - assets\images\fa5.jpg
+    - assets\images\b1.jpg
+    - assets\images\b3.jpg
+    - assets\images\b4.jpg
+    - assets\images\b5.jpg
+    - assets\images\s1.jpg
+    - assets\images\s2.jpg
+    - assets\images\s3.jpg
+    - assets\images\s4.jpg
+    - assets\images\s5.jpg
+    - assets\images\a1.jpg
+    - assets\images\a2.jpg
+    - assets\images\a3.jpg
+    - assets\images\a4.jpg
+    - assets\images\a5.jpg
+    - assets\images\c1.jpg
+    - assets\images\c2.jpg
+    - assets\images\c3.jpg
+    - assets\images\c4.jpg
+    - assets\images\c5.jpg
+    - assets\images\b2.jpg
+    - assets\images\coupon_icon.png
