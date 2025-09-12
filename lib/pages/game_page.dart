@@ -57,6 +57,7 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
       } else if (_selectedOption == 1) {
         _coins = (_coins - 5).clamp(0, 999);
       }
+
       _selectedOption = null;
     });
   }
@@ -323,23 +324,34 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
           ],
         ),
         const SizedBox(height: 30),
-        // Score and feedback
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text('Coins: \'$_coins\'', style: const TextStyle(color: Colors.white, fontSize: 16)),
-            Text('Hearts: \'$_hearts\'', style: const TextStyle(color: Colors.white, fontSize: 16)),
-          ],
-        ),
         const SizedBox(height: 12),
         if (_selectedOption != null)
-          Text(
-            _selectedOption == 1 ? '✅ Correct Answer! +5 Coins' : '❌ Wrong Answer! -1 Heart',
-            style: TextStyle(
-              color: _selectedOption == 1 ? Colors.greenAccent : Colors.redAccent,
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-            ),
+          Column(
+            children: [
+              if (_selectedOption == 1) ...[
+                const Text(
+                  'Correct Answer',
+                  style: TextStyle(
+                    color: Colors.green,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Image.asset('assets/images/gold_star.png', width: 60, height: 60),
+              ] else ...[
+                const Text(
+                  'Wrong Answer',
+                  style: TextStyle(
+                    color: Colors.red,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Image.asset('assets/images/heart.png', width: 60, height: 60),
+              ],
+            ],
           ),
         const SizedBox(height: 12),
         if (_selectedOption != null)
@@ -369,28 +381,29 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
           ),
         ),
         const SizedBox(height: 20),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            _ActionButton(
-              label: "Hint",
-              onPressed: () => _showSkipDialog(
-                context,
-                "Are you sure you want a hint?",
-                "Hint 5",
+        if (_selectedOption == null)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _ActionButton(
+                label: "Hint",
+                onPressed: () => _showSkipDialog(
+                  context,
+                  "Are you sure you want a hint?",
+                  "Hint 5",
+                ),
               ),
-            ),
-            const SizedBox(width: 16),
-            _ActionButton(
-              label: "Skip",
-              onPressed: () => _showSkipDialog(
-                context,
-                "Are you sure you want to skip?",
-                "Skip 5",
+              const SizedBox(width: 16),
+              _ActionButton(
+                label: "Skip",
+                onPressed: () => _showSkipDialog(
+                  context,
+                  "Are you sure you want to skip?",
+                  "Skip 5",
+                ),
               ),
-            ),
-          ],
-        ),
+            ],
+          ),
       ],
     );
   }
@@ -894,6 +907,7 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
       },
     );
   }
+
 
 
 
