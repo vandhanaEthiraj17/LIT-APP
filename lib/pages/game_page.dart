@@ -32,6 +32,35 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
   late Animation<double> _animation1;
   late Animation<double> _animation2;
 
+  // Shoe selection state
+  int? _selectedOption; // 1 = shoe1, 2 = shoe2
+  int _coins = 0;
+  int _hearts = 3;
+  static const String _shoe1Price = '₹93,499';
+  static const String _shoe2Price = '₹3,500';
+
+  void _selectOption(int option) {
+    setState(() {
+      _selectedOption = option;
+      if (option == 1) {
+        _coins += 5;
+      } else {
+        _hearts = (_hearts - 1).clamp(0, 999);
+      }
+    });
+  }
+
+  void _undoSelection() {
+    setState(() {
+      if (_selectedOption == 2) {
+        _hearts += 1;
+      } else if (_selectedOption == 1) {
+        _coins = (_coins - 5).clamp(0, 999);
+      }
+      _selectedOption = null;
+    });
+  }
+
 
   void _onNavTapped(int index) {
     setState(() => currentIndex = index);
@@ -228,12 +257,107 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
       children: [
         Row(
           children: [
-            _buildOptionCard("assets/images/shoe1.png", "Option 1"),
+            // Shoe 1
+            Expanded(
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () => _selectOption(1),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 250),
+                  margin: const EdgeInsets.only(top: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      if (_selectedOption == 1)
+                        BoxShadow(
+                          color: Colors.greenAccent.withOpacity(0.8),
+                          blurRadius: 20,
+                          spreadRadius: 4,
+                        ),
+                    ],
+                  ),
+                  child: _selectionCard(
+                    imagePath: 'assets/images/shoe1.png',
+                    label: 'BALENCIAGA',
+                    scaleUp: _selectedOption == 1,
+                    showPrice: _selectedOption != null,
+                    price: _shoe1Price,
+                    glowColor: _selectedOption == 1 ? Colors.greenAccent : Colors.transparent,
+                  ),
+                ),
+              ),
+            ),
             const SizedBox(width: 16),
-            _buildOptionCard("assets/images/shoe2.png", "Option 2"),
+            // Shoe 2
+            Expanded(
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () => _selectOption(2),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 250),
+                  margin: const EdgeInsets.only(top: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      if (_selectedOption == 2)
+                        BoxShadow(
+                          color: Colors.redAccent.withOpacity(0.8),
+                          blurRadius: 20,
+                          spreadRadius: 4,
+                        ),
+                    ],
+                  ),
+                  child: _selectionCard(
+                    imagePath: 'assets/images/shoe2.png',
+                    label: 'CONVERSE',
+                    scaleUp: _selectedOption == 2,
+                    showPrice: _selectedOption != null,
+                    price: _shoe2Price,
+                    glowColor: _selectedOption == 2 ? Colors.redAccent : Colors.transparent,
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
         const SizedBox(height: 30),
+        // Score and feedback
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('Coins: \'$_coins\'', style: const TextStyle(color: Colors.white, fontSize: 16)),
+            Text('Hearts: \'$_hearts\'', style: const TextStyle(color: Colors.white, fontSize: 16)),
+          ],
+        ),
+        const SizedBox(height: 12),
+        if (_selectedOption != null)
+          Text(
+            _selectedOption == 1 ? '✅ Correct Answer! +5 Coins' : '❌ Wrong Answer! -1 Heart',
+            style: TextStyle(
+              color: _selectedOption == 1 ? Colors.greenAccent : Colors.redAccent,
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
+          ),
+        const SizedBox(height: 12),
+        if (_selectedOption != null)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (_selectedOption == 2)
+                _primaryButton('Undo', _undoSelection),
+              if (_selectedOption == 2) const SizedBox(width: 12),
+              _primaryButton('Next', () {
+                setState(() {
+                  _selectedOption = null; // reset for next round
+                });
+              }),
+              const SizedBox(width: 12),
+              _primaryButton('Exit', () => Navigator.pop(context)),
+            ],
+          ),
         Center(
           child: Text(
             "00:${secondsRemaining.toString().padLeft(2, '0')}",
@@ -902,6 +1026,153 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _selectionCard({
+    required String imagePath,
+    required String label,
+    required bool scaleUp,
+    required bool showPrice,
+    required String price,
+    required Color glowColor,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: const RadialGradient(
+          center: Alignment(0.08, 0.08),
+          radius: 7.98,
+          colors: [
+            Color.fromRGBO(0, 0, 0, 0.8),
+            Color.fromRGBO(147, 51, 234, 0.4),
+          ],
+          stops: [0.0, 0.5],
+        ),
+        border: Border.all(color: const Color(0xFFAEAEAE), width: 1),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          if (glowColor != Colors.transparent)
+            BoxShadow(color: glowColor.withOpacity(0.85), blurRadius: 20, spreadRadius: 4),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                child: Center(
+                  child: AnimatedScale(
+                    duration: const Duration(milliseconds: 200),
+                    scale: scaleUp ? 1.1 : 1.0,
+                    child: Image.asset(imagePath, height: 130, fit: BoxFit.contain),
+                  ),
+                ),
+              ),
+              Positioned(
+                top: -1.5,
+                right: -1,
+                child: Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: Colors.black,
+                    border: Border.all(color: const Color(0xFF491E75), width: 2),
+                    borderRadius: const BorderRadius.only(
+                      bottomLeft: Radius.circular(12),
+                      topRight: Radius.circular(12),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.4),
+                        blurRadius: 4,
+                        offset: const Offset(2, 2),
+                      ),
+                    ],
+                  ),
+                  child: const Center(
+                    child: Icon(Icons.bookmark_border, size: 20, color: Color(0xFF491E75)),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            decoration: const BoxDecoration(
+              gradient: RadialGradient(
+                center: Alignment(0.08, 0.08),
+                radius: 7.98,
+                colors: [
+                  Color.fromRGBO(0, 0, 0, 0.8),
+                  Color.fromRGBO(147, 51, 234, 0.4),
+                ],
+                stops: [0.0, 0.5],
+              ),
+              border: Border(
+                top: BorderSide(color: Color(0xFFAEAEAE), width: 1),
+              ),
+              borderRadius: BorderRadius.vertical(bottom: Radius.circular(16)),
+            ),
+            child: Column(
+              children: [
+                Text(
+                  label,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+                if (showPrice)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 6),
+                    child: Text(
+                      price,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _primaryButton(String label, VoidCallback onPressed) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: const RadialGradient(
+          center: Alignment(0.08, 0.08),
+          radius: 7.98,
+          colors: [
+            Color.fromRGBO(0, 0, 0, 0.8),
+            Color.fromRGBO(147, 51, 234, 0.4),
+          ],
+          stops: [0.0, 0.5],
+        ),
+        border: Border.all(color: const Color(0xFFAEAEAE), width: 1),
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: const [
+          BoxShadow(color: Color(0x66000000), offset: Offset(0, 4), blurRadius: 4),
+        ],
+      ),
+      child: TextButton(
+        onPressed: onPressed,
+        style: TextButton.styleFrom(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+          foregroundColor: Colors.white,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        ),
+        child: Text(label, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
       ),
     );
   }
