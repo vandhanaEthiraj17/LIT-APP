@@ -150,51 +150,27 @@ class _GameEntrancePageState extends State<GameEntrancePage> {
                   ),
 
                   const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      buildShoeCard('assets/images/violet-shoe.png', -math.pi / 15),
-                      const SizedBox(width: 8),
-                      Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          Text(
-                            'VS',
-                            style: TextStyle(
-                              fontSize: 52,
-                              fontWeight: FontWeight.w900,
-                              foreground: Paint()
-                                ..style = PaintingStyle.stroke
-                                ..strokeWidth = 4
-                                ..color = Colors.black,
-                            ),
-                          ),
-                          ShaderMask(
-                            shaderCallback: (Rect bounds) {
-                              return const LinearGradient(
-                                colors: [
-                                  Color(0xFFB497D6),
-                                  Color(0xFF6B4F9E),
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ).createShader(bounds);
-                            },
-                            child: const Text(
-                              'VS',
-                              style: TextStyle(
-                                fontSize: 46,
-                                fontWeight: FontWeight.w900,
-                                color: Colors.white,
+                  // Replaced dual shoe widgets with a single combined image per request
+                  Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 340),
+                      child: Image.asset(
+                        'assets/images/game entrance.png',
+                        fit: BoxFit.contain,
+                        height: 220,
+                        errorBuilder: (context, error, stack) {
+                          return const SizedBox(
+                            height: 220,
+                            child: Center(
+                              child: Text(
+                                'Image not found',
+                                style: TextStyle(color: Colors.white70),
                               ),
                             ),
-                          ),
-                        ],
+                          );
+                        },
                       ),
-                      const SizedBox(width: 8),
-                      buildShoeCard('assets/images/blue-shoe.png', math.pi / 15),
-                    ],
+                    ),
                   ),
                   const SizedBox(height: 10),
                   Column(
@@ -461,6 +437,34 @@ class _AudioSettingsPopupState extends State<_AudioSettingsPopup> {
                               ),
                             ],
                           ),
+                          const SizedBox(height: 24),
+                          Wrap(
+                            alignment: WrapAlignment.center,
+                            spacing: 16,
+                            runSpacing: 16,
+                            children: [
+                              _settingsPill(
+                                icon: Icons.info_outline,
+                                label: 'How to Play',
+                                onTap: () {},
+                              ),
+                              _settingsPill(
+                                icon: Icons.privacy_tip_outlined,
+                                label: 'Privacy',
+                                onTap: () {},
+                              ),
+                              _settingsPill(
+                                icon: Icons.gavel_outlined,
+                                label: 'Terms of Service',
+                                onTap: () {},
+                              ),
+                              _settingsPill(
+                                icon: Icons.headset_mic_outlined,
+                                label: 'Help And Support',
+                                onTap: () {},
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                     ),
@@ -481,6 +485,34 @@ class _AudioSettingsPopupState extends State<_AudioSettingsPopup> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _settingsPill({required IconData icon, required String label, required VoidCallback onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.15),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.white24),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, color: Colors.white, size: 18),
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
         ),
       ),
     );
