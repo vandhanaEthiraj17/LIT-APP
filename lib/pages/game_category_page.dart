@@ -46,6 +46,34 @@ class _GameCategoryPageState extends State<GameCategoryPage> with TickerProvider
     selectedCategories = [selectedCategory];
   }
 
+  Widget _settingsPill({required IconData icon, required String label, required VoidCallback onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.15),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.white24),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, color: Colors.white, size: 18),
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   void _onNavTapped(int index) {
     setState(() => currentIndex = index);
     if (index == 0) {
@@ -484,6 +512,34 @@ class _AudioSettingsPopupState extends State<_AudioSettingsPopup> {
                               ),
                             ],
                           ),
+                          const SizedBox(height: 24),
+                          Wrap(
+                            alignment: WrapAlignment.center,
+                            spacing: 16,
+                            runSpacing: 16,
+                            children: [
+                              _settingsPill(
+                                icon: Icons.info_outline,
+                                label: 'How to Play',
+                                onTap: () {},
+                              ),
+                              _settingsPill(
+                                icon: Icons.privacy_tip_outlined,
+                                label: 'Privacy',
+                                onTap: () {},
+                              ),
+                              _settingsPill(
+                                icon: Icons.gavel_outlined,
+                                label: 'Terms of Service',
+                                onTap: () {},
+                              ),
+                              _settingsPill(
+                                icon: Icons.headset_mic_outlined,
+                                label: 'Help And Support',
+                                onTap: () {},
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                     ),
@@ -504,6 +560,34 @@ class _AudioSettingsPopupState extends State<_AudioSettingsPopup> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _settingsPill({required IconData icon, required String label, required VoidCallback onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.15),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.white24),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, color: Colors.white, size: 18),
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
         ),
       ),
     );
