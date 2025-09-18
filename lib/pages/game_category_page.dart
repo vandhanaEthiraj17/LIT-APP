@@ -558,6 +558,16 @@ class _AudioSettingsPopupState extends State<_AudioSettingsPopup> {
                                 end: Alignment.centerRight,
                               ),
                             ),
+                            child: Center(
+                              child: Text(
+                                '${(value * 100).round()}%',
+                                style: const TextStyle(
+                                  color: Colors.black87,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
                           ),
                         ),
                       ],

@@ -19,6 +19,7 @@ dependencies:
   intl: ^0.20.2
   audioplayers: ^5.2.1
   shimmer: ^3.0.0
+  flutter_svg: ^2.0.9
 
 
 dev_dependencies:
@@ -69,6 +70,7 @@ flutter:
     - assets/images/women_collection.png
     - assets/images/diamond.png
     - assets/images/heart.png
+    - assets/images/heart.svg
     - assets/images/savings1.jpg
     - assets/images/savings2.jpg
     - assets/images/savings3.jpg
