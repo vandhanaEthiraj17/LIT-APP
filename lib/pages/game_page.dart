@@ -5,9 +5,9 @@ import 'package:lit/widgets/common_button.dart';
 import 'dart:ui';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:math' as math;
-import 'dart:async';
 import 'package:flutter/scheduler.dart';
 import '../widgets/notification_bell.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class GamePage extends StatefulWidget {
   const GamePage({super.key});
@@ -331,11 +331,11 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
               if (_selectedOption == 1) ...[
                 const Text(
                   'Correct Answer',
-                  style: TextStyle(
+            style: TextStyle(
                     color: Colors.green,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                  ),
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
                 ),
                 const SizedBox(height: 6),
                 Image.asset('assets/images/gold_star.png', width: 60, height: 60),
@@ -382,28 +382,28 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
         ),
         const SizedBox(height: 20),
         if (_selectedOption == null)
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _ActionButton(
-                label: "Hint",
-                onPressed: () => _showSkipDialog(
-                  context,
-                  "Are you sure you want a hint?",
-                  "Hint 5",
-                ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _ActionButton(
+              label: "Hint",
+              onPressed: () => _showSkipDialog(
+                context,
+                "Are you sure you want a hint?",
+                "Hint 5",
               ),
-              const SizedBox(width: 16),
-              _ActionButton(
-                label: "Skip",
-                onPressed: () => _showSkipDialog(
-                  context,
-                  "Are you sure you want to skip?",
-                  "Skip 5",
-                ),
+            ),
+            const SizedBox(width: 16),
+            _ActionButton(
+              label: "Skip",
+              onPressed: () => _showSkipDialog(
+                context,
+                "Are you sure you want to skip?",
+                "Skip 5",
               ),
-            ],
-          ),
+            ),
+          ],
+        ),
       ],
     );
   }
@@ -870,26 +870,13 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
                               Positioned(
                                 top: -10,
                                 right: -6,
-                                child: Row(
-                                  children: [
-                                    const Text(
-                                      "-",
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 2),
-                                    Transform.rotate(
+                                child: Transform.rotate(
                                       angle: 0.0,
                                       child: Image.asset(
                                         'assets/images/heart.png',
                                         width: 22,
                                         height: 22,
                                       ),
-                                    ),
-                                  ],
                                 ),
                               ),
 
@@ -952,8 +939,7 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
   }
 
   static Widget _buildOptionCard(String imagePath, String label) {
-    return Expanded(
-      child: Container(
+    return Container(
         margin: const EdgeInsets.only(top: 8),
         decoration: BoxDecoration(
           gradient: const RadialGradient(
@@ -1039,7 +1025,6 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
               ),
             ),
           ],
-        ),
       ),
     );
   }
@@ -1503,6 +1488,16 @@ class _AudioSettingsPopupState extends State<_AudioSettingsPopup> {
                                 colors: [Color(0xFFE0E0E0), Color(0xFF8B8B8B)],
                                 begin: Alignment.centerLeft,
                                 end: Alignment.centerRight,
+                              ),
+                            ),
+                            child: Center(
+                              child: Text(
+                                '${(value * 100).round()}%',
+                                style: const TextStyle(
+                                  color: Colors.black87,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                           ),
