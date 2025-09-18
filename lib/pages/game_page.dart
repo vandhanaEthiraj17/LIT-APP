@@ -856,7 +856,9 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
                                 padding: const EdgeInsets.all(1.5),
                                 child: TextButton(
                                   onPressed: () {
-                                    Navigator.pushNamed(context, '/game-modes'); // go back
+                                    // Close dialog then pop GamePage to return to Game Modes
+                                    Navigator.of(context).pop();
+                                    Navigator.of(context).pop();
                                   },
                                   style: TextButton.styleFrom(
                                     padding: const EdgeInsets.symmetric(horizontal: 36),
