@@ -76,18 +76,13 @@ class CustomBottomNavBar extends StatelessWidget {
                       ),
                     ),
 
-                    // 🔹 Cart or IR Icon (based on isMarketplace)
+                    // 🔹 Save/Cart/IR Icon
                     GestureDetector(
                       onTap: () {
                         if (isGame) {
                           Navigator.pushNamed(context, '/save-products');
                         } else if (isMarketplace) {
-                          Navigator.pushNamed(
-                            context,
-                            '/cart',
-                            arguments:
-                                cartItems, // cartItems must be the actual list you are maintaining
-                          );
+                          Navigator.pushNamed(context, '/cart', arguments: cartItems);
                         } else {
                           Navigator.pushNamed(context, '/ir-icon');
                         }
@@ -96,15 +91,27 @@ class CustomBottomNavBar extends StatelessWidget {
                         isGame
                             ? 'assets/images/save-pro-icon.png'
                             : isMarketplace
-                            ? 'assets/images/cart_icon.png'
-                            : 'assets/images/ir_icon.png',
+                                ? 'assets/images/cart_icon.png'
+                                : 'assets/images/ir_icon.png',
                         width: 28,
                         height: 28,
-                        color: currentIndex == 1
-                            ? const Color(0x718D00FF)
-                            : Colors.white,
+                        color: currentIndex == 1 ? const Color(0x718D00FF) : Colors.white,
                       ),
                     ),
+
+                    // 🔹 Cart Icon (only in Game) — placed between save-pro and profile
+                    if (isGame)
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(context, '/cart', arguments: cartItems);
+                        },
+                        child: Image.asset(
+                          'assets/images/cart_icon.png',
+                          width: 28,
+                          height: 28,
+                          color: Colors.white,
+                        ),
+                      ),
 
                     // 🔹 Profile Icon
                     GestureDetector(

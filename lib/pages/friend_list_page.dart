@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:lit/widgets/app_drawer.dart';
 import 'package:lit/widgets/common_button.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'dart:math' as math;
 
 import 'package:provider/provider.dart';
@@ -413,6 +414,159 @@ class _FriendListPageState extends State<FriendListPage> {
     );
   }
 
+  Future<void> _showAcceptedPopup(String name, String imagePath) async {
+    await showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(22),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+                  child: Container(
+                    width: 340,
+                    padding: const EdgeInsets.fromLTRB(22, 36, 22, 24),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(22),
+                      color: const Color.fromRGBO(255, 255, 255, 0.08),
+                      border: Border.all(color: Colors.white.withOpacity(0.15)),
+                      boxShadow: [
+                        BoxShadow(color: Colors.black.withOpacity(0.25), blurRadius: 16, offset: const Offset(0, 8)),
+                      ],
+                      gradient: const LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [Color(0x1AFFFFFF), Color(0x0FFFFFFF)],
+                      ),
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          name,
+                          style: GoogleFonts.kronaOne(color: Colors.white, fontSize: 22),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 14),
+                        CircleAvatar(radius: 56, backgroundImage: AssetImage(imagePath)),
+                        const SizedBox(height: 18),
+                        const Text(
+                          'Is now in your Friend List !',
+                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                        ),
+                        const SizedBox(height: 22),
+                        SizedBox(
+                          width: 200,
+                          height: 42,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF2D0C4B),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                              elevation: 6,
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                              Navigator.of(context).push(
+                                MaterialPageRoute(builder: (_) => const FriendSuggestionsPage()),
+                              );
+                            },
+                            child: const Text('Add More friends', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                top: -6,
+                right: -6,
+                child: GestureDetector(
+                  onTap: () => Navigator.of(context).pop(),
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Image.asset('assets/images/Rectangle.png', width: 44, height: 44),
+                      const Icon(Icons.close, color: Colors.white, size: 20),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _showRequestSentPopup(String name, String imagePath) async {
+    await showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(22),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+                  child: Container(
+                    width: 320,
+                    padding: const EdgeInsets.fromLTRB(22, 36, 22, 24),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(22),
+                      color: const Color.fromRGBO(255, 255, 255, 0.08),
+                      border: Border.all(color: Colors.white.withOpacity(0.15)),
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          name,
+                          style: GoogleFonts.kronaOne(color: Colors.white, fontSize: 22),
+                        ),
+                        const SizedBox(height: 14),
+                        CircleAvatar(radius: 52, backgroundImage: AssetImage(imagePath)),
+                        const SizedBox(height: 18),
+                        const Text(
+                          'Friend Request Sent successfully',
+                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                top: -6,
+                right: -6,
+                child: GestureDetector(
+                  onTap: () => Navigator.of(context).pop(),
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Image.asset('assets/images/Rectangle.png', width: 44, height: 44),
+                      const Icon(Icons.close, color: Colors.white, size: 20),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   void _handleSearch(String query) {
     setState(() {
       isSearching = query.isNotEmpty;
@@ -466,6 +620,7 @@ class _FriendListPageState extends State<FriendListPage> {
       bottomNavigationBar: CustomBottomNavBar(
         currentIndex: currentIndex,
         onTap: _onNavTapped,
+        isGame: true,
       ),
       body: Stack(
         children: [
@@ -731,15 +886,21 @@ class _FriendListPageState extends State<FriendListPage> {
             ),
           ),
           GestureDetector(
-            onTap: () {
+            onTap: () async {
               onSendRequest();
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text("Friend request sent!"),
-                  backgroundColor: Colors.green,
-                  duration: Duration(seconds: 2),
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (_) => Dialog(
+                  backgroundColor: Colors.transparent,
+                  child: Center(
+                    child: Image.asset('assets/images/check (1).png', width: 80, height: 80),
+                  ),
                 ),
               );
+              await Future.delayed(const Duration(milliseconds: 700));
+              Navigator.of(context).pop();
+              _showRequestSentPopup(name, image);
             },
             child: Container(
               padding: const EdgeInsets.all(6),
@@ -821,6 +982,7 @@ class _FriendListPageState extends State<FriendListPage> {
                             'image': imagePath,
                           });
                         });
+                        _showAcceptedPopup(name, imagePath);
                       },
                     ),
                   ),
@@ -1069,7 +1231,7 @@ class _FriendListPageState extends State<FriendListPage> {
               ),
             ),
             IconButton(
-              icon: const Icon(Icons.delete, color: Colors.redAccent),
+              icon: SvgPicture.asset('assets/images/trash.svg', height: 22, width: 22, color: Colors.redAccent),
               onPressed: () {
                 showDialog(
                   context: context,
@@ -1126,12 +1288,12 @@ class _AudioSettingsPopupState extends State<_AudioSettingsPopup> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final popupWidth = math.min(screenWidth * 0.79, 500.0);
+    final popupWidth = math.min(screenWidth * 0.79, 500.0); // 90% of screen or 500 max
 
     return Center(
       child: UnconstrainedBox(
         child: SizedBox(
-          width: popupWidth,
+          width: popupWidth.toDouble(),
           child: Stack(
             clipBehavior: Clip.none,
             children: [
@@ -1220,7 +1382,34 @@ class _AudioSettingsPopupState extends State<_AudioSettingsPopup> {
                               ),
                             ],
                           ),
-
+                          const SizedBox(height: 24),
+                          Wrap(
+                            alignment: WrapAlignment.center,
+                            spacing: 16,
+                            runSpacing: 16,
+                            children: [
+                              _settingsPill(
+                                icon: Icons.info_outline,
+                                label: 'How to Play',
+                                onTap: () {},
+                              ),
+                              _settingsPill(
+                                icon: Icons.privacy_tip_outlined,
+                                label: 'Privacy',
+                                onTap: () {},
+                              ),
+                              _settingsPill(
+                                icon: Icons.gavel_outlined,
+                                label: 'Terms of Service',
+                                onTap: () {},
+                              ),
+                              _settingsPill(
+                                icon: Icons.headset_mic_outlined,
+                                label: 'Help And Support',
+                                onTap: () {},
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                     ),
@@ -1241,6 +1430,34 @@ class _AudioSettingsPopupState extends State<_AudioSettingsPopup> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _settingsPill({required IconData icon, required String label, required VoidCallback onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.15),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.white24),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, color: Colors.white, size: 18),
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -1295,6 +1512,16 @@ class _AudioSettingsPopupState extends State<_AudioSettingsPopup> {
                                 end: Alignment.centerRight,
                               ),
                             ),
+                            child: Center(
+                              child: Text(
+                                '${(value * 100).round()}%',
+                                style: const TextStyle(
+                                  color: Colors.black87,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
                           ),
                         ),
                       ],
@@ -1330,6 +1557,182 @@ class _AudioIconButton extends StatelessWidget {
         ),
         padding: const EdgeInsets.all(16),
         child: Icon(icon, color: Colors.white, size: 20),
+      ),
+    );
+  }
+}
+
+class FriendSuggestionsPage extends StatefulWidget {
+  const FriendSuggestionsPage({super.key});
+
+  @override
+  State<FriendSuggestionsPage> createState() => _FriendSuggestionsPageState();
+}
+
+class _FriendSuggestionsPageState extends State<FriendSuggestionsPage> {
+  final List<String> suggestions = List.generate(12, (i) => 'User ${i + 1}');
+  final TextEditingController _search = TextEditingController();
+
+  Future<void> _showRequestSentPopup(String name, String imagePath) async {
+    await showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(22),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+                  child: Container(
+                    width: 320,
+                    padding: const EdgeInsets.fromLTRB(22, 36, 22, 24),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(22),
+                      color: const Color.fromRGBO(255, 255, 255, 0.08),
+                      border: Border.all(color: Colors.white.withOpacity(0.15)),
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          name,
+                          style: GoogleFonts.kronaOne(color: Colors.white, fontSize: 22),
+                        ),
+                        const SizedBox(height: 14),
+                        CircleAvatar(radius: 52, backgroundImage: AssetImage(imagePath)),
+                        const SizedBox(height: 18),
+                        const Text(
+                          'Friend Request Sent successfully',
+                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                top: -6,
+                right: -6,
+                child: GestureDetector(
+                  onTap: () => Navigator.of(context).pop(),
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Image.asset('assets/images/Rectangle.png', width: 44, height: 44),
+                      const Icon(Icons.close, color: Colors.white, size: 20),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final filtered = suggestions
+        .where((n) => n.toLowerCase().contains(_search.text.toLowerCase()))
+        .toList();
+
+    return Scaffold(
+      extendBodyBehindAppBar: true,
+      body: Stack(
+        children: [
+          Positioned.fill(child: Image.asset('assets/images/background.png', fit: BoxFit.cover)),
+          Positioned.fill(child: Container(color: Colors.black.withOpacity(0.6))),
+          SafeArea(
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.arrow_back, color: Colors.white),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                      const Spacer(),
+                      Image.asset('assets/images/logo.png', height: 36),
+                      const Spacer(),
+                      const Icon(Icons.notifications, color: Colors.white),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text('FRIENDS', style: GoogleFonts.kronaOne(color: Colors.white, letterSpacing: 4, fontSize: 18)),
+                const SizedBox(height: 16),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(color: const Color(0x569333EA)),
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.search, color: Color(0xFFBFA9DD), size: 20),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: TextField(
+                            controller: _search,
+                            onChanged: (_) => setState(() {}),
+                            decoration: const InputDecoration(hintText: 'Search', border: InputBorder.none),
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Expanded(
+                  child: ListView.separated(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    itemCount: filtered.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 8),
+                    itemBuilder: (_, i) {
+                      final name = filtered[i];
+                      return Row(
+                        children: [
+                          const CircleAvatar(radius: 22, backgroundImage: AssetImage('assets/images/user.png')),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500)),
+                          ),
+                          GestureDetector(
+                            onTap: () async {
+                              showDialog(
+                                context: context,
+                                barrierDismissible: false,
+                                builder: (_) => Dialog(
+                                  backgroundColor: Colors.transparent,
+                                  child: Center(child: Image.asset('assets/images/check (1).png', width: 80, height: 80)),
+                                ),
+                              );
+                              await Future.delayed(const Duration(milliseconds: 700));
+                              Navigator.of(context).pop();
+                              _showRequestSentPopup(name, 'assets/images/user.png');
+                            },
+                            child: SvgPicture.asset('assets/images/heart.svg', width: 22, height: 22, color: Colors.white),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

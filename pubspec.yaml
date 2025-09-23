@@ -133,7 +133,11 @@ flutter:
     - assets/images/lives3.png
     - assets/images/lives4.png
     - assets/images/notification.wav
+    - assets/images/Rectangle.png
+    - assets/images/user.png
+    - assets/images/check (1).png
     - assets/images/save-pro-icon.png
+    - assets/images/trash.svg
     - assets/images/clap.png
     - assets/images/mens-collection.jpg
     - assets/images/womens-collection.jpg
@@ -164,3 +168,4 @@ flutter:
     - assets/images/b2.jpg
     - assets/images/coupon_icon.png
     - assets/images/game entrance.png
+    # assets/images/game_entrance.png was removed; using existing 'game entrance.png'

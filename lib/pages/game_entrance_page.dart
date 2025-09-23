@@ -115,57 +115,21 @@ class _GameEntrancePageState extends State<GameEntrancePage> {
                     ],
                   ),
                   const SizedBox(height: 10),
-                  Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          "LIT",
-                          style: GoogleFonts.kronaOne(
-                            fontSize: 40,
-                            fontWeight: FontWeight.w200,
-                            color: Colors.white,
-                            letterSpacing: 9,
-                          ),
-                        ),
-                        const SizedBox(height: 1),
-                        Text(
-                          "GAME",
-                          style: GoogleFonts.kronaOne(
-                            fontSize: 40,
-                            fontWeight: FontWeight.w200,
-                            color: Colors.white,
-                            letterSpacing: 9,
-                          ),
-                        ),
-                        const SizedBox(height: 12), // Spacing between GAME and logo
-                        Image.asset(
-                          'assets/images/logo.png',
-                          height: 70,
-                          width: 70,
-                          fit: BoxFit.contain,
-                        ),
-                      ],
-                    ),
-                  ),
+                  const SizedBox.shrink(),
 
                   const SizedBox(height: 20),
-                  // Replaced dual shoe widgets with a single combined image per request
                   Center(
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 340),
+                    child: SizedBox(
+                      width: 500,
+                      height: 300,
                       child: Image.asset(
                         'assets/images/game entrance.png',
                         fit: BoxFit.contain,
-                        height: 220,
                         errorBuilder: (context, error, stack) {
-                          return const SizedBox(
-                            height: 220,
-                            child: Center(
-                              child: Text(
-                                'Image not found',
-                                style: TextStyle(color: Colors.white70),
-                              ),
+                          return const Center(
+                            child: Text(
+                              'Image not found',
+                              style: TextStyle(color: Colors.white70),
                             ),
                           );
                         },
