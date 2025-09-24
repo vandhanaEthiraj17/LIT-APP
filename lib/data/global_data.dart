@@ -112,3 +112,6 @@ final List<Map<String, dynamic>> allProducts = [
 
 List<Map<String, dynamic>> cartItems = [];
 
+// Saved items from Game page
+List<Map<String, String>> savedGameItems = [];
+

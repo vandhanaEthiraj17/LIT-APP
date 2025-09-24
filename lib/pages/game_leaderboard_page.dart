@@ -533,7 +533,7 @@ class _GameLeaderboardPageState extends State<GameLeaderboardPage> {
                                       ],
                                       const SizedBox(width: 10),
                                       Image.asset(
-                                        entry['isGold'] ? 'assets/images/gold_star.png' : 'assets/images/purple_star.png',
+                                        entry['isGold'] ? 'assets/images/star.png' : 'assets/images/purple_star.png',
                                         width: 20,
                                         height: 20,
                                       ),

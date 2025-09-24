@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lit/pages/notifications_page.dart';
 import 'screens/main_layout.dart';
-import 'package:lit/screens/home/home_page.dart';
-import 'pages/ir_icon_page.dart';
+// duplicate import removed
 import 'pages/profile_page.dart';
 import 'pages/newsletter_page.dart';
 import 'pages/sustainable_luxury.dart';
@@ -28,11 +27,12 @@ import 'settings/return_cancellation_settings_page.dart';
 import 'settings/support_legal_settings_page.dart';
 import 'settings/payment_methods_page.dart';
 import 'settings/subscription_plan_details_page.dart';
-import 'pages/notifications_page.dart';
+// removed duplicate import of notifications_page.dart above
 import 'payment/payment_gateway_page.dart';
 import 'pages/game_entrance_page.dart';
 import 'pages/shop_page.dart';
 import 'pages/friend_list_page.dart';
+import 'pages/saved_item_page.dart';
 import 'package:lit/providers/notification_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:lit/pages/coming_soon.dart';
@@ -40,6 +40,9 @@ import 'package:lit/ecommerce/billing_history.dart';
 import 'package:lit/ecommerce/selection_address.dart';
 import 'package:lit/ecommerce/cart_page.dart';
 void main() {
+  // Enable performance optimizations
+  WidgetsFlutterBinding.ensureInitialized();
+  
   runApp(
     ChangeNotifierProvider(
       create: (_) => NotificationProvider(),
@@ -61,6 +64,13 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: const Color(0xFF1B0428),
         brightness: Brightness.dark,
       ),
+      // Performance optimizations
+      builder: (context, child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+          child: child!,
+        );
+      },
       home: const MainLayout(),
 
       routes: {
@@ -106,6 +116,7 @@ class MyApp extends StatelessWidget {
         '/game-entrance': (context) => const GameEntrancePage(),
         '/game-shop': (context) => const ShopPage(),
         '/friend-list': (context) => const FriendListPage(),
+        '/save-products': (context) => const SavedItemPage(),
         '/coming-soon': (context) => const ComingSoonPage(),
         '/billing-history': (context) => const BillingHistoryPage(),
         '/shipping-address': (context) => const ShippingAddressPage(),

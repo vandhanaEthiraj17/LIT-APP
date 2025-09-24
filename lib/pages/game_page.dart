@@ -8,6 +8,8 @@ import 'dart:math' as math;
 import 'package:flutter/scheduler.dart';
 import '../widgets/notification_bell.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:lit/data/global_data.dart';
+import 'package:lit/pages/saved_item_page.dart';
 
 class GamePage extends StatefulWidget {
   const GamePage({super.key});
@@ -17,20 +19,13 @@ class GamePage extends StatefulWidget {
 }
 
 class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
+  int _diamonds = 6;
   int currentIndex = -1;
   List<String> selectedCategories = [];
   int secondsRemaining = 15;
   Timer? countdownTimer;
   bool _hasStarted = false;
-  Timer? _timer;
-
   bool isFlipped = false;
-  bool _showRealCards = false;
-
-  late AnimationController _flipController1;
-  late AnimationController _flipController2;
-  late Animation<double> _animation1;
-  late Animation<double> _animation2;
 
   // Shoe selection state
   int? _selectedOption; // 1 = shoe1, 2 = shoe2
@@ -86,8 +81,6 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
 
   @override
   void dispose() {
-    _flipController1.dispose();
-    _flipController2.dispose();
     countdownTimer?.cancel();
     super.dispose();
   }
@@ -96,18 +89,6 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-
-    _flipController1 = AnimationController(
-      duration: const Duration(milliseconds: 500),
-      vsync: this,
-    );
-    _flipController2 = AnimationController(
-      duration: const Duration(milliseconds: 500),
-      vsync: this,
-    );
-
-    _animation1 = Tween<double>(begin: 0, end: 1).animate(_flipController1);
-    _animation2 = Tween<double>(begin: 0, end: 1).animate(_flipController2);
   }
 
 
@@ -205,27 +186,44 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
                       ],
                     ),
                     const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        _resourceIcon('assets/images/heart.png', '6'),
-                        const SizedBox(width: 8),
-                        _resourceIcon('assets/images/diamond.png', '6'),
-                        const SizedBox(width: 8),
-                        _resourceIcon('assets/images/fire.png', '6'),
-                        const SizedBox(width: 8),
-                        _resourceIcon('assets/images/purple_star.png', '2803'),
-                      ],
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          _resourceIcon('assets/images/heart.png', '6'),
+                          const SizedBox(width: 8),
+                          _resourceIcon('assets/images/diamond.png', '6'),
+                          const SizedBox(width: 8),
+                          _resourceIcon('assets/images/fire.png', '6'),
+                          const SizedBox(width: 8),
+                          _resourceIcon('assets/images/purple_star.png', '2803'),
+                        ],
+                      ),
                     ),
                     const SizedBox(height: 25),
                     const Center(
-                      child: Text(
-                        "Which One Looks More Expensive ?",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      child: Column(
+                        children: [
+                          Text(
+                            "Which One Looks More",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: 2),
+                          Text(
+                            "Expensive ?",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -278,14 +276,24 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
                         ),
                     ],
                   ),
-                  child: _selectionCard(
+                    child: Column(
+                      children: [
+                        _selectionCard(
                     imagePath: 'assets/images/shoe1.png',
                     label: 'BALENCIAGA',
                     scaleUp: _selectedOption == 1,
                     showPrice: _selectedOption != null,
                     price: _shoe1Price,
                     glowColor: _selectedOption == 1 ? Colors.greenAccent : Colors.transparent,
-                  ),
+                      ),
+                        if (_selectedOption == 1) ...[
+                          const SizedBox(height: 10),
+                          const Text('Correct Answer', style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 18)),
+                          const SizedBox(height: 6),
+                          Image.asset('assets/images/star.png', width: 60, height: 60),
+                        ],
+                      ],
+                    ),
                 ),
               ),
             ),
@@ -310,13 +318,23 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
                         ),
                     ],
                   ),
-                  child: _selectionCard(
+                  child: Column(
+                    children: [
+                      _selectionCard(
                     imagePath: 'assets/images/shoe2.png',
                     label: 'CONVERSE',
                     scaleUp: _selectedOption == 2,
                     showPrice: _selectedOption != null,
                     price: _shoe2Price,
                     glowColor: _selectedOption == 2 ? Colors.redAccent : Colors.transparent,
+                      ),
+                      if (_selectedOption == 2) ...[
+                        const SizedBox(height: 10),
+                        const Text('Wrong Answer', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 18)),
+                        const SizedBox(height: 6),
+                        SvgPicture.asset('assets/images/heart-1.svg', width: 60, height: 60),
+                      ],
+                    ],
                   ),
                 ),
               ),
@@ -338,7 +356,7 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
             ),
                 ),
                 const SizedBox(height: 6),
-                Image.asset('assets/images/gold_star.png', width: 60, height: 60),
+                Image.asset('assets/images/star.png', width: 60, height: 60),
               ] else ...[
                 const Text(
                   'Wrong Answer',
@@ -349,7 +367,7 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
                   ),
                 ),
                 const SizedBox(height: 6),
-                Image.asset('assets/images/heart.png', width: 60, height: 60),
+                SvgPicture.asset('assets/images/heart-1.svg', width: 60, height: 60),
               ],
             ],
           ),
@@ -359,9 +377,22 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               if (_selectedOption == 2)
-                _primaryButton('Undo', _undoSelection),
+                Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Positioned(
+                      top: -8,
+                      left: -8,
+                      child: Image.asset('assets/images/diamond.png', width: 22, height: 22),
+                    ),
+                    _primaryButton('Undo', () {
+                      setState(() => _diamonds = (_diamonds - 1).clamp(0, 999));
+                      _undoSelection();
+                    }),
+                  ],
+                ),
               if (_selectedOption == 2) const SizedBox(width: 12),
-              _primaryButton('Next', () {
+                  _primaryButton('Next', () {
                 setState(() {
                   _selectedOption = null; // reset for next round
                 });
@@ -423,7 +454,6 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
                     animation: rotateAnim,
                     child: child,
                     builder: (context, child) {
-                      final isUnder = (ValueKey(_hasStarted) != child!.key);
                       final tilt = (rotateAnim.value <= math.pi / 2 ? 1.0 : -1.0);
                       final transform = Matrix4.rotationY(rotateAnim.value * tilt);
                       return Transform(
@@ -454,7 +484,6 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
                     animation: rotateAnim,
                     child: child,
                     builder: (context, child) {
-                      final isUnder = (ValueKey(_hasStarted) != child!.key);
                       final tilt = (rotateAnim.value <= math.pi / 2 ? 1.0 : -1.0);
                       final transform = Matrix4.rotationY(rotateAnim.value * tilt);
                       return Transform(
@@ -940,7 +969,7 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
     );
   }
 
-  static Widget _buildOptionCard(String imagePath, String label) {
+  Widget _buildOptionCard(String imagePath, String label) {
     return Container(
         margin: const EdgeInsets.only(top: 8),
         decoration: BoxDecoration(
@@ -967,13 +996,18 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
               children: [
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-                  child: Center(
-                    child: Image.asset(imagePath, height: 130, fit: BoxFit.contain),
-                  ),
+                child: Center(
+                  child: Image.asset(imagePath, height: 130, fit: BoxFit.contain),
+                ),
                 ),
                 Positioned(
                   top: -1.5,
                   right: -1,
+                child: GestureDetector(
+                  onTap: () {
+                    savedGameItems.add({'image': imagePath, 'label': label});
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const SavedItemPage()));
+                  },
                   child: Container(
                     width: 36,
                     height: 36,
@@ -995,7 +1029,8 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
                     child: const Center(
                       child: Icon(Icons.bookmark_border, size: 20, color: Color(0xFF491E75)),
                     ),
-                  ),
+                ),
+                ),
                 ),
               ],
             ),

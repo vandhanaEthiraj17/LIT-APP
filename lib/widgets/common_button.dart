@@ -91,7 +91,7 @@ class CustomBottomNavBar extends StatelessWidget {
                         isGame
                             ? 'assets/images/save-pro-icon.png'
                             : isMarketplace
-                                ? 'assets/images/cart_icon.png'
+                                ? 'assets/images/grocery-store.png'
                                 : 'assets/images/ir_icon.png',
                         width: 28,
                         height: 28,
@@ -106,7 +106,7 @@ class CustomBottomNavBar extends StatelessWidget {
                           Navigator.pushNamed(context, '/cart', arguments: cartItems);
                         },
                         child: Image.asset(
-                          'assets/images/cart_icon.png',
+                          'assets/images/grocery-store.png',
                           width: 28,
                           height: 28,
                           color: Colors.white,

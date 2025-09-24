@@ -421,28 +421,28 @@ class _FriendListPageState extends State<FriendListPage> {
       builder: (context) {
         return Dialog(
           backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 60),
           child: Stack(
             clipBehavior: Clip.none,
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.circular(22),
+                borderRadius: BorderRadius.circular(20),
                 child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+                  filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
                   child: Container(
-                    width: 340,
-                    padding: const EdgeInsets.fromLTRB(22, 36, 22, 24),
+                    width: 380,
+                    padding: const EdgeInsets.fromLTRB(28, 36, 28, 36),
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(22),
-                      color: const Color.fromRGBO(255, 255, 255, 0.08),
-                      border: Border.all(color: Colors.white.withOpacity(0.15)),
-                      boxShadow: [
-                        BoxShadow(color: Colors.black.withOpacity(0.25), blurRadius: 16, offset: const Offset(0, 8)),
-                      ],
-                      gradient: const LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [Color(0x1AFFFFFF), Color(0x0FFFFFFF)],
+                      borderRadius: BorderRadius.circular(20),
+                      gradient: const RadialGradient(
+                        center: Alignment(0, -0.3),
+                        radius: 1.3,
+                        colors: [
+                          Color.fromRGBO(255, 255, 255, 0.08),
+                          Color.fromRGBO(255, 255, 255, 0.02),
+                        ],
                       ),
+                      border: Border.all(color: Colors.white.withOpacity(0.15)),
                     ),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
@@ -452,30 +452,37 @@ class _FriendListPageState extends State<FriendListPage> {
                           style: GoogleFonts.kronaOne(color: Colors.white, fontSize: 22),
                           textAlign: TextAlign.center,
                         ),
-                        const SizedBox(height: 14),
-                        CircleAvatar(radius: 56, backgroundImage: AssetImage(imagePath)),
-                        const SizedBox(height: 18),
+                        const SizedBox(height: 16),
+                        CircleAvatar(radius: 62, backgroundImage: AssetImage(imagePath)),
+                        const SizedBox(height: 22),
                         const Text(
                           'Is now in your Friend List !',
-                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 18),
+                          textAlign: TextAlign.center,
                         ),
-                        const SizedBox(height: 22),
+                        const SizedBox(height: 26),
                         SizedBox(
-                          width: 200,
-                          height: 42,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF2D0C4B),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                              elevation: 6,
+                          width: 280,
+                          height: 34,
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(24),
+                              border: Border.all(color: Colors.white, width: 1.2),
                             ),
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                              Navigator.of(context).push(
-                                MaterialPageRoute(builder: (_) => const FriendSuggestionsPage()),
-                              );
-                            },
-                            child: const Text('Add More friends', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                            child: TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(builder: (_) => const FriendSuggestionsPage()),
+                                );
+                              },
+                              style: TextButton.styleFrom(
+                                backgroundColor: const Color(0xFF2D0C4B),
+                                padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 4),
+                                foregroundColor: Colors.white,
+                              ),
+                              child: const Text('Add More friends', style: TextStyle(fontSize: 16, color: Colors.white)),
+                            ),
                           ),
                         ),
                       ],
@@ -484,15 +491,15 @@ class _FriendListPageState extends State<FriendListPage> {
                 ),
               ),
               Positioned(
-                top: -6,
-                right: -6,
+                top: 6,
+                right: 6,
                 child: GestureDetector(
                   onTap: () => Navigator.of(context).pop(),
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
-                      Image.asset('assets/images/Rectangle.png', width: 44, height: 44),
-                      const Icon(Icons.close, color: Colors.white, size: 20),
+                      Image.asset('assets/images/Rectangle.png', width: 54, height: 54),
+                      const Icon(Icons.close, color: Colors.white, size: 22),
                     ],
                   ),
                 ),
@@ -511,19 +518,27 @@ class _FriendListPageState extends State<FriendListPage> {
       builder: (context) {
         return Dialog(
           backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 60),
           child: Stack(
             clipBehavior: Clip.none,
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.circular(22),
+                borderRadius: BorderRadius.circular(20),
                 child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+                  filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
                   child: Container(
-                    width: 320,
-                    padding: const EdgeInsets.fromLTRB(22, 36, 22, 24),
+                    width: 380,
+                    padding: const EdgeInsets.fromLTRB(28, 36, 28, 36),
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(22),
-                      color: const Color.fromRGBO(255, 255, 255, 0.08),
+                      borderRadius: BorderRadius.circular(20),
+                      gradient: const RadialGradient(
+                        center: Alignment(0, -0.3),
+                        radius: 1.3,
+                        colors: [
+                          Color.fromRGBO(255, 255, 255, 0.08),
+                          Color.fromRGBO(255, 255, 255, 0.02),
+                        ],
+                      ),
                       border: Border.all(color: Colors.white.withOpacity(0.15)),
                     ),
                     child: Column(
@@ -533,12 +548,12 @@ class _FriendListPageState extends State<FriendListPage> {
                           name,
                           style: GoogleFonts.kronaOne(color: Colors.white, fontSize: 22),
                         ),
-                        const SizedBox(height: 14),
-                        CircleAvatar(radius: 52, backgroundImage: AssetImage(imagePath)),
-                        const SizedBox(height: 18),
+                        const SizedBox(height: 16),
+                        CircleAvatar(radius: 60, backgroundImage: AssetImage(imagePath)),
+                        const SizedBox(height: 22),
                         const Text(
                           'Friend Request Sent successfully',
-                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 18),
                           textAlign: TextAlign.center,
                         ),
                       ],
@@ -547,15 +562,15 @@ class _FriendListPageState extends State<FriendListPage> {
                 ),
               ),
               Positioned(
-                top: -6,
-                right: -6,
+                top: 6,
+                right: 6,
                 child: GestureDetector(
                   onTap: () => Navigator.of(context).pop(),
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
-                      Image.asset('assets/images/Rectangle.png', width: 44, height: 44),
-                      const Icon(Icons.close, color: Colors.white, size: 20),
+                      Image.asset('assets/images/Rectangle.png', width: 54, height: 54),
+                      const Icon(Icons.close, color: Colors.white, size: 22),
                     ],
                   ),
                 ),
@@ -937,21 +952,29 @@ class _FriendListPageState extends State<FriendListPage> {
                 style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500),
               ),
             ),
-            Row(
-              children: [
-                if (!sentByMe) ...[
-                  // ⭐ Coin + score
-                  Row(
-                    children: [
-                      Image.asset('assets/images/gold_star.png', width: 18, height: 18),
-                      const SizedBox(width: 4),
-                      Text(
-                        score,
-                        style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+            Flexible(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (!sentByMe) ...[
+                    // ⭐ Coin + score
+                    Flexible(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Image.asset('assets/images/gold_star.png', width: 18, height: 18),
+                          const SizedBox(width: 4),
+                          Flexible(
+                            child: Text(
+                              score,
+                              style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                  const SizedBox(width: 8),
+                    ),
+                    const SizedBox(width: 8),
 
                   // ✔ Accept button
                   Container(
@@ -1151,6 +1174,7 @@ class _FriendListPageState extends State<FriendListPage> {
                   ),
                 ]
               ],
+            ),
             ),
           ],
         ),
@@ -1570,8 +1594,87 @@ class FriendSuggestionsPage extends StatefulWidget {
 }
 
 class _FriendSuggestionsPageState extends State<FriendSuggestionsPage> {
-  final List<String> suggestions = List.generate(12, (i) => 'User ${i + 1}');
+  final List<Map<String, String>> suggestions = [
+    {'name': 'LuxuryinTaste', 'avatar': 'assets/images/avatar10.jpg'},
+    {'name': 'Gamer65', 'avatar': 'assets/images/avatar1.jpg'},
+    {'name': 'Beautyeve', 'avatar': 'assets/images/avatar2.jpg'},
+    {'name': 'Liya James', 'avatar': 'assets/images/avatar3.jpg'},
+    {'name': 'Gamer65', 'avatar': 'assets/images/avatar4.jpg'},
+    {'name': 'Beautyeve', 'avatar': 'assets/images/avatar5.jpg'},
+    {'name': 'Liya James', 'avatar': 'assets/images/avatar6.jpg'},
+    {'name': 'Gamer65', 'avatar': 'assets/images/avatar7.jpg'},
+  ];
   final TextEditingController _search = TextEditingController();
+
+  void _showProfileDialog(Map<String, String> player) {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 60),
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                  child: Container(
+                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 30),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      gradient: const RadialGradient(
+                        center: Alignment(0, -0.3),
+                        radius: 1.3,
+                        colors: [
+                          Color.fromRGBO(255, 255, 255, 0.08),
+                          Color.fromRGBO(255, 255, 255, 0.02),
+                        ],
+                      ),
+                      border: Border.all(color: Colors.white.withOpacity(0.15)),
+                    ),
+                    child: Row(
+                      children: [
+                        CircleAvatar(backgroundImage: AssetImage(player['avatar']!), radius: 28),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(player['name']!, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                              const SizedBox(height: 4),
+                              const Text('Beginner', style: TextStyle(color: Colors.white70, fontSize: 12)),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                top: 6,
+                right: 6,
+                child: GestureDetector(
+                  onTap: () => Navigator.of(context).pop(),
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Image.asset('assets/images/Rectangle.png', width: 36, height: 36),
+                      const Icon(Icons.close, size: 16, color: Colors.white),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
   Future<void> _showRequestSentPopup(String name, String imagePath) async {
     await showDialog(
@@ -1580,19 +1683,27 @@ class _FriendSuggestionsPageState extends State<FriendSuggestionsPage> {
       builder: (context) {
         return Dialog(
           backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 60),
           child: Stack(
             clipBehavior: Clip.none,
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.circular(22),
+                borderRadius: BorderRadius.circular(20),
                 child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+                  filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
                   child: Container(
-                    width: 320,
-                    padding: const EdgeInsets.fromLTRB(22, 36, 22, 24),
+                    width: 420,
+                    padding: const EdgeInsets.fromLTRB(24, 28, 24, 28),
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(22),
-                      color: const Color.fromRGBO(255, 255, 255, 0.08),
+                      borderRadius: BorderRadius.circular(20),
+                      gradient: const RadialGradient(
+                        center: Alignment(0, -0.3),
+                        radius: 1.3,
+                        colors: [
+                          Color.fromRGBO(255, 255, 255, 0.08),
+                          Color.fromRGBO(255, 255, 255, 0.02),
+                        ],
+                      ),
                       border: Border.all(color: Colors.white.withOpacity(0.15)),
                     ),
                     child: Column(
@@ -1602,9 +1713,9 @@ class _FriendSuggestionsPageState extends State<FriendSuggestionsPage> {
                           name,
                           style: GoogleFonts.kronaOne(color: Colors.white, fontSize: 22),
                         ),
-                        const SizedBox(height: 14),
-                        CircleAvatar(radius: 52, backgroundImage: AssetImage(imagePath)),
-                        const SizedBox(height: 18),
+                        const SizedBox(height: 16),
+                        CircleAvatar(radius: 56, backgroundImage: AssetImage(imagePath)),
+                        const SizedBox(height: 20),
                         const Text(
                           'Friend Request Sent successfully',
                           style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
@@ -1616,15 +1727,15 @@ class _FriendSuggestionsPageState extends State<FriendSuggestionsPage> {
                 ),
               ),
               Positioned(
-                top: -6,
-                right: -6,
+                top: 6,
+                right: 6,
                 child: GestureDetector(
                   onTap: () => Navigator.of(context).pop(),
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
-                      Image.asset('assets/images/Rectangle.png', width: 44, height: 44),
-                      const Icon(Icons.close, color: Colors.white, size: 20),
+                      Image.asset('assets/images/Rectangle.png', width: 36, height: 36),
+                      const Icon(Icons.close, color: Colors.white, size: 16),
                     ],
                   ),
                 ),
@@ -1639,7 +1750,7 @@ class _FriendSuggestionsPageState extends State<FriendSuggestionsPage> {
   @override
   Widget build(BuildContext context) {
     final filtered = suggestions
-        .where((n) => n.toLowerCase().contains(_search.text.toLowerCase()))
+        .where((n) => n['name']!.toLowerCase().contains(_search.text.toLowerCase()))
         .toList();
 
     return Scaffold(
@@ -1700,13 +1811,25 @@ class _FriendSuggestionsPageState extends State<FriendSuggestionsPage> {
                     itemCount: filtered.length,
                     separatorBuilder: (_, __) => const SizedBox(height: 8),
                     itemBuilder: (_, i) {
-                      final name = filtered[i];
+                      final name = filtered[i]['name']!;
+                      final avatar = filtered[i]['avatar']!;
                       return Row(
                         children: [
-                          const CircleAvatar(radius: 22, backgroundImage: AssetImage('assets/images/user.png')),
+                          CircleAvatar(radius: 22, backgroundImage: AssetImage(avatar)),
                           const SizedBox(width: 12),
                           Expanded(
-                            child: Text(name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500)),
+                            child: GestureDetector(
+                              behavior: HitTestBehavior.opaque,
+                              onTap: () {
+                                final parent = context.findAncestorStateOfType<_FriendListPageState>();
+                                if (parent != null) {
+                                  parent._showPlayerPopup(context, {'name': name, 'avatar': avatar});
+                                } else {
+                                  _showProfileDialog({'name': name, 'avatar': avatar});
+                                }
+                              },
+                              child: Text(name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 16)),
+                            ),
                           ),
                           GestureDetector(
                             onTap: () async {
@@ -1720,9 +1843,23 @@ class _FriendSuggestionsPageState extends State<FriendSuggestionsPage> {
                               );
                               await Future.delayed(const Duration(milliseconds: 700));
                               Navigator.of(context).pop();
-                              _showRequestSentPopup(name, 'assets/images/user.png');
+                              _showRequestSentPopup(name, avatar);
+                              // Add notification and remove from list
+                              if (mounted) {
+                                context.read<NotificationProvider>().addGameNotification({
+                                  'type': 'user',
+                                  'time': DateTime.now().toIso8601String(),
+                                  'name': name,
+                                  'message': 'You sent a friend request to $name.',
+                                  'image': avatar,
+                                  'trailingIcon': 'assets/images/trash.png',
+                                });
+                                setState(() {
+                                  suggestions.removeWhere((u) => u['name'] == name);
+                                });
+                              }
                             },
-                            child: SvgPicture.asset('assets/images/heart.svg', width: 22, height: 22, color: Colors.white),
+                            child: Image.asset('assets/images/user.png', width: 22, height: 22),
                           ),
                         ],
                       );

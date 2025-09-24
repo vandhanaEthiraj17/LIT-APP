@@ -65,12 +65,12 @@ flutter:
     - assets/images/d6.jpg
     - assets/images/d7.jpg
     - assets/images/d8.jpg
-    - assets/images/cart_icon.png
+    - assets/images/grocery-store.png
     - assets/images/men_collection.png
     - assets/images/women_collection.png
     - assets/images/diamond.png
     - assets/images/heart.png
-    - assets/images/heart.svg
+    - assets/images/heart-1.svg
     - assets/images/savings1.jpg
     - assets/images/savings2.jpg
     - assets/images/savings3.jpg
@@ -87,6 +87,7 @@ flutter:
     - assets/images/accessories.png
     - assets/images/purple_star.png
     - assets/images/gold_star.png
+    - assets/images/star.png
     - assets/images/avatar1.jpg
     - assets/images/avatar2.jpg
     - assets/images/avatar3.jpg
