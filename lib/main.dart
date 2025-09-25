@@ -26,13 +26,13 @@ import 'settings/order_preferences_settings_page.dart';
 import 'settings/return_cancellation_settings_page.dart';
 import 'settings/support_legal_settings_page.dart';
 import 'settings/payment_methods_page.dart';
+import 'pages/saved_item_page.dart';
 import 'settings/subscription_plan_details_page.dart';
 // removed duplicate import of notifications_page.dart above
 import 'payment/payment_gateway_page.dart';
 import 'pages/game_entrance_page.dart';
 import 'pages/shop_page.dart';
 import 'pages/friend_list_page.dart';
-import 'pages/saved_item_page.dart';
 import 'package:lit/providers/notification_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:lit/pages/coming_soon.dart';
@@ -75,6 +75,7 @@ class MyApp extends StatelessWidget {
 
       routes: {
         '/home': (context) => const MainLayout(),
+        '/saved': (context) => const SavedItemPage(),
         '/ir_icon': (context) => const IrIconPage(),
         '/profile': (context) => const ProfilePage(),
         '/newsletter': (context) => const NewsletterPage(),

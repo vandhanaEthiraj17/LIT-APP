@@ -8,7 +8,7 @@ import 'dart:math' as math;
 import 'package:flutter/scheduler.dart';
 import '../widgets/notification_bell.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:lit/data/global_data.dart';
+import 'package:lit/data/saved_items.dart';
 import 'package:lit/pages/saved_item_page.dart';
 
 class GamePage extends StatefulWidget {
@@ -19,28 +19,77 @@ class GamePage extends StatefulWidget {
 }
 
 class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
-  int _diamonds = 6;
   int currentIndex = -1;
   List<String> selectedCategories = [];
   int secondsRemaining = 15;
   Timer? countdownTimer;
   bool _hasStarted = false;
+
   bool isFlipped = false;
+
+  late AnimationController _flipController1;
+  late AnimationController _flipController2;
 
   // Shoe selection state
   int? _selectedOption; // 1 = shoe1, 2 = shoe2
   int _coins = 0;
   int _hearts = 3;
+  int _streakDays = 24;
   static const String _shoe1Price = '₹93,499';
   static const String _shoe2Price = '₹3,500';
+
+  late AnimationController _rewardController;
+  late Animation<double> _rewardAnimation;
+  bool _showWrongReward = false;
+  bool _showCoinRewardOverlay = false;
+  static const int _coinRewardAmount = 5;
+  
+  // Fly-to-card overlay animation
+  final GlobalKey _leftCardKey = GlobalKey();
+  final GlobalKey _rightCardKey = GlobalKey();
+  late AnimationController _flyController;
+  late Animation<double> _flyAnim;
+  bool _flyIsCorrect = true;
+  bool _showFly = false;
+  double _flyStartTop = 0;
+  double _flyEndTop = 0;
+  double _flyLeft = 0;
 
   void _selectOption(int option) {
     setState(() {
       _selectedOption = option;
       if (option == 1) {
-        _coins += 5;
+        _showWrongReward = false;
+        _showCoinRewardOverlay = false;
+        _flyIsCorrect = true;
       } else {
         _hearts = (_hearts - 1).clamp(0, 999);
+        _showWrongReward = true;
+        _flyIsCorrect = false;
+      }
+    });
+    // stop timer on selection
+    countdownTimer?.cancel();
+    _rewardController.forward(from: 0);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final media = MediaQuery.of(context);
+      final screenSize = media.size;
+      RenderBox? targetBox;
+      if (option == 1) {
+        targetBox = _leftCardKey.currentContext?.findRenderObject() as RenderBox?;
+      } else {
+        targetBox = _rightCardKey.currentContext?.findRenderObject() as RenderBox?;
+      }
+      if (targetBox != null) {
+        final pos = targetBox.localToGlobal(Offset.zero);
+        final width = targetBox.size.width;
+        setState(() {
+          _flyLeft = pos.dx + width / 2 - 24;
+          _flyStartTop = _flyIsCorrect ? (screenSize.height - 120) : (screenSize.height - 120);
+          _flyEndTop = pos.dy - 36;
+          _showFly = true;
+        });
+        _flyController.forward(from: 0);
       }
     });
   }
@@ -81,6 +130,10 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
 
   @override
   void dispose() {
+    _flipController1.dispose();
+    _flipController2.dispose();
+    _rewardController.dispose();
+    _flyController.dispose();
     countdownTimer?.cancel();
     super.dispose();
   }
@@ -89,6 +142,33 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+
+    _flipController1 = AnimationController(
+      duration: const Duration(milliseconds: 500),
+      vsync: this,
+    );
+    _flipController2 = AnimationController(
+      duration: const Duration(milliseconds: 500),
+      vsync: this,
+    );
+
+    
+    _rewardController = AnimationController(
+      duration: const Duration(milliseconds: 900),
+      vsync: this,
+    );
+    _rewardAnimation = CurvedAnimation(parent: _rewardController, curve: Curves.easeOut);
+    
+    _flyController = AnimationController(duration: const Duration(milliseconds: 1500), vsync: this);
+    _flyAnim = CurvedAnimation(parent: _flyController, curve: Curves.easeInOutCubic);
+    _flyController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        if (_flyIsCorrect) {
+          setState(() => _coins += _coinRewardAmount);
+        }
+        setState(() => _showFly = false);
+      }
+    });
   }
 
 
@@ -123,9 +203,10 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
             SafeArea(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                     Row(
                       children: [
                         Builder(
@@ -186,44 +267,30 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
                       ],
                     ),
                     const SizedBox(height: 16),
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: [
-                          _resourceIcon('assets/images/heart.png', '6'),
-                          const SizedBox(width: 8),
-                          _resourceIcon('assets/images/diamond.png', '6'),
-                          const SizedBox(width: 8),
-                          _resourceIcon('assets/images/fire.png', '6'),
-                          const SizedBox(width: 8),
-                          _resourceIcon('assets/images/purple_star.png', '2803'),
-                        ],
-                      ),
+                    Row(
+                      children: [
+                        _resourceIcon('assets/images/heart.png', _hearts.toString()),
+                        const SizedBox(width: 8),
+                        _resourceIcon('assets/images/diamond.png', _coins.toString()),
+                        const SizedBox(width: 8),
+                        GestureDetector(
+                          onTap: _showStreakDialog,
+                          child: _resourceIcon('assets/images/fire.png', _streakDays.toString()),
+                        ),
+                        const SizedBox(width: 8),
+                        _resourceIcon('assets/images/purple_star.png', '2803'),
+                      ],
                     ),
                     const SizedBox(height: 25),
                     const Center(
-                      child: Column(
-                        children: [
-                          Text(
-                            "Which One Looks More",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: 2),
-                          Text(
-                            "Expensive ?",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
+                      child: Text(
+                        "Which One Looks More Expensive ?",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -236,6 +303,7 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
 
                     const SizedBox(height: 20),
                   ],
+                  ),
                 ),
               ),
             ),
@@ -252,189 +320,251 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
   }
 
   Widget _buildGameBody() {
-    return Column(
+    return Stack(
+      alignment: Alignment.center,
       children: [
-        Row(
+        Column(
           children: [
-            // Shoe 1
-            Expanded(
-              child: GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: () => _selectOption(1),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 250),
-                  margin: const EdgeInsets.only(top: 8),
-                  decoration: BoxDecoration(
-                    color: Colors.transparent,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      if (_selectedOption == 1)
-                        BoxShadow(
-                          color: Colors.greenAccent.withOpacity(0.8),
-                          blurRadius: 20,
-                          spreadRadius: 4,
-                        ),
-                    ],
-                  ),
-                    child: Column(
-                      children: [
-                        _selectionCard(
-                    imagePath: 'assets/images/shoe1.png',
-                    label: 'BALENCIAGA',
-                    scaleUp: _selectedOption == 1,
-                    showPrice: _selectedOption != null,
-                    price: _shoe1Price,
-                    glowColor: _selectedOption == 1 ? Colors.greenAccent : Colors.transparent,
-                      ),
-                        if (_selectedOption == 1) ...[
-                          const SizedBox(height: 10),
-                          const Text('Correct Answer', style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 18)),
-                          const SizedBox(height: 6),
-                          Image.asset('assets/images/star.png', width: 60, height: 60),
-                        ],
-                      ],
-                    ),
-                ),
-              ),
-            ),
-            const SizedBox(width: 16),
-            // Shoe 2
-            Expanded(
-              child: GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: () => _selectOption(2),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 250),
-                  margin: const EdgeInsets.only(top: 8),
-                  decoration: BoxDecoration(
-                    color: Colors.transparent,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      if (_selectedOption == 2)
-                        BoxShadow(
-                          color: Colors.redAccent.withOpacity(0.8),
-                          blurRadius: 20,
-                          spreadRadius: 4,
-                        ),
-                    ],
-                  ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Left card with per-card feedback
+                Expanded(
                   child: Column(
                     children: [
-                      _selectionCard(
-                    imagePath: 'assets/images/shoe2.png',
-                    label: 'CONVERSE',
-                    scaleUp: _selectedOption == 2,
-                    showPrice: _selectedOption != null,
-                    price: _shoe2Price,
-                    glowColor: _selectedOption == 2 ? Colors.redAccent : Colors.transparent,
+                      GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () => _selectOption(1),
+                        child: Transform.translate(
+                          offset: Offset(0, _selectedOption == 1 ? -6 : 0),
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 250),
+                            margin: const EdgeInsets.only(top: 8),
+                            decoration: BoxDecoration(
+                              color: _selectedOption == 1 ? const Color(0xFF33B642).withOpacity(0.15) : Colors.transparent,
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                if (_selectedOption == 1)
+                                  const BoxShadow(
+                                    color: Color(0x6633B642),
+                                    blurRadius: 22,
+                                    spreadRadius: 4,
+                                  ),
+                              ],
+                            ),
+                            child: KeyedSubtree(
+                              key: _leftCardKey,
+                              child: _selectionCard(
+                                imagePath: 'assets/images/shoe1.png',
+                                label: 'BALENCIAGA',
+                                showPrice: _selectedOption != null,
+                                price: _shoe1Price,
+                                glowColor: _selectedOption == 1 ? const Color(0x6633B642) : Colors.transparent,
+                                borderColor: _selectedOption == 1 ? const Color(0xFF33B642) : null,
+                                showCorrectAnswer: _selectedOption == 1,
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
-                      if (_selectedOption == 2) ...[
-                        const SizedBox(height: 10),
-                        const Text('Wrong Answer', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 18)),
-                        const SizedBox(height: 6),
-                        SvgPicture.asset('assets/images/heart-1.svg', width: 60, height: 60),
-                      ],
                     ],
                   ),
                 ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 30),
-        const SizedBox(height: 12),
-        if (_selectedOption != null)
-          Column(
-            children: [
-              if (_selectedOption == 1) ...[
-                const Text(
-                  'Correct Answer',
-            style: TextStyle(
-                    color: Colors.green,
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-            ),
-                ),
-                const SizedBox(height: 6),
-                Image.asset('assets/images/star.png', width: 60, height: 60),
-              ] else ...[
-                const Text(
-                  'Wrong Answer',
-                  style: TextStyle(
-                    color: Colors.red,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
+                const SizedBox(width: 16),
+                // Right card with per-card feedback
+                Expanded(
+                  child: Column(
+                    children: [
+                      GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () => _selectOption(2),
+                        child: Transform.translate(
+                          offset: Offset(0, _selectedOption == 2 ? -6 : 0),
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 250),
+                            margin: const EdgeInsets.only(top: 8),
+                            decoration: BoxDecoration(
+                              color: _selectedOption == 2 ? const Color(0xCA3232B2).withOpacity(0.25) : Colors.transparent,
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                if (_selectedOption == 2)
+                                  const BoxShadow(
+                                    color: Color(0x80CA3232),
+                                    blurRadius: 22,
+                                    spreadRadius: 4,
+                                  ),
+                              ],
+                            ),
+                            child: KeyedSubtree(
+                              key: _rightCardKey,
+                              child: _selectionCard(
+                                imagePath: 'assets/images/shoe2.png',
+                                label: 'CONVERSE',
+                                showPrice: _selectedOption != null,
+                                price: _shoe2Price,
+                                glowColor: _selectedOption == 2 ? const Color(0x80CA3232) : Colors.transparent,
+                                borderColor: _selectedOption == 2 ? const Color(0xB2CA3232) : null,
+                                showWrongAnswer: _selectedOption == 2,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 6),
-                SvgPicture.asset('assets/images/heart-1.svg', width: 60, height: 60),
               ],
-            ],
-          ),
-        const SizedBox(height: 12),
-        if (_selectedOption != null)
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (_selectedOption == 2)
-                Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    Positioned(
-                      top: -8,
-                      left: -8,
-                      child: Image.asset('assets/images/diamond.png', width: 22, height: 22),
-                    ),
-                    _primaryButton('Undo', () {
-                      setState(() => _diamonds = (_diamonds - 1).clamp(0, 999));
-                      _undoSelection();
-                    }),
-                  ],
+            ),
+            const SizedBox(height: 16),
+            if (_hasStarted)
+              Center(
+                child: Text(
+                  "00:${secondsRemaining.toString().padLeft(2, '0')}",
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              if (_selectedOption == 2) const SizedBox(width: 12),
+              ),
+            const SizedBox(height: 18),
+            if (_selectedOption == 1) ...[
+              // CORRECT ANSWER text below the card
+              const SizedBox(height: 12),
+              const Text(
+                'CORRECT ANSWER',
+                style: TextStyle(
+                  color: Color(0xFF33B642), 
+                  fontSize: 16, 
+                  fontWeight: FontWeight.bold
+                ),
+              ),
+              const SizedBox(height: 6),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
                   _primaryButton('Next', () {
-                setState(() {
-                  _selectedOption = null; // reset for next round
-                });
-              }),
-              const SizedBox(width: 12),
-              _primaryButton('Exit', () => Navigator.pop(context)),
+                    setState(() {
+                      _selectedOption = null; // reset for next round
+                      _showWrongReward = false;
+                      secondsRemaining = 15;
+                    });
+                    countdownTimer?.cancel();
+                    _startTimer();
+                  }),
+                  const SizedBox(width: 12),
+                  _primaryButton('Exit', () {
+                    _showExitConfirmation(context);
+                  }),
+                ],
+              ),
             ],
-          ),
-        Center(
-          child: Text(
-            "00:${secondsRemaining.toString().padLeft(2, '0')}",
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-        const SizedBox(height: 20),
-        if (_selectedOption == null)
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            _ActionButton(
-              label: "Hint",
-              onPressed: () => _showSkipDialog(
-                context,
-                "Are you sure you want a hint?",
-                "Hint 5",
+            if (_selectedOption == 2) ...[
+              // WRONG ANSWER text below the card
+              const SizedBox(height: 12),
+              const Text(
+                'WRONG ANSWER',
+                style: TextStyle(
+                  color: Color(0xB2CA3232), 
+                  fontSize: 16, 
+                  fontWeight: FontWeight.bold
+                ),
               ),
-            ),
-            const SizedBox(width: 16),
-            _ActionButton(
-              label: "Skip",
-              onPressed: () => _showSkipDialog(
-                context,
-                "Are you sure you want to skip?",
-                "Skip 5",
+              const SizedBox(height: 6),
+              // Animated heart effect
+              SizedBox(
+                height: 40,
+                child: AnimatedBuilder(
+                  animation: _rewardAnimation,
+                  builder: (context, child) {
+                    if (!_showWrongReward) return const SizedBox.shrink();
+                    final dy = 20 - 40 * _rewardAnimation.value;
+                    final opacity = 1.0 - _rewardAnimation.value;
+                    return Opacity(
+                      opacity: opacity,
+                      child: Transform.translate(
+                        offset: Offset(0, dy),
+                        child: Center(
+                          child: SvgPicture.asset('assets/images/heart-1.svg', width: 32, height: 32),
+                        ),
+                      ),
+                    );
+                  },
+                ),
               ),
-            ),
+              const SizedBox(height: 8),
+              // Buttons moved up to avoid scrolling
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _primaryButton('Undo', _undoSelection),
+                  const SizedBox(width: 12),
+                  _primaryButton('Next', () {
+                    setState(() {
+                      _selectedOption = null;
+                      _showWrongReward = false;
+                      secondsRemaining = 15;
+                    });
+                    countdownTimer?.cancel();
+                    _startTimer();
+                  }),
+                  const SizedBox(width: 12),
+                  _primaryButton('Exit', () { _showExitConfirmation(context); }),
+                ],
+              ),
+            ],
+            if (_selectedOption == null)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _ActionButton(
+                    label: "Hint",
+                    onPressed: () => _showSkipDialog(
+                      context,
+                      "Are you sure you want a hint?",
+                      "Hint 5",
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  _ActionButton(
+                    label: "Skip",
+                    onPressed: () => _showSkipDialog(
+                      context,
+                      "Are you sure you want to skip?",
+                      "Skip 5",
+                    ),
+                  ),
+                ],
+              ),
           ],
         ),
+        if (_showFly)
+          AnimatedBuilder(
+            animation: _flyAnim,
+            builder: (context, child) {
+              final top = _flyStartTop + (_flyEndTop - _flyStartTop) * _flyAnim.value;
+              return Positioned(
+                top: top,
+                left: _flyLeft,
+                child: _flyIsCorrect
+                    ? Image.asset('assets/images/star.png', width: 32, height: 32)
+                    : SvgPicture.asset('assets/images/heart-1.svg', width: 32, height: 32),
+              );
+            },
+          ),
+        if (_showCoinRewardOverlay)
+          Positioned(
+            bottom: 40,
+            child: _StarCoinReward(
+              amount: _coinRewardAmount,
+              onCompleted: () {
+                setState(() {
+                  _coins += _coinRewardAmount;
+                  _showCoinRewardOverlay = false;
+                });
+              },
+            ),
+          ),
       ],
     );
   }
@@ -945,6 +1075,116 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
     );
   }
 
+  void _showStreakDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
+          child: Center(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+                child: Container(
+                  width: 320,
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: const Color.fromRGBO(255, 255, 255, 0.06),
+                    border: Border.all(color: Colors.white24, width: 1),
+                  ),
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      // Close Rectangle
+                      Positioned(
+                        top: 8,
+                        right: 8,
+                        child: GestureDetector(
+                          onTap: () => Navigator.of(context).pop(),
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              Image.asset('assets/images/Rectangle.png', width: 28, height: 28),
+                              const Icon(Icons.close, size: 16, color: Colors.white),
+                            ],
+                          ),
+                        ),
+                      ),
+                      // Decorative side flames with exact positions
+                      Positioned(
+                        left: -31,
+                        top: 90,
+                        child: Transform.rotate(
+                          angle: -23.21 * (math.pi / 180),
+                          child: Image.asset('assets/images/fire.png', width: 78, height: 78),
+                        ),
+                      ),
+                      Positioned(
+                        left: 6,
+                        top: 208,
+                        child: Image.asset('assets/images/fire.png', width: 78, height: 78),
+                      ),
+                      Positioned(
+                        left: 289,
+                        top: 36,
+                        child: Image.asset('assets/images/fire.png', width: 78, height: 78),
+                      ),
+                      Positioned(
+                        left: 296.76,
+                        top: 151.75,
+                        child: Transform.rotate(
+                          angle: 10.82 * (math.pi / 180),
+                          child: Image.asset('assets/images/fire.png', width: 78, height: 78),
+                        ),
+                      ),
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Row(
+                            children: [
+                              ClipOval(
+                                child: Image.asset('assets/images/avatar.jpg', width: 32, height: 32, fit: BoxFit.cover),
+                              ),
+                              const SizedBox(width: 8),
+                              const Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('LuxuryinTaste', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                                  Text('Beginner', style: TextStyle(color: Colors.white70, fontSize: 12)),
+                                ],
+                              )
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          Text('$_streakDays', style: const TextStyle(color: Colors.white, fontSize: 64, fontWeight: FontWeight.bold)),
+                          const Text('DAYS', style: TextStyle(color: Colors.white70, fontSize: 16, fontWeight: FontWeight.w600, letterSpacing: 2)),
+                          const SizedBox(height: 16),
+                          const Text("You're On A Streak", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                          const SizedBox(height: 10),
+                          const Text(
+                            'Your Consistency Is Unmatched — And We\nNotice. Keep The Streak Alive And Hit 30 For A\nSurprise Reward',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: Colors.white70, fontSize: 12, height: 1.4),
+                          ),
+                          const SizedBox(height: 12),
+                          const Text('Next Milestone : 30 Days', style: TextStyle(color: Colors.white70, fontSize: 12)),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   static Widget _resourceIcon(String asset, String value) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -969,7 +1209,7 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildOptionCard(String imagePath, String label) {
+  static Widget _buildOptionCard(String imagePath, String label) {
     return Container(
         margin: const EdgeInsets.only(top: 8),
         decoration: BoxDecoration(
@@ -996,18 +1236,13 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
               children: [
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-                child: Center(
-                  child: Image.asset(imagePath, height: 130, fit: BoxFit.contain),
-                ),
+                  child: Center(
+                    child: Image.asset(imagePath, height: 130, fit: BoxFit.contain),
+                  ),
                 ),
                 Positioned(
                   top: -1.5,
                   right: -1,
-                child: GestureDetector(
-                  onTap: () {
-                    savedGameItems.add({'image': imagePath, 'label': label});
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => const SavedItemPage()));
-                  },
                   child: Container(
                     width: 36,
                     height: 36,
@@ -1029,8 +1264,7 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
                     child: const Center(
                       child: Icon(Icons.bookmark_border, size: 20, color: Color(0xFF491E75)),
                     ),
-                ),
-                ),
+                  ),
                 ),
               ],
             ),
@@ -1069,10 +1303,12 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
   Widget _selectionCard({
     required String imagePath,
     required String label,
-    required bool scaleUp,
     required bool showPrice,
     required String price,
     required Color glowColor,
+    Color? borderColor,
+    bool showCorrectAnswer = false,
+    bool showWrongAnswer = false,
   }) {
     return Container(
       decoration: BoxDecoration(
@@ -1080,16 +1316,22 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
           center: Alignment(0.08, 0.08),
           radius: 7.98,
           colors: [
-            Color.fromRGBO(0, 0, 0, 0.8),
-            Color.fromRGBO(147, 51, 234, 0.4),
+            // darken slightly when glowing
+            Color.fromRGBO(0, 0, 0, 0.86),
+            Color.fromRGBO(147, 51, 234, 0.46),
           ],
           stops: [0.0, 0.5],
         ),
-        border: Border.all(color: const Color(0xFFAEAEAE), width: 1),
+        border: Border.all(
+          color: borderColor ?? (glowColor != Colors.transparent ? glowColor : const Color(0xFFAEAEAE)),
+          width: (borderColor != null || glowColor != Colors.transparent) ? 2 : 1,
+        ),
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           if (glowColor != Colors.transparent)
-            BoxShadow(color: glowColor.withOpacity(0.85), blurRadius: 20, spreadRadius: 4),
+            BoxShadow(color: glowColor.withOpacity(0.85), blurRadius: 22, spreadRadius: 4),
+          if (glowColor != Colors.transparent)
+            BoxShadow(color: glowColor.withOpacity(0.5), blurRadius: 10, spreadRadius: 1),
         ],
       ),
       child: Column(
@@ -1101,36 +1343,38 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
                 child: Center(
-                  child: AnimatedScale(
-                    duration: const Duration(milliseconds: 200),
-                    scale: scaleUp ? 1.1 : 1.0,
-                    child: Image.asset(imagePath, height: 130, fit: BoxFit.contain),
-                  ),
+                  child: Image.asset(imagePath, height: 130, fit: BoxFit.contain),
                 ),
               ),
               Positioned(
                 top: -1.5,
                 right: -1,
-                child: Container(
-                  width: 36,
-                  height: 36,
-                  decoration: BoxDecoration(
-                    color: Colors.black,
-                    border: Border.all(color: const Color(0xFF491E75), width: 2),
-                    borderRadius: const BorderRadius.only(
-                      bottomLeft: Radius.circular(12),
-                      topRight: Radius.circular(12),
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.4),
-                        blurRadius: 4,
-                        offset: const Offset(2, 2),
+                child: GestureDetector(
+                  onTap: () {
+                    SavedItems.addItem(imagePath: imagePath, label: label);
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const SavedItemPage()));
+                  },
+                  child: Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      color: Colors.black,
+                      border: Border.all(color: const Color(0xFF491E75), width: 2),
+                      borderRadius: const BorderRadius.only(
+                        bottomLeft: Radius.circular(12),
+                        topRight: Radius.circular(12),
                       ),
-                    ],
-                  ),
-                  child: const Center(
-                    child: Icon(Icons.bookmark_border, size: 20, color: Color(0xFF491E75)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.4),
+                          blurRadius: 4,
+                          offset: const Offset(2, 2),
+                        ),
+                      ],
+                    ),
+                    child: const Center(
+                      child: Icon(Icons.bookmark_border, size: 20, color: Color(0xFF491E75)),
+                    ),
                   ),
                 ),
               ),
@@ -1156,7 +1400,7 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
             child: Column(
               children: [
                 Text(
-                  label,
+                  _selectedOption == null ? (imagePath.contains('shoe1') ? 'Option 1' : 'Option 2') : label,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     color: Colors.white,
@@ -1175,6 +1419,30 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
                       ),
                     ),
                   ),
+                if (showCorrectAnswer)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: Text(
+                      'CORRECT ANSWER',
+                      style: const TextStyle(
+                        color: Color(0xFF33B642),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                if (showWrongAnswer)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: Text(
+                      'WRONG ANSWER',
+                      style: const TextStyle(
+                        color: Color(0xB2CA3232),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
               ],
             ),
           ),
@@ -1184,32 +1452,50 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
   }
 
   Widget _primaryButton(String label, VoidCallback onPressed) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: const RadialGradient(
-          center: Alignment(0.08, 0.08),
-          radius: 7.98,
-          colors: [
-            Color.fromRGBO(0, 0, 0, 0.8),
-            Color.fromRGBO(147, 51, 234, 0.4),
-          ],
-          stops: [0.0, 0.5],
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            gradient: const RadialGradient(
+              center: Alignment(0.08, 0.08),
+              radius: 7.98,
+              colors: [
+                Color.fromRGBO(0, 0, 0, 0.8),
+                Color.fromRGBO(147, 51, 234, 0.4),
+              ],
+              stops: [0.0, 0.5],
+            ),
+            border: Border.all(color: const Color(0xFFAEAEAE), width: 1),
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: const [
+              BoxShadow(color: Color(0x66000000), offset: Offset(0, 4), blurRadius: 4),
+            ],
+          ),
+          child: TextButton(
+            onPressed: onPressed,
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+            ),
+            child: Text(label, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          ),
         ),
-        border: Border.all(color: const Color(0xFFAEAEAE), width: 1),
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: const [
-          BoxShadow(color: Color(0x66000000), offset: Offset(0, 4), blurRadius: 4),
-        ],
-      ),
-      child: TextButton(
-        onPressed: onPressed,
-        style: TextButton.styleFrom(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
-          foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        ),
-        child: Text(label, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-      ),
+        if (label.toLowerCase() == 'undo')
+          Positioned(
+            top: -8,
+            right: -8,
+            child: Transform.rotate(
+              angle: 0.9,
+              child: Image.asset(
+                'assets/images/diamond.png',
+                height: 24,
+                width: 24,
+              ),
+            ),
+          ),
+      ],
     );
   }
 
@@ -1572,6 +1858,67 @@ class _AudioIconButton extends StatelessWidget {
         ),
         padding: const EdgeInsets.all(16),
         child: Icon(icon, color: Colors.white, size: 20),
+      ),
+    );
+  }
+}
+
+// Floating coin/star reward animation overlay
+class _StarCoinReward extends StatefulWidget {
+  final int amount;
+  final VoidCallback onCompleted;
+
+  const _StarCoinReward({required this.amount, required this.onCompleted});
+
+  @override
+  State<_StarCoinReward> createState() => _StarCoinRewardState();
+}
+
+class _StarCoinRewardState extends State<_StarCoinReward>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<Offset> _slide;
+  late Animation<double> _fade;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 2));
+    _slide = Tween<Offset>(begin: const Offset(0, 1), end: const Offset(0, -0.5))
+        .animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+    _fade = Tween<double>(begin: 1.0, end: 0.0)
+        .animate(CurvedAnimation(parent: _controller, curve: const Interval(0.5, 1.0)));
+    _controller.forward().whenComplete(() => widget.onCompleted());
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SlideTransition(
+      position: _slide,
+      child: FadeTransition(
+        opacity: _fade,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Image.asset('assets/images/star.png', width: 32, height: 32),
+            const SizedBox(width: 4),
+            Text(
+              '+${widget.amount}',
+              style: const TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Colors.yellow,
+                shadows: [Shadow(color: Colors.black38, offset: Offset(1, 1), blurRadius: 2)],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
