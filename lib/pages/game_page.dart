@@ -204,9 +204,9 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                     Row(
                       children: [
                         Builder(
@@ -324,94 +324,72 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
       alignment: Alignment.center,
       children: [
         Column(
-          children: [
-            Row(
+      children: [
+        Row(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+          children: [
                 // Left card with per-card feedback
-                Expanded(
+            Expanded(
                   child: Column(
                     children: [
                       GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        onTap: () => _selectOption(1),
+                behavior: HitTestBehavior.opaque,
+                onTap: () => _selectOption(1),
                         child: Transform.translate(
                           offset: Offset(0, _selectedOption == 1 ? -6 : 0),
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 250),
-                            margin: const EdgeInsets.only(top: 8),
-                            decoration: BoxDecoration(
-                              color: _selectedOption == 1 ? const Color(0xFF33B642).withOpacity(0.15) : Colors.transparent,
-                              borderRadius: BorderRadius.circular(16),
-                              boxShadow: [
-                                if (_selectedOption == 1)
-                                  const BoxShadow(
-                                    color: Color(0x6633B642),
-                                    blurRadius: 22,
-                                    spreadRadius: 4,
-                                  ),
-                              ],
-                            ),
+                          child: AnimatedScale(
+                            duration: const Duration(milliseconds: 220),
+                            curve: Curves.easeOut,
+                            scale: _selectedOption == 1 ? 1.06 : 1.0,
                             child: KeyedSubtree(
                               key: _leftCardKey,
-                              child: _selectionCard(
-                                imagePath: 'assets/images/shoe1.png',
-                                label: 'BALENCIAGA',
-                                showPrice: _selectedOption != null,
-                                price: _shoe1Price,
+                  child: _selectionCard(
+                    imagePath: 'assets/images/shoe1.png',
+                    label: 'BALENCIAGA',
+                    showPrice: _selectedOption != null,
+                    price: _shoe1Price,
                                 glowColor: _selectedOption == 1 ? const Color(0x6633B642) : Colors.transparent,
                                 borderColor: _selectedOption == 1 ? const Color(0xFF33B642) : null,
                                 showCorrectAnswer: _selectedOption == 1,
-                              ),
-                            ),
+                  ),
+                ),
                           ),
                         ),
                       ),
                     ],
-                  ),
-                ),
-                const SizedBox(width: 16),
+              ),
+            ),
+            const SizedBox(width: 16),
                 // Right card with per-card feedback
-                Expanded(
+            Expanded(
                   child: Column(
                     children: [
                       GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        onTap: () => _selectOption(2),
+                behavior: HitTestBehavior.opaque,
+                onTap: () => _selectOption(2),
                         child: Transform.translate(
                           offset: Offset(0, _selectedOption == 2 ? -6 : 0),
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 250),
-                            margin: const EdgeInsets.only(top: 8),
-                            decoration: BoxDecoration(
-                              color: _selectedOption == 2 ? const Color(0xCA3232B2).withOpacity(0.25) : Colors.transparent,
-                              borderRadius: BorderRadius.circular(16),
-                              boxShadow: [
-                                if (_selectedOption == 2)
-                                  const BoxShadow(
-                                    color: Color(0x80CA3232),
-                                    blurRadius: 22,
-                                    spreadRadius: 4,
-                                  ),
-                              ],
-                            ),
+                          child: AnimatedScale(
+                            duration: const Duration(milliseconds: 220),
+                            curve: Curves.easeOut,
+                            scale: _selectedOption == 2 ? 1.06 : 1.0,
                             child: KeyedSubtree(
                               key: _rightCardKey,
-                              child: _selectionCard(
-                                imagePath: 'assets/images/shoe2.png',
-                                label: 'CONVERSE',
-                                showPrice: _selectedOption != null,
-                                price: _shoe2Price,
+                  child: _selectionCard(
+                    imagePath: 'assets/images/shoe2.png',
+                    label: 'CONVERSE',
+                    showPrice: _selectedOption != null,
+                    price: _shoe2Price,
                                 glowColor: _selectedOption == 2 ? const Color(0x80CA3232) : Colors.transparent,
                                 borderColor: _selectedOption == 2 ? const Color(0xB2CA3232) : null,
                                 showWrongAnswer: _selectedOption == 2,
                               ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
                   ),
+                ),
+              ),
+            ),
+          ],
+        ),
                 ),
               ],
             ),
@@ -423,14 +401,14 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+              fontWeight: FontWeight.bold,
+            ),
+          ),
               ),
             const SizedBox(height: 18),
             if (_selectedOption == 1) ...[
               // CORRECT ANSWER text below the card
-              const SizedBox(height: 12),
+        const SizedBox(height: 12),
               const Text(
                 'CORRECT ANSWER',
                 style: TextStyle(
@@ -440,19 +418,19 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
                 ),
               ),
               const SizedBox(height: 6),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _primaryButton('Next', () {
-                    setState(() {
-                      _selectedOption = null; // reset for next round
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _primaryButton('Next', () {
+                setState(() {
+                  _selectedOption = null; // reset for next round
                       _showWrongReward = false;
                       secondsRemaining = 15;
-                    });
+                });
                     countdownTimer?.cancel();
                     _startTimer();
-                  }),
-                  const SizedBox(width: 12),
+              }),
+              const SizedBox(width: 12),
                   _primaryButton('Exit', () {
                     _showExitConfirmation(context);
                   }),
@@ -514,27 +492,27 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
               ),
             ],
             if (_selectedOption == null)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _ActionButton(
-                    label: "Hint",
-                    onPressed: () => _showSkipDialog(
-                      context,
-                      "Are you sure you want a hint?",
-                      "Hint 5",
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  _ActionButton(
-                    label: "Skip",
-                    onPressed: () => _showSkipDialog(
-                      context,
-                      "Are you sure you want to skip?",
-                      "Skip 5",
-                    ),
-                  ),
-                ],
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _ActionButton(
+              label: "Hint",
+              onPressed: () => _showSkipDialog(
+                context,
+                "Are you sure you want a hint?",
+                "Hint 5",
+              ),
+            ),
+            const SizedBox(width: 16),
+            _ActionButton(
+              label: "Skip",
+              onPressed: () => _showSkipDialog(
+                context,
+                "Are you sure you want to skip?",
+                "Skip 5",
+              ),
+            ),
+          ],
               ),
           ],
         ),
@@ -547,7 +525,7 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
                 top: top,
                 left: _flyLeft,
                 child: _flyIsCorrect
-                    ? Image.asset('assets/images/star.png', width: 32, height: 32)
+                    ? const _GoldStarEmitter(count: 7)
                     : SvgPicture.asset('assets/images/heart-1.svg', width: 32, height: 32),
               );
             },
@@ -564,7 +542,7 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
                 });
               },
             ),
-          ),
+        ),
       ],
     );
   }
@@ -800,25 +778,28 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
               borderRadius: BorderRadius.circular(16),
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                child: Container(
-                  width: 360,
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    color: const Color.fromRGBO(255, 255, 255, 0.06),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.3),
-                        blurRadius: 12,
-                        offset: const Offset(0, 6),
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Container(
+                      width: 360,
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        color: const Color.fromRGBO(255, 255, 255, 0.06),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.3),
+                            blurRadius: 12,
+                            offset: const Offset(0, 6),
+                          ),
+                        ],
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.15),
+                          width: 1.2,
+                        ),
                       ),
-                    ],
-                    border: Border.all(
-                      color: Colors.white.withOpacity(0.15),
-                      width: 1.2,
-                    ),
-                  ),
-                  child: Column(
+                      child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
@@ -928,7 +909,10 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
                         ],
                       )
                     ],
-                  ),
+                      ),
+                    ),
+                    const _DialogCloseButton(),
+                  ],
                 ),
               ),
             ),
@@ -951,14 +935,17 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
               borderRadius: BorderRadius.circular(16),
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                child: Container(
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    color: const Color.fromRGBO(255, 255, 255, 0.06),
-                    border: Border.all(color: Colors.white.withOpacity(0.15)),
-                  ),
-                  child: Column(
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        color: const Color.fromRGBO(255, 255, 255, 0.06),
+                        border: Border.all(color: Colors.white.withOpacity(0.15)),
+                      ),
+                      child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       const Text(
@@ -1031,13 +1018,25 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
                               Positioned(
                                 top: -10,
                                 right: -6,
-                                child: Transform.rotate(
-                                      angle: 0.0,
-                                      child: Image.asset(
-                                        'assets/images/heart.png',
-                                        width: 22,
-                                        height: 22,
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: const [
+                                    Text(
+                                      "-",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
                                       ),
+                                    ),
+                                    SizedBox(width: 2),
+                                    // Keep existing heart asset path
+                                    Image(
+                                      image: AssetImage('assets/images/heart.png'),
+                                      width: 22,
+                                      height: 22,
+                                    ),
+                                  ],
                                 ),
                               ),
 
@@ -1046,7 +1045,10 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
                         ],
                       ),
                     ],
-                  ),
+                      ),
+                    ),
+                    const _DialogCloseButton(),
+                  ],
                 ),
               ),
             ),
@@ -1088,94 +1090,85 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
               borderRadius: BorderRadius.circular(20),
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-                child: Container(
-                  width: 320,
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: const Color.fromRGBO(255, 255, 255, 0.06),
-                    border: Border.all(color: Colors.white24, width: 1),
-                  ),
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      // Close Rectangle
-                      Positioned(
-                        top: 8,
-                        right: 8,
-                        child: GestureDetector(
-                          onTap: () => Navigator.of(context).pop(),
-                          child: Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              Image.asset('assets/images/Rectangle.png', width: 28, height: 28),
-                              const Icon(Icons.close, size: 16, color: Colors.white),
-                            ],
-                          ),
-                        ),
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Container(
+                      width: 320,
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: const Color.fromRGBO(255, 255, 255, 0.06),
+                        border: Border.all(color: Colors.white24, width: 1),
                       ),
-                      // Decorative side flames with exact positions
-                      Positioned(
-                        left: -31,
-                        top: 90,
-                        child: Transform.rotate(
-                          angle: -23.21 * (math.pi / 180),
-                          child: Image.asset('assets/images/fire.png', width: 78, height: 78),
-                        ),
-                      ),
-                      Positioned(
-                        left: 6,
-                        top: 208,
-                        child: Image.asset('assets/images/fire.png', width: 78, height: 78),
-                      ),
-                      Positioned(
-                        left: 289,
-                        top: 36,
-                        child: Image.asset('assets/images/fire.png', width: 78, height: 78),
-                      ),
-                      Positioned(
-                        left: 296.76,
-                        top: 151.75,
-                        child: Transform.rotate(
-                          angle: 10.82 * (math.pi / 180),
-                          child: Image.asset('assets/images/fire.png', width: 78, height: 78),
-                        ),
-                      ),
-                      Column(
-                        mainAxisSize: MainAxisSize.min,
+                      child: Stack(
+                        clipBehavior: Clip.none,
                         children: [
-                          Row(
+                          // Decorative side flames with exact positions
+                          Positioned(
+                            left: -31,
+                            top: 90,
+                            child: Transform.rotate(
+                              angle: -23.21 * (math.pi / 180),
+                              child: Image.asset('assets/images/fire.png', width: 78, height: 78),
+                            ),
+                          ),
+                          Positioned(
+                            left: 6,
+                            top: 208,
+                            child: Image.asset('assets/images/fire.png', width: 78, height: 78),
+                          ),
+                          Positioned(
+                            left: 289,
+                            top: 36,
+                            child: Image.asset('assets/images/fire.png', width: 78, height: 78),
+                          ),
+                          Positioned(
+                            left: 296.76,
+                            top: 151.75,
+                            child: Transform.rotate(
+                              angle: 10.82 * (math.pi / 180),
+                              child: Image.asset('assets/images/fire.png', width: 78, height: 78),
+                            ),
+                          ),
+                          Column(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              ClipOval(
-                                child: Image.asset('assets/images/avatar.jpg', width: 32, height: 32, fit: BoxFit.cover),
-                              ),
-                              const SizedBox(width: 8),
-                              const Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                              Row(
                                 children: [
-                                  Text('LuxuryinTaste', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                                  Text('Beginner', style: TextStyle(color: Colors.white70, fontSize: 12)),
+                                  ClipOval(
+                                    child: Image.asset('assets/images/avatar.jpg', width: 32, height: 32, fit: BoxFit.cover),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  const Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text('LuxuryinTaste', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                                      Text('Beginner', style: TextStyle(color: Colors.white70, fontSize: 12)),
+                                    ],
+                                  )
                                 ],
-                              )
+                              ),
+                              const SizedBox(height: 16),
+                              Text('$_streakDays', style: const TextStyle(color: Colors.white, fontSize: 64, fontWeight: FontWeight.bold)),
+                              const Text('DAYS', style: TextStyle(color: Colors.white70, fontSize: 16, fontWeight: FontWeight.w600, letterSpacing: 2)),
+                              const SizedBox(height: 16),
+                              const Text("You're On A Streak", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                              const SizedBox(height: 10),
+                              const Text(
+                                'Your Consistency Is Unmatched — And We\nNotice. Keep The Streak Alive And Hit 30 For A\nSurprise Reward',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(color: Colors.white70, fontSize: 12, height: 1.4),
+                              ),
+                              const SizedBox(height: 12),
+                              const Text('Next Milestone : 30 Days', style: TextStyle(color: Colors.white70, fontSize: 12)),
                             ],
                           ),
-                          const SizedBox(height: 16),
-                          Text('$_streakDays', style: const TextStyle(color: Colors.white, fontSize: 64, fontWeight: FontWeight.bold)),
-                          const Text('DAYS', style: TextStyle(color: Colors.white70, fontSize: 16, fontWeight: FontWeight.w600, letterSpacing: 2)),
-                          const SizedBox(height: 16),
-                          const Text("You're On A Streak", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
-                          const SizedBox(height: 10),
-                          const Text(
-                            'Your Consistency Is Unmatched — And We\nNotice. Keep The Streak Alive And Hit 30 For A\nSurprise Reward',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(color: Colors.white70, fontSize: 12, height: 1.4),
-                          ),
-                          const SizedBox(height: 12),
-                          const Text('Next Milestone : 30 Days', style: TextStyle(color: Colors.white70, fontSize: 12)),
                         ],
                       ),
-                    ],
-                  ),
+                    ),
+                    const _DialogCloseButton(),
+                  ],
                 ),
               ),
             ),
@@ -1310,29 +1303,55 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
     bool showCorrectAnswer = false,
     bool showWrongAnswer = false,
   }) {
-    return Container(
+    final bool isSelected = glowColor != Colors.transparent;
+    // Determine palette based on which card this is
+    final bool isGreen = borderColor == const Color(0xFF33B642) || showCorrectAnswer;
+    // Solid glow colors
+    const Color solidGreen = Color(0xFF276630);
+    const Color solidRed = Color(0xFF952B2C);
+
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        // Blurred gradient glow behind card when selected
+        if (isSelected)
+          Positioned.fill(
+            child: IgnorePointer(
+              child: Center(
+                child: Container(
+                  margin: const EdgeInsets.only(top: 6, left: 6, right: 6),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(28),
+                    boxShadow: [
+                      BoxShadow(
+                        color: (isGreen ? solidGreen : solidRed).withOpacity(0.9),
+                        blurRadius: 30,
+                        spreadRadius: 6,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+        // Original card container (no outer glow/border outlines)
+        Container(
       decoration: BoxDecoration(
         gradient: const RadialGradient(
           center: Alignment(0.08, 0.08),
           radius: 7.98,
           colors: [
-            // darken slightly when glowing
-            Color.fromRGBO(0, 0, 0, 0.86),
-            Color.fromRGBO(147, 51, 234, 0.46),
+                Color.fromRGBO(0, 0, 0, 0.86),
+                Color.fromRGBO(147, 51, 234, 0.46),
           ],
           stops: [0.0, 0.5],
         ),
-        border: Border.all(
-          color: borderColor ?? (glowColor != Colors.transparent ? glowColor : const Color(0xFFAEAEAE)),
-          width: (borderColor != null || glowColor != Colors.transparent) ? 2 : 1,
-        ),
+            border: Border.all(
+              color: isSelected ? Colors.transparent : const Color(0xFFAEAEAE),
+              width: 1,
+            ),
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          if (glowColor != Colors.transparent)
-            BoxShadow(color: glowColor.withOpacity(0.85), blurRadius: 22, spreadRadius: 4),
-          if (glowColor != Colors.transparent)
-            BoxShadow(color: glowColor.withOpacity(0.5), blurRadius: 10, spreadRadius: 1),
-        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -1343,7 +1362,7 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
                 child: Center(
-                  child: Image.asset(imagePath, height: 130, fit: BoxFit.contain),
+                    child: Image.asset(imagePath, height: 130, fit: BoxFit.contain),
                 ),
               ),
               Positioned(
@@ -1354,32 +1373,62 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
                     SavedItems.addItem(imagePath: imagePath, label: label);
                     Navigator.push(context, MaterialPageRoute(builder: (_) => const SavedItemPage()));
                   },
-                  child: Container(
-                    width: 36,
-                    height: 36,
-                    decoration: BoxDecoration(
-                      color: Colors.black,
-                      border: Border.all(color: const Color(0xFF491E75), width: 2),
-                      borderRadius: const BorderRadius.only(
-                        bottomLeft: Radius.circular(12),
-                        topRight: Radius.circular(12),
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.4),
-                          blurRadius: 4,
-                          offset: const Offset(2, 2),
-                        ),
-                      ],
+                child: Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: Colors.black,
+                    border: Border.all(color: const Color(0xFF491E75), width: 2),
+                    borderRadius: const BorderRadius.only(
+                      bottomLeft: Radius.circular(12),
+                      topRight: Radius.circular(12),
                     ),
-                    child: const Center(
-                      child: Icon(Icons.bookmark_border, size: 20, color: Color(0xFF491E75)),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.4),
+                        blurRadius: 4,
+                        offset: const Offset(2, 2),
+                      ),
+                    ],
+                  ),
+                  child: const Center(
+                    child: Icon(Icons.bookmark_border, size: 20, color: Color(0xFF491E75)),
                     ),
                   ),
                 ),
               ),
             ],
           ),
+          // Bottom area: when selected, hide strip and divider; when not, show them
+          if (isSelected)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Column(
+                children: [
+                  Text(
+                    _selectedOption == null ? (imagePath.contains('shoe1') ? 'Option 1' : 'Option 2') : label,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                  if (showPrice)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 6),
+                      child: Text(
+                        price,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            )
+          else
           Container(
             padding: const EdgeInsets.symmetric(vertical: 12),
             decoration: const BoxDecoration(
@@ -1400,11 +1449,11 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
             child: Column(
               children: [
                 Text(
-                  _selectedOption == null ? (imagePath.contains('shoe1') ? 'Option 1' : 'Option 2') : label,
+                    _selectedOption == null ? (imagePath.contains('shoe1') ? 'Option 1' : 'Option 2') : label,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     color: Colors.white,
-                    fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w600,
                     fontSize: 16,
                   ),
                 ),
@@ -1414,32 +1463,8 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
                     child: Text(
                       price,
                       style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                if (showCorrectAnswer)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8),
-                    child: Text(
-                      'CORRECT ANSWER',
-                      style: const TextStyle(
-                        color: Color(0xFF33B642),
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                if (showWrongAnswer)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8),
-                    child: Text(
-                      'WRONG ANSWER',
-                      style: const TextStyle(
-                        color: Color(0xB2CA3232),
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
+                          color: Colors.white70,
+                          fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
@@ -1448,6 +1473,8 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
           ),
         ],
       ),
+        ),
+      ],
     );
   }
 
@@ -1456,31 +1483,31 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
       clipBehavior: Clip.none,
       children: [
         Container(
-          decoration: BoxDecoration(
-            gradient: const RadialGradient(
-              center: Alignment(0.08, 0.08),
-              radius: 7.98,
-              colors: [
-                Color.fromRGBO(0, 0, 0, 0.8),
-                Color.fromRGBO(147, 51, 234, 0.4),
-              ],
-              stops: [0.0, 0.5],
-            ),
-            border: Border.all(color: const Color(0xFFAEAEAE), width: 1),
-            borderRadius: BorderRadius.circular(24),
-            boxShadow: const [
-              BoxShadow(color: Color(0x66000000), offset: Offset(0, 4), blurRadius: 4),
-            ],
-          ),
-          child: TextButton(
-            onPressed: onPressed,
-            style: TextButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-            ),
-            child: Text(label, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-          ),
+      decoration: BoxDecoration(
+        gradient: const RadialGradient(
+          center: Alignment(0.08, 0.08),
+          radius: 7.98,
+          colors: [
+            Color.fromRGBO(0, 0, 0, 0.8),
+            Color.fromRGBO(147, 51, 234, 0.4),
+          ],
+          stops: [0.0, 0.5],
+        ),
+        border: Border.all(color: const Color(0xFFAEAEAE), width: 1),
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: const [
+          BoxShadow(color: Color(0x66000000), offset: Offset(0, 4), blurRadius: 4),
+        ],
+      ),
+      child: TextButton(
+        onPressed: onPressed,
+        style: TextButton.styleFrom(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+          foregroundColor: Colors.white,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        ),
+        child: Text(label, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+      ),
         ),
         if (label.toLowerCase() == 'undo')
           Positioned(
@@ -1601,26 +1628,29 @@ class _AudioSettingsPopupState extends State<_AudioSettingsPopup> {
                 borderRadius: BorderRadius.circular(20),
                 child: BackdropFilter(
                   filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-                  child: SingleChildScrollView(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        gradient: const RadialGradient(
-                          center: Alignment(0, -0.2),
-                          radius: 1.2,
-                          colors: [
-                            Color(0x2FFFFFFF),
-                            Color(0x33FFFFFF),
-                          ],
-                          stops: [0.1, 1.0],
-                        ),
-                        border: Border.all(color: Colors.white24, width: 1),
-                      ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      SingleChildScrollView(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            gradient: const RadialGradient(
+                              center: Alignment(0, -0.2),
+                              radius: 1.2,
+                              colors: [
+                                Color(0x2FFFFFFF),
+                                Color(0x33FFFFFF),
+                              ],
+                              stops: [0.1, 1.0],
+                            ),
+                            border: Border.all(color: Colors.white24, width: 1),
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
                           const SizedBox(height: 20),
                           Text(
                             "SETTINGS",
@@ -1711,21 +1741,12 @@ class _AudioSettingsPopupState extends State<_AudioSettingsPopup> {
                               ),
                             ],
                           ),
-                        ],
+                            ],
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                ),
-              ),
-              Positioned(
-                top: 5,
-                right: 5,
-                child: GestureDetector(
-                  onTap: () => Navigator.of(context).pop(),
-                  child: const CircleAvatar(
-                    radius: 14,
-                    backgroundColor: Colors.white30,
-                    child: Icon(Icons.close, size: 16, color: Colors.white),
+                      const _DialogCloseButton(),
+                    ],
                   ),
                 ),
               ),
@@ -1863,6 +1884,46 @@ class _AudioIconButton extends StatelessWidget {
   }
 }
 
+/// Reusable dialog close button that uses `assets/images/Rectangle.png`.
+/// Tap -> closes the top-most Navigator (dialog).
+class _DialogCloseButton extends StatelessWidget {
+  final double size; // background image size
+  final EdgeInsets margin; // offset from top-right
+  const _DialogCloseButton({Key? key, this.size = 36, this.margin = const EdgeInsets.only(top: 8, right: 8)}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      top: margin.top,
+      right: margin.right,
+      child: Semantics(
+        button: true,
+        label: 'Close',
+        child: GestureDetector(
+          onTap: () {
+            // Close the dialog / topmost route
+            if (Navigator.of(context).canPop()) {
+              Navigator.of(context).pop();
+            }
+          },
+          child: SizedBox(
+            width: size,
+            height: size,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                // Rectangle background (use existing asset)
+                Image.asset('assets/images/Rectangle.png', width: size, height: size, fit: BoxFit.contain),
+                // White X icon centered on top
+                const Icon(Icons.close, size: 16, color: Colors.white),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
 // Floating coin/star reward animation overlay
 class _StarCoinReward extends StatefulWidget {
   final int amount;
@@ -1903,23 +1964,92 @@ class _StarCoinRewardState extends State<_StarCoinReward>
       position: _slide,
       child: FadeTransition(
         opacity: _fade,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
+        child: Stack(
+          alignment: Alignment.center,
           children: [
-            Image.asset('assets/images/star.png', width: 32, height: 32),
-            const SizedBox(width: 4),
-            Text(
-              '+${widget.amount}',
-              style: const TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Colors.yellow,
-                shadows: [Shadow(color: Colors.black38, offset: Offset(1, 1), blurRadius: 2)],
-              ),
+            const _GoldStarEmitter(count: 6),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Image.asset('assets/images/star.png', width: 24, height: 24),
+                const SizedBox(width: 4),
+                Text(
+                  '+${widget.amount}',
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.yellow,
+                    shadows: [Shadow(color: Colors.black38, offset: Offset(1, 1), blurRadius: 2)],
+                  ),
+                ),
+              ],
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+class _GoldStarEmitter extends StatefulWidget {
+  final int count;
+  const _GoldStarEmitter({this.count = 5});
+
+  @override
+  State<_GoldStarEmitter> createState() => _GoldStarEmitterState();
+}
+
+class _GoldStarEmitterState extends State<_GoldStarEmitter>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2800),
+    )..forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      clipBehavior: Clip.none,
+      children: List.generate(widget.count, (i) {
+        final dx = (i - (widget.count - 1) / 2) * 30.0; // even spacing across ~120px
+        final delay = i * 0.1; // small stagger
+
+        final anim = CurvedAnimation(
+          parent: _controller,
+          curve: Interval(delay, 1.0, curve: Curves.easeOut),
+        );
+
+        return AnimatedBuilder(
+          animation: anim,
+          builder: (_, child) {
+            return Opacity(
+              opacity: 1 - anim.value,
+              child: Transform.translate(
+                offset: Offset(dx, -140 * anim.value),
+                child: child,
+              ),
+            );
+          },
+          child: Image.asset(
+            'assets/images/gold_star.png',
+            errorBuilder: (_, __, ___) => Image.asset('assets/images/star.png'),
+            width: 40,
+            height: 40,
+          ),
+        );
+      }),
     );
   }
 }
