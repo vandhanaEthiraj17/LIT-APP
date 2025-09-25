@@ -21,6 +21,10 @@ dependencies:
   shimmer: ^3.0.0
   flutter_svg: ^2.0.9
 
+dependency_overrides:
+  # Pin to an SDK-34-compatible Android impl to avoid requiring Android 36
+  path_provider_android: 2.2.6
+
 
 dev_dependencies:
   flutter_test:
