@@ -293,7 +293,7 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 40),
                     // Inside your build method or main column (where the body is rendered)
                     !_hasStarted
                         ? buildStartPlaceholder()
@@ -325,6 +325,8 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
       children: [
         Column(
       children: [
+        // Add padding at the top to prevent clipping during animation
+        const SizedBox(height: 15),
         Row(
               crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -356,6 +358,19 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
                           ),
                         ),
                       ),
+                      if (_selectedOption == 1) ...[
+                        const SizedBox(height: 14),
+                        const Text(
+                          'CORRECT ANSWER',
+                          style: TextStyle(
+                            color: Color(0xFF33B642), 
+                            fontSize: 16, 
+                            fontWeight: FontWeight.bold
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        const _RewardIcon('assets/images/gold_star.png'),
+                      ],
                     ],
               ),
             ),
@@ -388,6 +403,19 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
                 ),
               ),
             ),
+            if (_selectedOption == 2) ...[
+              const SizedBox(height: 14),
+              const Text(
+                'WRONG ANSWER',
+                style: TextStyle(
+                  color: Color(0xB2CA3232), 
+                  fontSize: 16, 
+                  fontWeight: FontWeight.bold
+                ),
+              ),
+              const SizedBox(height: 2),
+              const _RewardIcon('assets/images/heartwrong.png'),
+            ],
           ],
         ),
                 ),
@@ -401,85 +429,25 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 22,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             const SizedBox(height: 18),
-            if (_selectedOption == 1) ...[
-              // CORRECT ANSWER text below the card
-        const SizedBox(height: 12),
-              const Text(
-                'CORRECT ANSWER',
-                style: TextStyle(
-                  color: Color(0xFF33B642), 
-                  fontSize: 16, 
-                  fontWeight: FontWeight.bold
-                ),
-              ),
-              const SizedBox(height: 6),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _primaryButton('Next', () {
-                setState(() {
-                  _selectedOption = null; // reset for next round
-                      _showWrongReward = false;
-                      secondsRemaining = 15;
-                });
-                    countdownTimer?.cancel();
-                    _startTimer();
-              }),
-              const SizedBox(width: 12),
-                  _primaryButton('Exit', () {
-                    _showExitConfirmation(context);
-                  }),
-                ],
-              ),
-            ],
-            if (_selectedOption == 2) ...[
-              // WRONG ANSWER text below the card
-              const SizedBox(height: 12),
-              const Text(
-                'WRONG ANSWER',
-                style: TextStyle(
-                  color: Color(0xB2CA3232), 
-                  fontSize: 16, 
-                  fontWeight: FontWeight.bold
-                ),
-              ),
-              const SizedBox(height: 6),
-              // Animated heart effect
-              SizedBox(
-                height: 40,
-                child: AnimatedBuilder(
-                  animation: _rewardAnimation,
-                  builder: (context, child) {
-                    if (!_showWrongReward) return const SizedBox.shrink();
-                    final dy = 20 - 40 * _rewardAnimation.value;
-                    final opacity = 1.0 - _rewardAnimation.value;
-                    return Opacity(
-                      opacity: opacity,
-                      child: Transform.translate(
-                        offset: Offset(0, dy),
-                        child: Center(
-                          child: SvgPicture.asset('assets/images/heart-1.svg', width: 32, height: 32),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              const SizedBox(height: 8),
-              // Buttons moved up to avoid scrolling
+            
+            // Action buttons centered below both cards
+            if (_selectedOption != null) ...[
+              const SizedBox(height: 12.0),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _primaryButton('Undo', _undoSelection),
-                  const SizedBox(width: 12),
+                  if (_selectedOption == 2)
+                    _primaryButton('Undo', _undoSelection),
+                  if (_selectedOption == 2)
+                    const SizedBox(width: 12),
                   _primaryButton('Next', () {
                     setState(() {
-                      _selectedOption = null;
+                      _selectedOption = null; // reset for next round
                       _showWrongReward = false;
                       secondsRemaining = 15;
                     });
@@ -487,12 +455,14 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
                     _startTimer();
                   }),
                   const SizedBox(width: 12),
-                  _primaryButton('Exit', () { _showExitConfirmation(context); }),
+                  _primaryButton('Exit', () {
+                    _showExitConfirmation(context);
+                  }),
                 ],
               ),
             ],
             if (_selectedOption == null)
-        Row(
+              Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             _ActionButton(
@@ -515,33 +485,6 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
           ],
               ),
           ],
-        ),
-        if (_showFly)
-          AnimatedBuilder(
-            animation: _flyAnim,
-            builder: (context, child) {
-              final top = _flyStartTop + (_flyEndTop - _flyStartTop) * _flyAnim.value;
-              return Positioned(
-                top: top,
-                left: _flyLeft,
-                child: _flyIsCorrect
-                    ? const _GoldStarEmitter(count: 7)
-                    : SvgPicture.asset('assets/images/heart-1.svg', width: 32, height: 32),
-              );
-            },
-          ),
-        if (_showCoinRewardOverlay)
-          Positioned(
-            bottom: 40,
-            child: _StarCoinReward(
-              amount: _coinRewardAmount,
-              onCompleted: () {
-                setState(() {
-                  _coins += _coinRewardAmount;
-                  _showCoinRewardOverlay = false;
-                });
-              },
-            ),
         ),
       ],
     );
@@ -1178,7 +1121,7 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
     );
   }
 
-  static Widget _resourceIcon(String asset, String value) {
+  Widget _resourceIcon(String asset, String value) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
@@ -1202,7 +1145,7 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
     );
   }
 
-  static Widget _buildOptionCard(String imagePath, String label) {
+  Widget _buildOptionCard(String imagePath, String label) {
     return Container(
         margin: const EdgeInsets.only(top: 8),
         decoration: BoxDecoration(
@@ -1889,7 +1832,7 @@ class _AudioIconButton extends StatelessWidget {
 class _DialogCloseButton extends StatelessWidget {
   final double size; // background image size
   final EdgeInsets margin; // offset from top-right
-  const _DialogCloseButton({Key? key, this.size = 36, this.margin = const EdgeInsets.only(top: 8, right: 8)}) : super(key: key);
+  const _DialogCloseButton({Key? key, this.size = 36, this.margin = const EdgeInsets.only(top: 0, right: 8)}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -1924,32 +1867,33 @@ class _DialogCloseButton extends StatelessWidget {
     );
   }
 }
-// Floating coin/star reward animation overlay
-class _StarCoinReward extends StatefulWidget {
-  final int amount;
-  final VoidCallback onCompleted;
+// Reward icon animation widget
+class _RewardIcon extends StatefulWidget {
+  final String assetPath;
 
-  const _StarCoinReward({required this.amount, required this.onCompleted});
+  const _RewardIcon(this.assetPath);
 
   @override
-  State<_StarCoinReward> createState() => _StarCoinRewardState();
+  State<_RewardIcon> createState() => _RewardIconState();
 }
 
-class _StarCoinRewardState extends State<_StarCoinReward>
-    with SingleTickerProviderStateMixin {
+class _RewardIconState extends State<_RewardIcon> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  late Animation<Offset> _slide;
-  late Animation<double> _fade;
+  late Animation<Offset> _offsetAnim;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 2));
-    _slide = Tween<Offset>(begin: const Offset(0, 1), end: const Offset(0, -0.5))
-        .animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
-    _fade = Tween<double>(begin: 1.0, end: 0.0)
-        .animate(CurvedAnimation(parent: _controller, curve: const Interval(0.5, 1.0)));
-    _controller.forward().whenComplete(() => widget.onCompleted());
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 1000),
+      vsync: this,
+    );
+    _offsetAnim = Tween<Offset>(
+      begin: const Offset(0, 0.6),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+
+    _controller.forward();
   }
 
   @override
@@ -1961,95 +1905,8 @@ class _StarCoinRewardState extends State<_StarCoinReward>
   @override
   Widget build(BuildContext context) {
     return SlideTransition(
-      position: _slide,
-      child: FadeTransition(
-        opacity: _fade,
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            const _GoldStarEmitter(count: 6),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Image.asset('assets/images/star.png', width: 24, height: 24),
-                const SizedBox(width: 4),
-                Text(
-                  '+${widget.amount}',
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.yellow,
-                    shadows: [Shadow(color: Colors.black38, offset: Offset(1, 1), blurRadius: 2)],
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _GoldStarEmitter extends StatefulWidget {
-  final int count;
-  const _GoldStarEmitter({this.count = 5});
-
-  @override
-  State<_GoldStarEmitter> createState() => _GoldStarEmitterState();
-}
-
-class _GoldStarEmitterState extends State<_GoldStarEmitter>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 2800),
-    )..forward();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      clipBehavior: Clip.none,
-      children: List.generate(widget.count, (i) {
-        final dx = (i - (widget.count - 1) / 2) * 30.0; // even spacing across ~120px
-        final delay = i * 0.1; // small stagger
-
-        final anim = CurvedAnimation(
-          parent: _controller,
-          curve: Interval(delay, 1.0, curve: Curves.easeOut),
-        );
-
-        return AnimatedBuilder(
-          animation: anim,
-          builder: (_, child) {
-            return Opacity(
-              opacity: 1 - anim.value,
-              child: Transform.translate(
-                offset: Offset(dx, -140 * anim.value),
-                child: child,
-              ),
-            );
-          },
-          child: Image.asset(
-            'assets/images/gold_star.png',
-            errorBuilder: (_, __, ___) => Image.asset('assets/images/star.png'),
-            width: 40,
-            height: 40,
-          ),
-        );
-      }),
+      position: _offsetAnim,
+      child: Image.asset(widget.assetPath, width: 44, height: 44),
     );
   }
 }
