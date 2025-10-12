@@ -8,6 +8,7 @@ import 'package:lit/pages/sustainable_luxury.dart';
 import 'package:lit/pages/signup_page.dart';
 import 'package:lit/pages/game_entrance_page.dart';
 import 'package:lit/pages/coming_soon.dart';
+import 'package:lit/ecommerce/cart_page.dart';
 class AppDrawer extends StatefulWidget {
   const AppDrawer({super.key});
 

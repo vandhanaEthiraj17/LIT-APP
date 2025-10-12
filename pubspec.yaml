@@ -174,4 +174,6 @@ flutter:
     - assets/images/b2.jpg
     - assets/images/coupon_icon.png
     - assets/images/game entrance.png
-    # assets/images/game_entrance.png was removed; using existing 'game entrance.png'
+    - assets/images/box.png
+    - assets/images/maps.png
+    - assets/images/Button.png

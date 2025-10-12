@@ -11,7 +11,6 @@ import 'package:provider/provider.dart';
 import '../providers/notification_provider.dart';
 import '../widgets/notification_bell.dart';
 
-
 class FriendListPage extends StatefulWidget {
   const FriendListPage({super.key});
 
@@ -22,11 +21,20 @@ class FriendListPage extends StatefulWidget {
 class _FriendListPageState extends State<FriendListPage> {
   int currentIndex = -1;
   String selectedTab = 'Friend list';
-  bool isSearching = false; // 🔍 tracks if user is actively searching
+  bool isSearching = false;
 
   TextEditingController _searchController = TextEditingController();
-  List<Map<String, String>> searchResults = [];
 
+  void _showFriendRequestSent(String name, String image) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Friend request sent to $name'),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
+  List<Map<String, String>> searchResults = [];
 
   final List<Map<String, dynamic>> friendList = [
     {'name': 'Gamer65', 'image': 'assets/images/avatar1.jpg'},
@@ -46,7 +54,6 @@ class _FriendListPageState extends State<FriendListPage> {
     {'name': 'GlamMystery', 'image': 'assets/images/avatar8.jpg', 'score': '499'},
   ];
 
-
   final List<Map<String, String>> allUsers = [
     {'name': 'Gamer65', 'image': 'assets/images/avatar1.jpg'},
     {'name': 'Beautyeve', 'image': 'assets/images/avatar2.jpg'},
@@ -58,10 +65,6 @@ class _FriendListPageState extends State<FriendListPage> {
     {'name': 'NewUserY', 'image': 'assets/images/avatar7.jpg'},
     {'name': 'NewUserZ', 'image': 'assets/images/avatar8.jpg'},
   ];
-
-
-
-
 
   void _onNavTapped(int index) {
     setState(() => currentIndex = index);
@@ -121,7 +124,6 @@ class _FriendListPageState extends State<FriendListPage> {
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Header
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
@@ -169,23 +171,16 @@ class _FriendListPageState extends State<FriendListPage> {
                             ),
                           ],
                         ),
-
                         const SizedBox(height: 24),
-
-                        // Player Stats & Badges Section
-                        // Player Stats & Badges Section (Updated)
-                        // Player Stats & Badges Section (Updated & Aligned)
                         IntrinsicHeight(
                           child: Row(
                             children: [
-                              // Player Stats Box
                               Expanded(
                                 flex: 6,
                                 child: Container(
                                   padding: const EdgeInsets.all(10),
-
                                   decoration: BoxDecoration(
-                                    color: const Color.fromRGBO(255, 255, 255, 0.03), // Optional soft fill
+                                    color: const Color.fromRGBO(255, 255, 255, 0.03),
                                     border: Border.all(color: Color(0xFF8A6FCF), width: 0.5),
                                     borderRadius: BorderRadius.circular(12),
                                     boxShadow: [
@@ -200,7 +195,6 @@ class _FriendListPageState extends State<FriendListPage> {
                                       ),
                                     ],
                                   ),
-
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
@@ -236,16 +230,13 @@ class _FriendListPageState extends State<FriendListPage> {
                                   ),
                                 ),
                               ),
-
                               const SizedBox(width: 8),
-
-                              // Badges Box
                               Expanded(
                                 flex: 5,
                                 child: Container(
                                   padding: const EdgeInsets.all(10),
                                   decoration: BoxDecoration(
-                                    color: const Color.fromRGBO(255, 255, 255, 0.03), // Optional soft fill
+                                    color: const Color.fromRGBO(255, 255, 255, 0.03),
                                     border: Border.all(color: Color(0xFF8A6FCF), width: 0.5),
                                     borderRadius: BorderRadius.circular(12),
                                     boxShadow: [
@@ -260,7 +251,6 @@ class _FriendListPageState extends State<FriendListPage> {
                                       ),
                                     ],
                                   ),
-
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
@@ -315,14 +305,11 @@ class _FriendListPageState extends State<FriendListPage> {
                             ],
                           ),
                         ),
-
                         const SizedBox(height: 20),
-
-
                         Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: const Color.fromRGBO(255, 255, 255, 0.03), // Optional soft fill
+                            color: const Color.fromRGBO(255, 255, 255, 0.03),
                             border: Border.all(color: Color(0xFF8A6FCF), width: 0.5),
                             borderRadius: BorderRadius.circular(12),
                             boxShadow: [
@@ -337,7 +324,6 @@ class _FriendListPageState extends State<FriendListPage> {
                               ),
                             ],
                           ),
-
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -383,14 +369,11 @@ class _FriendListPageState extends State<FriendListPage> {
                             ],
                           ),
                         ),
-
                       ],
                     ),
                   ),
                 ),
               ),
-
-              // ❌ Close Button
               Positioned(
                 top: 3,
                 right: 3,
@@ -449,39 +432,64 @@ class _FriendListPageState extends State<FriendListPage> {
                       children: [
                         Text(
                           name,
-                          style: GoogleFonts.kronaOne(color: Colors.white, fontSize: 22),
+                          style: GoogleFonts.kronaOne(
+                              color: Colors.white, fontSize: 22),
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 16),
                         CircleAvatar(radius: 62, backgroundImage: AssetImage(imagePath)),
                         const SizedBox(height: 22),
                         const Text(
-                          'Is now in your Friend List !',
-                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 18),
+                          'Is now in your Friend List!',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 18),
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 26),
                         SizedBox(
                           width: 280,
-                          height: 34,
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(24),
-                              border: Border.all(color: Colors.white, width: 1.2),
-                            ),
-                            child: TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(builder: (_) => const FriendSuggestionsPage()),
-                                );
-                              },
-                              style: TextButton.styleFrom(
-                                backgroundColor: const Color(0xFF2D0C4B),
-                                padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 4),
-                                foregroundColor: Colors.white,
+                          height: 42,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.of(context).pop();
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                    builder: (_) => const FriendSuggestionsPage()),
+                              );
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                gradient: const RadialGradient(
+                                  center: Alignment(0.08, 0.08),
+                                  radius: 7.98,
+                                  colors: [
+                                    Color.fromRGBO(0, 0, 0, 0.8),
+                                    Color.fromRGBO(147, 51, 234, 0.4),
+                                  ],
+                                ),
+                                border: Border.all(color: Colors.white, width: 1),
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: const [
+                                  BoxShadow(
+                                    color: Color(0x66000000),
+                                    offset: Offset(0, 4),
+                                    blurRadius: 4,
+                                  ),
+                                ],
                               ),
-                              child: const Text('Add More friends', style: TextStyle(fontSize: 16, color: Colors.white)),
+                              child: const Center(
+                                child: Text(
+                                  'Add More Friends',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 16,
+                                    letterSpacing: 1,
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
                         ),
@@ -491,79 +499,8 @@ class _FriendListPageState extends State<FriendListPage> {
                 ),
               ),
               Positioned(
-                top: 6,
-                right: 6,
-                child: GestureDetector(
-                  onTap: () => Navigator.of(context).pop(),
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Image.asset('assets/images/Rectangle.png', width: 54, height: 54),
-                      const Icon(Icons.close, color: Colors.white, size: 22),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Future<void> _showRequestSentPopup(String name, String imagePath) async {
-    await showDialog(
-      context: context,
-      barrierDismissible: true,
-      builder: (context) {
-        return Dialog(
-          backgroundColor: Colors.transparent,
-          insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 60),
-          child: Stack(
-            clipBehavior: Clip.none,
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-                  child: Container(
-                    width: 380,
-                    padding: const EdgeInsets.fromLTRB(28, 36, 28, 36),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      gradient: const RadialGradient(
-                        center: Alignment(0, -0.3),
-                        radius: 1.3,
-                        colors: [
-                          Color.fromRGBO(255, 255, 255, 0.08),
-                          Color.fromRGBO(255, 255, 255, 0.02),
-                        ],
-                      ),
-                      border: Border.all(color: Colors.white.withOpacity(0.15)),
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          name,
-                          style: GoogleFonts.kronaOne(color: Colors.white, fontSize: 22),
-                        ),
-                        const SizedBox(height: 16),
-                        CircleAvatar(radius: 60, backgroundImage: AssetImage(imagePath)),
-                        const SizedBox(height: 22),
-                        const Text(
-                          'Friend Request Sent successfully',
-                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 18),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              Positioned(
-                top: 6,
-                right: 6,
+                top: 8,
+                right: 7,
                 child: GestureDetector(
                   onTap: () => Navigator.of(context).pop(),
                   child: Stack(
@@ -606,8 +543,6 @@ class _FriendListPageState extends State<FriendListPage> {
     });
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -630,7 +565,6 @@ class _FriendListPageState extends State<FriendListPage> {
             child: NotificationBell(),
           ),
         ],
-
       ),
       bottomNavigationBar: CustomBottomNavBar(
         currentIndex: currentIndex,
@@ -654,7 +588,6 @@ class _FriendListPageState extends State<FriendListPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // 🔹 Title: FRIENDS
                   Center(
                     child: Text(
                       "FRIENDS",
@@ -693,8 +626,6 @@ class _FriendListPageState extends State<FriendListPage> {
                     ],
                   ),
                   const SizedBox(height: 28),
-
-                  // 🔹 Toggle Buttons
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -703,10 +634,7 @@ class _FriendListPageState extends State<FriendListPage> {
                       _buildToggleButton("Pending Request"),
                     ],
                   ),
-
                   const SizedBox(height: 18),
-
-                  // 🔍 Search Bar
                   Container(
                     margin: const EdgeInsets.symmetric(horizontal: 8),
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -749,122 +677,106 @@ class _FriendListPageState extends State<FriendListPage> {
                       ],
                     ),
                   ),
-
                   if (_searchController.text.isNotEmpty) ...[
                     const SizedBox(height: 20),
                     Expanded(
                       child: searchResults.isEmpty
                           ? const Center(
-                        child: Text(
-                          "No users found",
-                          style: TextStyle(color: Colors.white54, fontSize: 16),
-                        ),
-                      )
+                              child: Text(
+                                "No users found",
+                                style: TextStyle(color: Colors.white54, fontSize: 16),
+                              ),
+                            )
                           : ListView.builder(
-                        itemCount: searchResults.length,
-                        itemBuilder: (context, index) {
-                          final user = searchResults[index];
-                          final name = user['name']!;
-                          final image = user['image']!;
-                          final isFriend = friendList.any((f) => f['name'] == name);
-                          final isPending = pendingRequests.any((r) => r['name'] == name);
+                              itemCount: searchResults.length,
+                              itemBuilder: (context, index) {
+                                final user = searchResults[index];
+                                final name = user['name']!;
+                                final image = user['image']!;
+                                final isFriend = friendList.any((f) => f['name'] == name);
+                                final isPending = pendingRequests.any((r) => r['name'] == name);
 
-                          if (isFriend) {
-                            return buildFriendCard(name, image, friendList.indexWhere((f) => f['name'] == name));
-                          } else if (isPending) {
-                            final matchedUser = pendingRequests.firstWhere((r) => r['name'] == name, orElse: () => {});
-                            final score = matchedUser['score'] ?? '0';
-
-                            // 🔥 Check if it's a request you sent
-                            final sentByMe = matchedUser['sentByMe'] == true;
-
-                            return buildPendingRequestCard(name, image, score, sentByMe: sentByMe);
-                          }
-                          else {
-                            return buildAddFriendCard(name, image, () {
-                              context.read<NotificationProvider>().addGameNotification({
-                                'type': 'user',
-                                'time': DateTime.now().toIso8601String(),
-                                'name': name,
-                                'message': 'You sent a friend request to $name.',
-                                'image': image,
-                              });
-
-                              setState(() {
-                                pendingRequests.add({
-                                  'name': name,
-                                  'image': image,
-                                  'score': '0', // default score
-                                  'sentByMe': true,
-                                });
-                              });
-                            });
-
-
-                          }
-                        }
-                      ),
+                                if (isFriend) {
+                                  return buildFriendCard(name, image, friendList.indexWhere((f) => f['name'] == name));
+                                } else if (isPending) {
+                                  final matchedUser = pendingRequests.firstWhere((r) => r['name'] == name, orElse: () => {});
+                                  final score = matchedUser['score'] ?? '0';
+                                  final sentByMe = matchedUser['sentByMe'] == true;
+                                  return buildPendingRequestCard(name, image, score, sentByMe: sentByMe);
+                                } else {
+                                  return buildAddFriendCard(name, image, () {
+                                    context.read<NotificationProvider>().addGameNotification({
+                                      'type': 'user',
+                                      'time': DateTime.now().toIso8601String(),
+                                      'name': name,
+                                      'message': 'You sent a friend request to $name.',
+                                      'image': image,
+                                    });
+                                    setState(() {
+                                      pendingRequests.add({
+                                        'name': name,
+                                        'image': image,
+                                        'score': '0',
+                                        'sentByMe': true,
+                                      });
+                                    });
+                                  });
+                                }
+                              }),
                     ),
                   ]
-
                   else if (selectedTab == 'Friend list') ...[
                     const SizedBox(height: 20),
                     Expanded(
                       child: friendList.isEmpty
                           ? Center(
-                        child: Text(
-                          "No friends yet",
-                          style: TextStyle(
-                            color: Colors.white54,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      )
+                              child: Text(
+                                "No friends yet",
+                                style: TextStyle(
+                                  color: Colors.white54,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            )
                           : ListView.builder(
-                        itemCount: friendList.length,
-                        itemBuilder: (context, index) {
-                          final friend = friendList[index];
-                          return buildFriendCard(friend['name']!, friend['image']!, index);
-                        },
-                      ),
+                              itemCount: friendList.length,
+                              itemBuilder: (context, index) {
+                                final friend = friendList[index];
+                                return buildFriendCard(friend['name']!, friend['image']!, index);
+                              },
+                            ),
                     )
-
                   ]
                   else if (selectedTab == 'Pending Request') ...[
                     const SizedBox(height: 20),
                     Expanded(
                       child: pendingRequests.isEmpty
                           ? const Center(
-                        child: Text(
-                          "No pending requests",
-                          style: TextStyle(
-                            color: Colors.white54,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      )
+                              child: Text(
+                                "No pending requests",
+                                style: TextStyle(
+                                  color: Colors.white54,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            )
                           : ListView.builder(
-                        itemCount: pendingRequests.length,
-                        itemBuilder: (context, index) {
-                          final request = pendingRequests[index];
-                          final sentByMe = request['sentByMe'] == true;
-
-                          return buildPendingRequestCard(
-                            request['name'],
-                            request['image'],
-                            request['score'] ?? '0',
-                            sentByMe: sentByMe,
-                          );
-                        },
-
-                      ),
-
+                              itemCount: pendingRequests.length,
+                              itemBuilder: (context, index) {
+                                final request = pendingRequests[index];
+                                final sentByMe = request['sentByMe'] == true;
+                                return buildPendingRequestCard(
+                                  request['name'],
+                                  request['image'],
+                                  request['score'] ?? '0',
+                                  sentByMe: sentByMe,
+                                );
+                              },
+                            ),
                     ),
                   ]
-
-
                 ],
               ),
             ),
@@ -903,19 +815,77 @@ class _FriendListPageState extends State<FriendListPage> {
           GestureDetector(
             onTap: () async {
               onSendRequest();
+              bool closedByUser = false;
               showDialog(
                 context: context,
                 barrierDismissible: false,
                 builder: (_) => Dialog(
                   backgroundColor: Colors.transparent,
-                  child: Center(
-                    child: Image.asset('assets/images/check (1).png', width: 80, height: 80),
+                  child: Stack(
+                    children: [
+                      Container(
+                        width: 300,
+                        height: 160,
+                        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 28),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.08),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: Colors.white.withOpacity(0.15), width: 1.2),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.3),
+                              blurRadius: 12,
+                              offset: const Offset(0, 6),
+                            ),
+                          ],
+                        ),
+                        child: const Center(
+                          child: Text(
+                            "Request sent successfully",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 18,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        top: 0,
+                        right: 0,
+                        child: GestureDetector(
+                          onTap: () {
+                            closedByUser = true;
+                            Navigator.of(context).pop();
+                          },
+                          child: Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.black.withOpacity(0.5),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8),
+                              child: Image.asset(
+                                'assets/images/close.png',
+                                fit: BoxFit.contain,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               );
               await Future.delayed(const Duration(milliseconds: 700));
-              Navigator.of(context).pop();
-              _showRequestSentPopup(name, image);
+              if (Navigator.of(context).canPop() && !closedByUser) {
+                Navigator.of(context).pop();
+              }
+              _showFriendRequestSent(name, image);
             },
             child: Container(
               padding: const EdgeInsets.all(6),
@@ -930,10 +900,6 @@ class _FriendListPageState extends State<FriendListPage> {
       ),
     );
   }
-
-
-
-
 
   Widget buildPendingRequestCard(String name, String imagePath, String score, {bool sentByMe = false}) {
     final friend = {'name': name, 'avatar': imagePath};
@@ -957,12 +923,11 @@ class _FriendListPageState extends State<FriendListPage> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   if (!sentByMe) ...[
-                    // ⭐ Coin + score
                     Flexible(
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Image.asset('assets/images/gold_star.png', width: 18, height: 18),
+                          Image.asset('assets/images/star.png', width: 18, height: 18),
                           const SizedBox(width: 4),
                           Flexible(
                             child: Text(
@@ -975,206 +940,190 @@ class _FriendListPageState extends State<FriendListPage> {
                       ),
                     ),
                     const SizedBox(width: 8),
-
-                  // ✔ Accept button
-                  Container(
-                    width: 34,
-                    height: 34,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(6),
-                      gradient: const RadialGradient(
-                        center: Alignment(0.08, 0.08),
-                        radius: 7.98,
-                        colors: [Color.fromRGBO(0, 0, 0, 0.8), Color.fromRGBO(147, 51, 234, 0.4)],
-                        stops: [0.0, 0.5],
+                    Container(
+                      width: 34,
+                      height: 34,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(6),
+                        gradient: const RadialGradient(
+                          center: Alignment(0.08, 0.08),
+                          radius: 7.98,
+                          colors: [Color.fromRGBO(0, 0, 0, 0.8), Color.fromRGBO(147, 51, 234, 0.4)],
+                          stops: [0.0, 0.5],
+                        ),
+                      ),
+                      child: IconButton(
+                        padding: EdgeInsets.zero,
+                        icon: const Icon(Icons.check, color: Colors.white, size: 18),
+                        onPressed: () {
+                          setState(() {
+                            friendList.add({'name': name, 'image': imagePath});
+                            pendingRequests.removeWhere((r) => r['name'] == name);
+                            context.read<NotificationProvider>().addGameNotification({
+                              'type': 'user',
+                              'time': DateTime.now().toIso8601String(),
+                              'name': name,
+                              'message': 'You accepted a friend request from $name.',
+                              'image': imagePath,
+                            });
+                          });
+                          _showAcceptedPopup(name, imagePath);
+                        },
                       ),
                     ),
-                    child: IconButton(
-                      padding: EdgeInsets.zero,
-                      icon: const Icon(Icons.check, color: Colors.white, size: 18),
-                      onPressed: () {
-                        setState(() {
-                          friendList.add({'name': name, 'image': imagePath});
-                          pendingRequests.removeWhere((r) => r['name'] == name);
-
-                          context.read<NotificationProvider>().addGameNotification({
-                            'type': 'user',
-                            'time': DateTime.now().toIso8601String(),
-                            'name': name,
-                            'message': 'You accepted a friend request from $name.',
-                            'image': imagePath,
-                          });
-                        });
-                        _showAcceptedPopup(name, imagePath);
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 6),
-
-                  // ❌ Reject button
-                  Container(
-                    width: 34,
-                    height: 34,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(6),
-                      border: Border.all(color: Colors.white30),
-                    ),
-                    child: IconButton(
-                      padding: EdgeInsets.zero,
-                      icon: const Icon(Icons.close, color: Colors.white, size: 18),
-                      onPressed: () {
-                        setState(() {
-                          pendingRequests.removeWhere((r) => r['name'] == name);
-                        });
-
-                        context.read<NotificationProvider>().addGameNotification({
-                          'type': 'user',
-                          'time': DateTime.now().toIso8601String(),
-                          'name': name,
-                          'message': 'You rejected a friend request from $name.',
-                          'image': imagePath,
-                        });
-                      },
-
-                    ),
-                  ),
-                ],
-
-                if (sentByMe) ...[
-                  GestureDetector(
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        barrierDismissible: true,
-                        builder: (context) {
-                          return Dialog(
-                            backgroundColor: Colors.transparent,
-                            child: Center(
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(16),
-                                child: BackdropFilter(
-                                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                                  child: Container(
-                                    padding: const EdgeInsets.all(24),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white.withOpacity(0.06),
-                                      borderRadius: BorderRadius.circular(16),
-                                      border: Border.all(
-                                        color: Colors.white.withOpacity(0.15),
-                                        width: 1.2,
-                                      ),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black.withOpacity(0.3),
-                                          blurRadius: 12,
-                                          offset: const Offset(0, 6),
-                                        ),
-                                      ],
-                                    ),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        const Text(
-                                          "Withdraw Request",
-                                          style: TextStyle(
-                                            fontSize: 18,
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 16),
-                                        Text(
-                                          "Do you want to withdraw your friend request with $name?",
-                                          style: const TextStyle(
-                                            color: Colors.white70,
-                                            fontSize: 14,
-                                          ),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                        const SizedBox(height: 28),
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                          children: [
-                                            // Cancel Button
-                                            TextButton(
-                                              onPressed: () => Navigator.of(context).pop(),
-                                              style: TextButton.styleFrom(
-                                                foregroundColor: Colors.white70,
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius: BorderRadius.circular(20),
-                                                  side: BorderSide(
-                                                    color: Colors.white.withOpacity(0.2),
-                                                  ),
-                                                ),
-                                              ),
-                                              child: const Padding(
-                                                padding: EdgeInsets.symmetric(horizontal: 16),
-                                                child: Text("Cancel"),
-                                              ),
-                                            ),
-
-                                            // Withdraw Button
-                                            TextButton(
-                                              onPressed: () {
-                                                Navigator.of(context).pop(); // Close dialog
-
-                                                setState(() {
-                                                  pendingRequests.removeWhere((r) => r['name'] == name);
-                                                });
-
-                                                // 🔔 Add a withdrawal notification
-                                                context.read<NotificationProvider>().addGameNotification({
-                                                  'type': 'user',
-                                                  'time': DateTime.now().toIso8601String(),
-                                                  'name': name,
-                                                  'message': 'You withdrew your friend request to $name.',
-                                                  'image': imagePath,
-                                                });
-                                              },
-
-                                              style: TextButton.styleFrom(
-                                                foregroundColor: Colors.redAccent,
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius: BorderRadius.circular(20),
-                                                  side: const BorderSide(color: Colors.redAccent),
-                                                ),
-                                              ),
-                                              child: const Padding(
-                                                padding: EdgeInsets.symmetric(horizontal: 16),
-                                                child: Text("Withdraw"),
-                                              ),
-                                            ),
-                                          ],
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                      );
-
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    const SizedBox(width: 6),
+                    Container(
+                      width: 34,
+                      height: 34,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(6),
                         border: Border.all(color: Colors.white30),
                       ),
-                      child: Row(
-                        children: const [
-                          Icon(Icons.person, color: Colors.white, size: 16),
-                          SizedBox(width: 6),
-                          Text("Sent", style: TextStyle(color: Colors.white)),
-                        ],
+                      child: IconButton(
+                        padding: EdgeInsets.zero,
+                        icon: const Icon(Icons.close, color: Colors.white, size: 18),
+                        onPressed: () {
+                          setState(() {
+                            pendingRequests.removeWhere((r) => r['name'] == name);
+                          });
+                          context.read<NotificationProvider>().addGameNotification({
+                            'type': 'user',
+                            'time': DateTime.now().toIso8601String(),
+                            'name': name,
+                            'message': 'You rejected a friend request from $name.',
+                            'image': imagePath,
+                          });
+                        },
                       ),
                     ),
-                  ),
-                ]
-              ],
-            ),
+                  ],
+                  if (sentByMe) ...[
+                    GestureDetector(
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          barrierDismissible: true,
+                          builder: (context) {
+                            return Dialog(
+                              backgroundColor: Colors.transparent,
+                              child: Center(
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(16),
+                                  child: BackdropFilter(
+                                    filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                                    child: Container(
+                                      padding: const EdgeInsets.all(24),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withOpacity(0.06),
+                                        borderRadius: BorderRadius.circular(16),
+                                        border: Border.all(
+                                          color: Colors.white.withOpacity(0.15),
+                                          width: 1.2,
+                                        ),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black.withOpacity(0.3),
+                                            blurRadius: 12,
+                                            offset: const Offset(0, 6),
+                                          ),
+                                        ],
+                                      ),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          const Text(
+                                            "Withdraw Request",
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 16),
+                                          Text(
+                                            "Do you want to withdraw your friend request with $name?",
+                                            style: const TextStyle(
+                                              color: Colors.white70,
+                                              fontSize: 14,
+                                            ),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                          const SizedBox(height: 28),
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                            children: [
+                                              TextButton(
+                                                onPressed: () => Navigator.of(context).pop(),
+                                                style: TextButton.styleFrom(
+                                                  foregroundColor: Colors.white70,
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius: BorderRadius.circular(20),
+                                                    side: BorderSide(
+                                                      color: Colors.white.withOpacity(0.2),
+                                                    ),
+                                                  ),
+                                                ),
+                                                child: const Padding(
+                                                  padding: EdgeInsets.symmetric(horizontal: 16),
+                                                  child: Text("Cancel"),
+                                                ),
+                                              ),
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.of(context).pop();
+                                                  setState(() {
+                                                    pendingRequests.removeWhere((r) => r['name'] == name);
+                                                  });
+                                                  context.read<NotificationProvider>().addGameNotification({
+                                                    'type': 'user',
+                                                    'time': DateTime.now().toIso8601String(),
+                                                    'name': name,
+                                                    'message': 'You withdrew your friend request to $name.',
+                                                    'image': imagePath,
+                                                  });
+                                                },
+                                                style: TextButton.styleFrom(
+                                                  foregroundColor: Colors.redAccent,
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius: BorderRadius.circular(20),
+                                                    side: const BorderSide(color: Colors.redAccent),
+                                                  ),
+                                                ),
+                                                child: const Padding(
+                                                  padding: EdgeInsets.symmetric(horizontal: 16),
+                                                  child: Text("Withdraw"),
+                                                ),
+                                              ),
+                                            ],
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(6),
+                          border: Border.all(color: Colors.white30),
+                        ),
+                        child: Row(
+                          children: const [
+                            Icon(Icons.person, color: Colors.white, size: 16),
+                            SizedBox(width: 6),
+                            Text("Sent", style: TextStyle(color: Colors.white)),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ]
+                ],
+              ),
             ),
           ],
         ),
@@ -1193,32 +1142,31 @@ class _FriendListPageState extends State<FriendListPage> {
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
         decoration: isSelected
             ? BoxDecoration(
-          gradient: const RadialGradient(
-            center: Alignment(0.08, 0.08),
-            radius: 7.98,
-            colors: [
-              Color.fromRGBO(0, 0, 0, 0.8),
-              Color.fromRGBO(147, 51, 234, 0.4),
-            ],
-            stops: [0.0, 0.5],
-          ),
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: const [
-            BoxShadow(
-              color: Color(0x66000000),
-              offset: Offset(0, 4),
-              blurRadius: 4,
-            ),
-          ],
-        )
+                gradient: const RadialGradient(
+                  center: Alignment(0.08, 0.08),
+                  radius: 7.98,
+                  colors: [
+                    Color.fromRGBO(0, 0, 0, 0.8),
+                    Color.fromRGBO(147, 51, 234, 0.4),
+                  ],
+                  stops: [0.0, 0.5],
+                ),
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color(0x66000000),
+                    offset: Offset(0, 4),
+                    blurRadius: 4,
+                  ),
+                ],
+              )
             : BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: Color.fromRGBO(147, 51, 234, 0.4),
-            width: 1,
-          ),
-        ),
-
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: Color.fromRGBO(147, 51, 234, 0.4),
+                  width: 1,
+                ),
+              ),
         child: Text(
           label,
           style: TextStyle(
@@ -1234,7 +1182,7 @@ class _FriendListPageState extends State<FriendListPage> {
     final friend = {'name': name, 'avatar': imagePath};
 
     return GestureDetector(
-      onTap: () => _showPlayerPopup(context, friend), // 👈 Show popup on tap
+      onTap: () => _showPlayerPopup(context, friend),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 6.0),
         child: Row(
@@ -1265,19 +1213,15 @@ class _FriendListPageState extends State<FriendListPage> {
                       setState(() {
                         final deletedFriend = friendList[index];
                         friendList.removeAt(index);
-
-                        // ✅ FIX: use 'image' instead of 'avatar'
                         context.read<NotificationProvider>().addGameNotification({
                           'type': 'user',
                           'time': 'JUST NOW',
                           'name': deletedFriend['name'],
                           'message': 'You removed ${deletedFriend['name']} from your friend list.',
-                          'image': deletedFriend['image'], // ✅ Correct key!
+                          'image': deletedFriend['image'],
                         });
                       });
                     },
-
-
                   ),
                 );
               },
@@ -1287,10 +1231,7 @@ class _FriendListPageState extends State<FriendListPage> {
       ),
     );
   }
-
 }
-
-// ✅ Audio Settings Popup
 
 class _AudioSettingsPopup extends StatefulWidget {
   const _AudioSettingsPopup();
@@ -1312,7 +1253,7 @@ class _AudioSettingsPopupState extends State<_AudioSettingsPopup> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final popupWidth = math.min(screenWidth * 0.79, 500.0); // 90% of screen or 500 max
+    final popupWidth = math.min(screenWidth * 0.79, 500.0);
 
     return Center(
       child: UnconstrainedBox(
@@ -1644,7 +1585,14 @@ class _FriendSuggestionsPageState extends State<FriendSuggestionsPage> {
                             mainAxisSize: MainAxisSize.min,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(player['name']!, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                              Text(
+                                player['name']!,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20,
+                                ),
+                              ),
                               const SizedBox(height: 4),
                               const Text('Beginner', style: TextStyle(color: Colors.white70, fontSize: 12)),
                             ],
@@ -1677,74 +1625,82 @@ class _FriendSuggestionsPageState extends State<FriendSuggestionsPage> {
   }
 
   Future<void> _showRequestSentPopup(String name, String imagePath) async {
-    await showDialog(
+    bool closedByUser = false;
+    showDialog(
       context: context,
-      barrierDismissible: true,
-      builder: (context) {
-        return Dialog(
-          backgroundColor: Colors.transparent,
-          insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 60),
-          child: Stack(
-            clipBehavior: Clip.none,
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-                  child: Container(
-                    width: 420,
-                    padding: const EdgeInsets.fromLTRB(24, 28, 24, 28),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      gradient: const RadialGradient(
-                        center: Alignment(0, -0.3),
-                        radius: 1.3,
-                        colors: [
-                          Color.fromRGBO(255, 255, 255, 0.08),
-                          Color.fromRGBO(255, 255, 255, 0.02),
-                        ],
-                      ),
-                      border: Border.all(color: Colors.white.withOpacity(0.15)),
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          name,
-                          style: GoogleFonts.kronaOne(color: Colors.white, fontSize: 22),
-                        ),
-                        const SizedBox(height: 16),
-                        CircleAvatar(radius: 56, backgroundImage: AssetImage(imagePath)),
-                        const SizedBox(height: 20),
-                        const Text(
-                          'Friend Request Sent successfully',
-                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
+      barrierDismissible: false,
+      builder: (_) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: Stack(
+          children: [
+            Container(
+              width: 320,
+              height: 180,
+              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 28),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.08),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.white.withOpacity(0.15), width: 1.2),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.3),
+                    blurRadius: 12,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    name,
+                    style: GoogleFonts.kronaOne(color: Colors.white, fontSize: 22),
+                  ),
+                  const SizedBox(height: 16),
+                  CircleAvatar(radius: 56, backgroundImage: AssetImage(imagePath)),
+                  const SizedBox(height: 20),
+                  const Text(
+                    'Request sent successfully',
+                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 18),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+            Positioned(
+              top: 0,
+              right: 0,
+              child: GestureDetector(
+                onTap: () {
+                  closedByUser = true;
+                  Navigator.of(context).pop();
+                },
+                child: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.black.withOpacity(0.5),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: Image.asset(
+                      'assets/images/close.png',
+                      fit: BoxFit.contain,
+                      color: Colors.white,
                     ),
                   ),
                 ),
               ),
-              Positioned(
-                top: 6,
-                right: 6,
-                child: GestureDetector(
-                  onTap: () => Navigator.of(context).pop(),
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Image.asset('assets/images/Rectangle.png', width: 36, height: 36),
-                      const Icon(Icons.close, color: Colors.white, size: 16),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
+            ),
+          ],
+        ),
+      ),
     );
+    await Future.delayed(const Duration(milliseconds: 700));
+    if (Navigator.of(context).canPop() && !closedByUser) {
+      Navigator.of(context).pop();
+    }
   }
 
   @override
@@ -1828,23 +1784,19 @@ class _FriendSuggestionsPageState extends State<FriendSuggestionsPage> {
                                   _showProfileDialog({'name': name, 'avatar': avatar});
                                 }
                               },
-                              child: Text(name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 16)),
+                              child: Text(
+                                name,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20,
+                                ),
+                              ),
                             ),
                           ),
                           GestureDetector(
                             onTap: () async {
-                              showDialog(
-                                context: context,
-                                barrierDismissible: false,
-                                builder: (_) => Dialog(
-                                  backgroundColor: Colors.transparent,
-                                  child: Center(child: Image.asset('assets/images/check (1).png', width: 80, height: 80)),
-                                ),
-                              );
-                              await Future.delayed(const Duration(milliseconds: 700));
-                              Navigator.of(context).pop();
-                              _showRequestSentPopup(name, avatar);
-                              // Add notification and remove from list
+                              await _showRequestSentPopup(name, avatar);
                               if (mounted) {
                                 context.read<NotificationProvider>().addGameNotification({
                                   'type': 'user',
@@ -1926,7 +1878,6 @@ class DeleteFriendDialog extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      // Cancel Button
                       TextButton(
                         onPressed: () => Navigator.of(context).pop(),
                         style: TextButton.styleFrom(
@@ -1943,8 +1894,6 @@ class DeleteFriendDialog extends StatelessWidget {
                           child: Text("Cancel"),
                         ),
                       ),
-
-                      // OK Button
                       TextButton(
                         onPressed: () {
                           Navigator.of(context).pop();
@@ -2066,5 +2015,3 @@ class _StatColumn extends StatelessWidget {
     );
   }
 }
-
-

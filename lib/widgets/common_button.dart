@@ -2,6 +2,9 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:lit/data/global_data.dart';
 
+// Define cartItems list if it's not defined in global_data.dart
+List<Map<String, dynamic>> cartItems = [];
+
 class CustomBottomNavBar extends StatelessWidget {
   final int currentIndex;
   final Function(int) onTap;
@@ -17,9 +20,8 @@ class CustomBottomNavBar extends StatelessWidget {
   });
 
   void addToCart(BuildContext context, Map<String, dynamic> product) {
-    cartItems.add(product); // This must be a global/shared list
+    cartItems.add(product); // Using the global cartItems list
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -68,48 +70,82 @@ class CustomBottomNavBar extends StatelessWidget {
                       onTap: () => onTap(0),
                       child: Image.asset(
                         'assets/images/home_icon.png',
-                        width: 28,
-                        height: 28,
+                        width: 24,
+                        height: 24,
                         color: currentIndex == 0
                             ? const Color(0x718D00FF)
                             : Colors.white,
                       ),
                     ),
 
-                    // 🔹 Save/Cart/IR Icon
+                    // 🔹 Save Icon with Badge
                     GestureDetector(
                       onTap: () {
                         if (isGame) {
                           Navigator.pushNamed(context, '/save-products');
                         } else if (isMarketplace) {
-                          Navigator.pushNamed(context, '/cart', arguments: cartItems);
+                          Navigator.pushNamed(
+                            context,
+                            '/cart',
+                            arguments: cartItems, // pass current items
+                          );
                         } else {
                           Navigator.pushNamed(context, '/ir-icon');
                         }
                       },
-                      child: Image.asset(
-                        isGame
-                            ? 'assets/images/save-pro-icon.png'
-                            : isMarketplace
-                                ? 'assets/images/grocery-store.png'
-                                : 'assets/images/ir_icon.png',
-                        width: 28,
-                        height: 28,
-                        color: currentIndex == 1 ? const Color(0x718D00FF) : Colors.white,
+                      child: Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          // Icon (Cart / IR / Save Products)
+                          Image.asset(
+                            isGame
+                                ? 'assets/images/save-pro-icon.png'
+                                : isMarketplace
+                                    ? 'assets/images/grocery-store.png'
+                                    : 'assets/images/ir_icon.png',
+                            width: 24,
+                            height: 24,
+                            color: currentIndex == 1
+                                ? const Color(0x718D00FF)
+                                : Colors.white,
+                          ),
+
+                          // 🔹 Badge (Cart Count)
+                          if (isMarketplace && cartItems.isNotEmpty)
+                            Positioned(
+                              right: -6,
+                              top: -6,
+                              child: Container(
+                                padding: const EdgeInsets.all(4),
+                                decoration: const BoxDecoration(
+                                  color: Colors.red,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Text(
+                                  '${cartItems.length}',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
                     ),
 
-                    // 🔹 Cart Icon (only in Game) — placed between save-pro and profile
+                    // 🔹 Grocery Store Icon (only for game pages)
                     if (isGame)
                       GestureDetector(
-                        onTap: () {
-                          Navigator.pushNamed(context, '/cart', arguments: cartItems);
-                        },
+                        onTap: () => Navigator.pushNamed(context, '/cart'),
                         child: Image.asset(
                           'assets/images/grocery-store.png',
-                          width: 28,
-                          height: 28,
-                          color: Colors.white,
+                          width: 24,
+                          height: 24,
+                          color: currentIndex == 3
+                              ? const Color(0x718D00FF)
+                              : Colors.white,
                         ),
                       ),
 
@@ -118,9 +154,9 @@ class CustomBottomNavBar extends StatelessWidget {
                       onTap: () => Navigator.pushNamed(context, '/profile'),
                       child: Image.asset(
                         'assets/images/profile_icon.png',
-                        width: 28,
-                        height: 28,
-                        color: currentIndex == 2
+                        width: 24,
+                        height: 24,
+                        color: currentIndex == (isGame ? 4 : 2)
                             ? const Color(0x718D00FF)
                             : Colors.white,
                       ),

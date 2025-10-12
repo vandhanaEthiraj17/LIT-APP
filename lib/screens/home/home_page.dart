@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'lit_game_section.dart';
 import 'fashion_section.dart';
 import 'newsletter_section.dart';
-
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 

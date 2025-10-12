@@ -5,7 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lit/providers/notification_provider.dart';
-
+import 'package:lit/ecommerce/cart_page.dart';
 
 class NotificationsPage extends StatefulWidget {
   const NotificationsPage({super.key});

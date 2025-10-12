@@ -6,6 +6,8 @@ import 'package:lit/widgets/badge_popup.dart';
 import 'package:lit/widgets/app_drawer.dart';
 import 'package:lit/widgets/common_button.dart';
 import '../widgets/notification_bell.dart';
+import 'package:lit/data/global_data.dart';
+import 'package:lit/pages/shop_page.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});

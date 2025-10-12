@@ -20,27 +20,17 @@ class BuyNowPage extends StatelessWidget {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // 🔹 AppDrawer (Hamburger)
             Builder(
               builder: (context) => GestureDetector(
                 onTap: () => Scaffold.of(context).openDrawer(),
                 child: const Icon(Icons.menu, color: Colors.white),
               ),
             ),
-
-            // 🔹 Center Logo
             Image.asset(
-              'assets/images/logo.png', // Replace with your actual logo path
+              'assets/images/logo.png',
               height: 41,
             ),
-
-            // 🔹 Wishlist Icon
-            GestureDetector(
-              onTap: () {
-                // Navigate to wishlist or handle tap
-              },
-              child: const Icon(Icons.favorite_border, color: Colors.white),
-            ),
+            const Icon(Icons.favorite_border, color: Colors.white),
           ],
         ),
       ),
@@ -59,25 +49,24 @@ class BuyNowPage extends StatelessWidget {
               child: ListView(
                 padding: EdgeInsets.zero,
                 children: [
-                  // 🔙 Back Button below the nav bar
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: GestureDetector(
-                      onTap: () => Navigator.of(context).pop(),
-                      child: const Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.arrow_back, color: Colors.white, size: 22),
-                          SizedBox(width: 4),
-                          Text('Back', style: TextStyle(color: Colors.white, fontSize: 14)),
-                        ],
-                      ),
+                  // Back Button
+                  GestureDetector(
+                    onTap: () => Navigator.of(context).pop(),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.arrow_back, color: Colors.white, size: 22),
+                        SizedBox(width: 4),
+                        Text('Back', style: TextStyle(color: Colors.white, fontSize: 14)),
+                      ],
                     ),
                   ),
+                  const SizedBox(height: 20),
 
-                  const SizedBox(height: 20), // Add spacing before the card
-
+                  // 🔹 Product Card (matches Figma)
                   Container(
+                    width: double.infinity,
+                    height: 189,
                     decoration: BoxDecoration(
                       gradient: const RadialGradient(
                         center: Alignment(0.08, 0.08),
@@ -89,39 +78,35 @@ class BuyNowPage extends StatelessWidget {
                         stops: [0.0, 0.5],
                       ),
                       border: Border.all(
-                        color: Color(0xB89333EA),
+                        color: Color(0xFF9333EA),
                         width: 1,
                       ),
                       borderRadius: BorderRadius.circular(16),
-
-                      // 🔹 Updated Box Shadow
                       boxShadow: const [
                         BoxShadow(
-                          color: Color(0xB89333EA),     // Slightly more opaque purple
-                          offset: Offset(0, 0),         // Centered
-                          blurRadius: 4,               // Bigger blur for softness
-                          spreadRadius: 1,              // Expands shadow outward more
+                          color: Color(0x884E4AFE),
+                          offset: Offset(0, 0),
+                          blurRadius: 5.5,
                         ),
                       ],
-
                     ),
                     padding: const EdgeInsets.all(14),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // 🔹 Product Image
+                        // Product Image
                         ClipRRect(
                           borderRadius: BorderRadius.circular(16),
                           child: Image.asset(
                             item['image'],
-                            width: 100,
-                            height: 120,
+                            width: 110,
+                            height: 160,
                             fit: BoxFit.cover,
                           ),
                         ),
                         const SizedBox(width: 16),
 
-                        // 🔹 Item Details Column
+                        // Right Details
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -132,76 +117,67 @@ class BuyNowPage extends StatelessWidget {
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16,
                                   )),
-                              const SizedBox(height: 4),
+                              const SizedBox(height: 2),
                               Text(item['title'],
                                   style: const TextStyle(
                                     color: Colors.white60,
-                                    fontSize: 15,
+                                    fontSize: 14,
                                   )),
                               const SizedBox(height: 10),
 
-                              // 🔹 Dropdowns
+                              // Size & Qty dropdowns
                               Row(
                                 children: [
                                   _styledDropdown(
-                                      value: 'Size: M',
-                                      items: ['Size: M', 'Size: L'],
-                                      onChanged: (_) {}),
+                                    value: 'Size: M',
+                                    items: ['Size: M', 'Size: L', 'Size: XL'],
+                                    onChanged: (_) {},
+                                  ),
                                   const SizedBox(width: 10),
                                   _styledDropdown(
-                                      value: 'Qty: 1',
-                                      items: ['Qty: 1', 'Qty: 2'],
-                                      onChanged: (_) {}),
+                                    value: 'Qty: 1',
+                                    items: ['Qty: 1', 'Qty: 2', 'Qty: 3'],
+                                    onChanged: (_) {},
+                                  ),
                                 ],
                               ),
                               const SizedBox(height: 10),
 
-                              // 🔹 Price Row
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                              // Price + Discount
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  // Row with Price and Discount aligned left and right
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        'Rs. ${item['price']}',
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 14,
-                                        ),
-                                      ),
-                                      if (item['discount'] != null)
-                                        Text(
-                                          '${item['discount']}',
-                                          style: const TextStyle(
-                                            color: Color(0xFF9333EA),
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 13,
-                                          ),
-                                        ),
-                                    ],
+                                  Text(
+                                    'Rs. ${item['price']}',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
                                   ),
-
-                                  const SizedBox(height: 4),
-
-                                  // Original Price aligned below
-                                  if (item['original'] != null)
+                                  if (item['discount'] != null)
                                     Text(
-                                      'Rs. ${item['original']}',
+                                      '${item['discount']}',
                                       style: const TextStyle(
-                                        color: Colors.white38,
-                                        fontSize: 12,
-                                        decoration: TextDecoration.lineThrough,
+                                        color: Color(0xFF9333EA),
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
                                       ),
                                     ),
                                 ],
                               ),
+                              if (item['original'] != null)
+                                Text(
+                                  'Rs. ${item['original']}',
+                                  style: const TextStyle(
+                                    color: Colors.white38,
+                                    fontSize: 12,
+                                    decoration: TextDecoration.lineThrough,
+                                  ),
+                                ),
+                              const Spacer(),
 
-                              const SizedBox(height: 8),
-
-                              // 🔹 Remove Button - aligned bottom right
+                              // Remove Button
                               Align(
                                 alignment: Alignment.bottomRight,
                                 child: ElevatedButton(
@@ -226,54 +202,46 @@ class BuyNowPage extends StatelessWidget {
 
                   const SizedBox(height: 14),
                   const Divider(color: Colors.white),
-                  Container(
-                    padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            // 🔹 Coupon Icon
-                            Image.asset(
-                              'assets/images/coupon_icon.png', // Make sure this icon matches the % ticket shape in UI
-                              width: 24,
-                              height: 24,
-                              color: Colors.white,
-                            ),
-                            const SizedBox(width: 10),
-                            const Text(
-                              'Apply Coupon',
-                              style: TextStyle(
+
+                  // Apply Coupon Row
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Image.asset(
+                            'assets/images/coupon_icon.png',
+                            width: 24,
+                            height: 24,
+                            color: Colors.white,
+                          ),
+                          const SizedBox(width: 10),
+                          const Text(
+                            'Apply Coupon',
+                            style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
-                                fontSize: 15,
-                              ),
-                            ),
-                          ],
-                        ),
-
-                        // 🔹 Select
-                        const Text(
-                          'Select',
-                          style: TextStyle(
+                                fontSize: 15),
+                          ),
+                        ],
+                      ),
+                      const Text(
+                        'Select',
+                        style: TextStyle(
                             color: Color(0xFF7F34C3),
                             fontWeight: FontWeight.bold,
-                            fontSize: 15,
-                          ),
-                        ),
-                      ],
-                    ),
+                            fontSize: 15),
+                      ),
+                    ],
                   ),
 
                   const Divider(color: Colors.white),
                   const SizedBox(height: 10),
-                  const Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Order Summary',
-                      style: TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
-                    ),
+
+                  const Text(
+                    'Order Summary',
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
                   ),
                   const SizedBox(height: 8),
                   _summaryRow('Cart Total', 'Rs. 1499'),
@@ -285,15 +253,13 @@ class BuyNowPage extends StatelessWidget {
                       isBold: true, fontSize: 18),
                   const Divider(color: Colors.white),
                   const SizedBox(height: 24),
-                  const Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Return & Exchange Policy',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14),
-                    ),
+
+                  const Text(
+                    'Return & Exchange Policy',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14),
                   ),
                   const SizedBox(height: 4),
                   const Text(
@@ -303,21 +269,24 @@ class BuyNowPage extends StatelessWidget {
                         fontSize: 12,
                         height: 1.4),
                   ),
-                  const SizedBox(height: 100), // to avoid overlap with nav bar
+                  const SizedBox(height: 100),
                 ],
               ),
             ),
           ),
         ],
       ),
+
       bottomNavigationBar: CustomBottomNavBar(
         currentIndex: 1,
-        onTap: (index) {
-          // Handle tab switch if needed
-        },
+        onTap: (index) {},
         isMarketplace: true,
       ),
+
+      // Bottom Buy Now bar
       bottomSheet: Container(
+        width: double.infinity,
+        height: 74,
         decoration: const BoxDecoration(
           gradient: RadialGradient(
             center: Alignment(0.08, 0.08),
@@ -329,22 +298,38 @@ class BuyNowPage extends StatelessWidget {
             stops: [0.0, 0.5],
           ),
           border: Border(
-            top: BorderSide(color: Color(0xFF864AFE)),
+            top: BorderSide(color: Color(0xFF864AFE), width: 1),
           ),
         ),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
-              'Total Amount\nRs. 3,199',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                height: 1.4,
-              ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: const [
+                Text(
+                  'Total Amount',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                  ),
+                ),
+                SizedBox(height: 4),
+                Text(
+                  'Rs. 3,199',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                ),
+              ],
             ),
             Container(
+              width: 110,
+              height: 40,
               decoration: BoxDecoration(
                 gradient: const RadialGradient(
                   center: Alignment(0.08, 0.08),
@@ -355,28 +340,25 @@ class BuyNowPage extends StatelessWidget {
                   ],
                   stops: [0.0, 0.5],
                 ),
-
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: const [
                   BoxShadow(
-                    color: Color(0x66000000),
-                    offset: Offset(0, 4),
-                    blurRadius: 4,
+                    color: Color(0x884E4AFE),
+                    offset: Offset(0, 0),
+                    blurRadius: 5.5,
                   ),
                 ],
               ),
               child: TextButton(
                 onPressed: () {
-                  // TODO: Handle Buy Now action
+                  // TODO: Handle Buy Now
                 },
                 style: TextButton.styleFrom(
                   padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  backgroundColor: Colors.transparent,
                   foregroundColor: Colors.white,
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
                 child: const Text(
                   'Buy Now',
@@ -388,14 +370,13 @@ class BuyNowPage extends StatelessWidget {
                 ),
               ),
             ),
-
           ],
         ),
       ),
-
     );
   }
 
+  // 🔹 Styled Dropdown (button-like)
   Widget _styledDropdown({
     required String value,
     required List<String> items,
@@ -407,27 +388,27 @@ class BuyNowPage extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.transparent,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Color.fromRGBO(147, 51, 234, 0.4)),
+        border: Border.all(color: Colors.white24),
       ),
       child: DropdownButton<String>(
         value: value,
         dropdownColor: Colors.black87,
         underline: const SizedBox(),
-        icon: const Icon(Icons.arrow_drop_down, color: Colors.white, size: 20),
+        icon: const Icon(Icons.arrow_drop_down, color: Colors.white, size: 18),
         style: const TextStyle(color: Colors.white, fontSize: 12),
         isExpanded: false,
         onChanged: onChanged,
         items: items
             .map((item) => DropdownMenuItem<String>(
-          value: item,
-          child: Text(item, style: const TextStyle(color: Colors.white)),
-        ))
+                  value: item,
+                  child: Text(item, style: const TextStyle(color: Colors.white)),
+                ))
             .toList(),
       ),
     );
   }
 
-
+  // 🔹 Order Summary Row
   static Widget _summaryRow(String label, String value,
       {bool isBold = false, double fontSize = 14, Color? color}) {
     return Padding(
