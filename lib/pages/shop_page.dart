@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lit/widgets/app_drawer.dart';
-import 'package:lit/widgets/common_button.dart';
-
 import '../widgets/notification_bell.dart';
 
 class ShopPage extends StatefulWidget {
@@ -16,82 +14,45 @@ class _ShopPageState extends State<ShopPage> {
   String selectedTab = 'Gems';
 
   final List<Map<String, dynamic>> gemItems = [
-    {
-      'qty': 25,
-      'label': 'Fistful of Gems',
-      'price': '240 ₹',
-      'icon': 'assets/images/gems1.png'
-    },
-    {
-      'qty': 50,
-      'label': 'Pouch of Gems',
-      'price': '240 ₹',
-      'icon': 'assets/images/gems3.png'
-    },
-    {
-      'qty': 75,
-      'label': 'Bag of Gems',
-      'price': '240 ₹',
-      'icon': 'assets/images/gems2.png'
-    },
-    {
-      'qty': 100,
-      'label': 'Box of Gems',
-      'price': '240 ₹',
-      'icon': 'assets/images/gems4.png'
-    },
+    {'qty': 25, 'label': 'Fistful of Gems', 'price': '240 ₹', 'icon': 'assets/images/gems1.png'},
+    {'qty': 50, 'label': 'Pouch of Gems', 'price': '240 ₹', 'icon': 'assets/images/gems3.png'},
+    {'qty': 75, 'label': 'Bag of Gems', 'price': '240 ₹', 'icon': 'assets/images/gems2.png'},
+    {'qty': 100, 'label': 'Box of Gems', 'price': '240 ₹', 'icon': 'assets/images/gems4.png'},
   ];
 
   final List<Map<String, dynamic>> livesItems = [
-    {
-      'qty': 5,
-      'label': 'Hearts',
-      'price': '2 GEMS',
-      'icon': 'assets/images/lives1.png'
-    },
-    {
-      'qty': 10,
-      'label': 'Hearts',
-      'price': '4 GEMS',
-      'icon': 'assets/images/lives2.png'
-    },
-    {
-      'qty': 15,
-      'label': 'Hearts',
-      'price': '6 GEMS',
-      'icon': 'assets/images/lives3.png'
-    },
-    {
-      'qty': 20,
-      'label': 'Hearts',
-      'price': '8 GEMS',
-      'icon': 'assets/images/lives4.png'
-    },
-    {
-      'qty': '∞',
-      'label': 'Hearts (2 min)',
-      'price': '20 GEMS',
-      'icon': 'assets/images/heart.png'
-    },
+    {'qty': 5, 'label': 'Hearts', 'price': '2 GEMS', 'icon': 'assets/images/lives1.png'},
+    {'qty': 10, 'label': 'Hearts', 'price': '4 GEMS', 'icon': 'assets/images/lives2.png'},
+    {'qty': 15, 'label': 'Hearts', 'price': '6 GEMS', 'icon': 'assets/images/lives3.png'},
+    {'qty': 20, 'label': 'Hearts', 'price': '8 GEMS', 'icon': 'assets/images/lives4.png'},
+    {'qty': '∞', 'label': 'Hearts (2 min)', 'price': '20 GEMS', 'icon': 'assets/images/heart.png'},
   ];
 
   void _onTabTapped(int index) {
-    if (index == 0) {
-      Navigator.pushReplacementNamed(context, '/home');
-    } else if (index == 1) {
-      Navigator.pushReplacementNamed(context, '/cart');
-    } else if (index == 2) {
-      Navigator.pushReplacementNamed(context, '/profile');
+    switch (index) {
+      case 0:
+        Navigator.pushReplacementNamed(context, '/home');
+        break;
+      case 1:
+        Navigator.pushReplacementNamed(context, '/saved_item_page');
+        break;
+      case 2:
+        Navigator.pushReplacementNamed(context, '/cart');
+        break;
+      case 3:
+        Navigator.pushReplacementNamed(context, '/profile');
+        break;
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final List<Map<String, dynamic>> itemsToShow =
-    selectedTab == 'Gems' ? gemItems : livesItems;
+        selectedTab == 'Gems' ? gemItems : livesItems;
 
     return Scaffold(
       drawer: const AppDrawer(),
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -105,9 +66,14 @@ class _ShopPageState extends State<ShopPage> {
           ),
         ),
         actions: [
-          const Padding(
-            padding: EdgeInsets.only(right: 0),
-            child: NotificationBell(),
+          GestureDetector(
+            onTap: () {
+              Navigator.pushNamed(context, '/notifications_page');
+            },
+            child: const Padding(
+              padding: EdgeInsets.only(right: 16),
+              child: NotificationBell(),
+            ),
           ),
         ],
       ),
@@ -179,12 +145,12 @@ class _ShopPageState extends State<ShopPage> {
                       ),
                       itemBuilder: (context, index) {
                         final item = itemsToShow[index];
-                        final qty = item['qty'].toString();
-                        final label = item['label'] ?? '';
-                        final price = item['price'] ?? '';
-                        final icon = item['icon'] ?? '';
-
-                        return _buildItemCard(qty, label, price, icon);
+                        return _buildItemCard(
+                          item['qty'].toString(),
+                          item['label'],
+                          item['price'],
+                          item['icon'],
+                        );
                       },
                     ),
                   ),
@@ -194,10 +160,36 @@ class _ShopPageState extends State<ShopPage> {
           ),
         ],
       ),
-      bottomNavigationBar: CustomBottomNavBar(
-        currentIndex: -1,
-        onTap: _onTabTapped,
-        isMarketplace: false,
+
+      // ✅ Custom bottom navigation bar
+      bottomNavigationBar: Container(
+        height: 70,
+        decoration: BoxDecoration(
+          color: Colors.black.withOpacity(0.8),
+          borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            IconButton(
+              onPressed: () => _onTabTapped(0),
+              icon: Image.asset('assets/images/home_icon.png', width: 30, height: 30),
+            ),
+            IconButton(
+              onPressed: () => _onTabTapped(1),
+              icon: Image.asset('assets/images/save-pro-icon.png', width: 30, height: 30),
+            ),
+            IconButton(
+              onPressed: () => _onTabTapped(2),
+              icon: Image.asset('assets/images/grocery-store.png', width: 30, height: 30),
+            ),
+            IconButton(
+              onPressed: () => _onTabTapped(3),
+              icon: Image.asset('assets/images/profile_icon.png', width: 30, height: 30),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -211,39 +203,39 @@ class _ShopPageState extends State<ShopPage> {
       child: Container(
         width: screenWidth * 0.3,
         padding: const EdgeInsets.symmetric(vertical: 6),
-        decoration: !isActive // Reversed condition
+        decoration: !isActive
             ? BoxDecoration(
-          gradient: const RadialGradient(
-            center: Alignment(0.08, 0.08),
-            radius: 15,
-            colors: [
-              Color.fromRGBO(0, 0, 0, 0.8),
-              Color.fromRGBO(147, 51, 234, 0.4),
-            ],
-            stops: [0.0, 0.5],
-          ),
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: const [
-            BoxShadow(
-              color: Color(0x66000000),
-              offset: Offset(0, 4),
-              blurRadius: 4,
-            ),
-          ],
-        )
+                gradient: const RadialGradient(
+                  center: Alignment(0.08, 0.08),
+                  radius: 15,
+                  colors: [
+                    Color.fromRGBO(0, 0, 0, 0.8),
+                    Color.fromRGBO(147, 51, 234, 0.4),
+                  ],
+                  stops: [0.0, 0.5],
+                ),
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color(0x66000000),
+                    offset: Offset(0, 4),
+                    blurRadius: 4,
+                  ),
+                ],
+              )
             : BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: const Color(0xFF9333EA),
-            width: 1,
-          ),
-          color: Colors.transparent,
-        ),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: const Color(0xFF9333EA),
+                  width: 1,
+                ),
+                color: Colors.transparent,
+              ),
         child: Center(
           child: Text(
             title,
-            style: TextStyle(
-              color: Colors.white.withOpacity(1),
+            style: const TextStyle(
+              color: Colors.white,
               fontWeight: FontWeight.w600,
               fontSize: 16,
             ),
@@ -308,9 +300,6 @@ class _ShopPageState extends State<ShopPage> {
                             height: 90,
                             width: 85,
                             fit: BoxFit.contain,
-                            errorBuilder: (context, error, stackTrace) {
-                              return const Icon(Icons.broken_image, color: Colors.red);
-                            },
                           ),
                         ),
                       ),

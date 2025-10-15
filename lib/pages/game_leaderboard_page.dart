@@ -349,19 +349,15 @@ class _GameLeaderboardPageState extends State<GameLeaderboardPage> {
 
               // ❌ Close Button
               Positioned(
-                top: 3,
-                right: 3,
-                child: GestureDetector(
-                  onTap: () => Navigator.of(context).pop(),
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF2D0C4B),
-                      shape: BoxShape.circle,
-                    ),
-                    padding: const EdgeInsets.all(8),
-                    child: const Icon(Icons.close,
-                        size: 16, color: Color(0xffD9BFFF)),
-                  ),
+  top: 3,
+  right: 3,
+  child: GestureDetector(
+    onTap: () => Navigator.of(context).pop(),
+    child: const Icon(
+      Icons.close,
+      size: 20, // adjust size if needed
+      color: Color(0xffD9BFFF),
+    ),
                 ),
               ),
             ],
@@ -370,6 +366,7 @@ class _GameLeaderboardPageState extends State<GameLeaderboardPage> {
       },
     );
   }
+
 
 
   final List<Map<String, dynamic>> leaderboard = [
@@ -789,6 +786,34 @@ class _AudioSettingsPopupState extends State<_AudioSettingsPopup> {
                               ),
                             ],
                           ),
+                          const SizedBox(height: 24),
+                          Wrap(
+                            alignment: WrapAlignment.center,
+                            spacing: 16,
+                            runSpacing: 16,
+                            children: [
+                              _settingsPill(
+                                icon: Icons.info_outline,
+                                label: 'How to Play',
+                                onTap: () {},
+                              ),
+                              _settingsPill(
+                                icon: Icons.privacy_tip_outlined,
+                                label: 'Privacy',
+                                onTap: () {},
+                              ),
+                              _settingsPill(
+                                icon: Icons.gavel_outlined,
+                                label: 'Terms of Service',
+                                onTap: () {},
+                              ),
+                              _settingsPill(
+                                icon: Icons.headset_mic_outlined,
+                                label: 'Help And Support',
+                                onTap: () {},
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                     ),
@@ -809,6 +834,34 @@ class _AudioSettingsPopupState extends State<_AudioSettingsPopup> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _settingsPill({required IconData icon, required String label, required VoidCallback onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.15),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.white24),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, color: Colors.white, size: 18),
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
         ),
       ),
     );

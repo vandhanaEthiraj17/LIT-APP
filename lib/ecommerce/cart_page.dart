@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-
 import '../data/global_data.dart';
 import 'package:lit/widgets/app_drawer.dart';
 import 'package:lit/widgets/common_button.dart';
+import 'address_page.dart';
 
+import 'package:lit/pages/shop_page.dart';
 class CartPage extends StatefulWidget {
   final List<Map<String, dynamic>> cartItems;
 
@@ -15,6 +16,7 @@ class CartPage extends StatefulWidget {
 
 class _CartPageState extends State<CartPage> {
   int currentIndex = 1;
+  late List<Map<String, dynamic>> cartItems;
 
   @override
   void initState() {
@@ -69,6 +71,8 @@ class _CartPageState extends State<CartPage> {
 
             const SizedBox(height: 14),
             const Divider(color: Colors.white),
+
+            // ✅ Coupon Section
             Container(
               padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
               child: Row(
@@ -76,10 +80,8 @@ class _CartPageState extends State<CartPage> {
                 children: [
                   Row(
                     children: [
-                      // 🔹 Coupon Icon
                       Image.asset(
                         'assets/images/coupon_icon.png',
-                        // Make sure this icon matches the % ticket shape in UI
                         width: 24,
                         height: 24,
                         color: Colors.white,
@@ -95,8 +97,6 @@ class _CartPageState extends State<CartPage> {
                       ),
                     ],
                   ),
-
-                  // 🔹 Select
                   const Text(
                     'Select',
                     style: TextStyle(
@@ -111,6 +111,8 @@ class _CartPageState extends State<CartPage> {
 
             const Divider(color: Colors.white),
             const SizedBox(height: 10),
+
+            // ✅ Order Summary
             const Align(
               alignment: Alignment.centerLeft,
               child: Text(
@@ -129,12 +131,7 @@ class _CartPageState extends State<CartPage> {
             _summaryRow('Platform Fee', 'Free'),
             _summaryRow('Delivery Fee', 'Free'),
             const Divider(color: Colors.white),
-            _summaryRow(
-              'Total Amount',
-              'Rs. $total',
-              isBold: true,
-              fontSize: 18,
-            ),
+            _summaryRow('Total Amount', 'Rs. $total', isBold: true, fontSize: 18),
 
             const Divider(color: Colors.white),
             const SizedBox(height: 24),
@@ -176,6 +173,65 @@ class _CartPageState extends State<CartPage> {
     );
   }
 
+  // ✅ Bottom Buy Now Section
+  Widget _bottomBuyNow(int total) {
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: RadialGradient(
+          center: Alignment(0.08, 0.08),
+          radius: 15.98,
+          colors: [
+            Color.fromRGBO(0, 0, 0, 0.8),
+            Color.fromRGBO(147, 51, 234, 0.4),
+          ],
+        ),
+        border: Border(top: BorderSide(color: Color(0xFF864AFE))),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'Total Amount\nRs. $total',
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              height: 1.4,
+            ),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.transparent,
+              shadowColor: Colors.transparent,
+              padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              side: const BorderSide(color: Colors.white),
+            ),
+            onPressed: () {
+              // Navigate to address_page.dart
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const AddressPage(),
+                ),
+              );
+            },
+            child: const Text(
+              'Checkout',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ✅ Reusable Cart Item Widget
   Widget _cartItemCard(Map<String, dynamic> item, int index) {
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
@@ -286,57 +342,7 @@ class _CartPageState extends State<CartPage> {
     );
   }
 
-  Widget _bottomBuyNow(int total) {
-    return Container(
-      decoration: const BoxDecoration(
-        gradient: RadialGradient(
-          center: Alignment(0.08, 0.08),
-          radius: 15.98,
-          colors: [
-            Color.fromRGBO(0, 0, 0, 0.8),
-            Color.fromRGBO(147, 51, 234, 0.4),
-          ],
-        ),
-        border: Border(top: BorderSide(color: Color(0xFF864AFE))),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            'Total Amount\nRs. $total',
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              height: 1.4,
-            ),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.transparent,
-              shadowColor: Colors.transparent,
-              padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              side: const BorderSide(color: Colors.white),
-            ),
-            onPressed: () {
-              // TODO: Handle checkout
-            },
-            child: const Text(
-              'Checkout',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
+  // ✅ Summary Row
   static Widget _summaryRow(
     String label,
     String value, {

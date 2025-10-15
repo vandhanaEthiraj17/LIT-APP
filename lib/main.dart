@@ -39,6 +39,7 @@ import 'package:lit/pages/coming_soon.dart';
 import 'package:lit/ecommerce/billing_history.dart';
 import 'package:lit/ecommerce/selection_address.dart';
 import 'package:lit/ecommerce/cart_page.dart';
+import 'package:lit/ecommerce/payment_page.dart';
 void main() {
   // Enable performance optimizations
   WidgetsFlutterBinding.ensureInitialized();
@@ -121,6 +122,7 @@ class MyApp extends StatelessWidget {
         '/coming-soon': (context) => const ComingSoonPage(),
         '/billing-history': (context) => const BillingHistoryPage(),
         '/shipping-address': (context) => const ShippingAddressPage(),
+        '/ecommerce/payment_page': (context) => const PaymentPage(),
         '/cart': (context) {
           final cartItems = ModalRoute.of(context)!.settings.arguments as List<Map<String, dynamic>>;
           return CartPage(cartItems: cartItems);

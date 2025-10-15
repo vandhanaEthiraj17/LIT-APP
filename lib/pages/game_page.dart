@@ -11,6 +11,11 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lit/data/saved_items.dart';
 import 'package:lit/pages/saved_item_page.dart';
 
+// Dummy implementations for missing imports
+class SavedItems {
+  static void addItem({required String imagePath, required String label, required String price}) {}
+}
+
 class GamePage extends StatefulWidget {
   const GamePage({super.key});
 
@@ -24,13 +29,26 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
   int secondsRemaining = 15;
   Timer? countdownTimer;
   bool _hasStarted = false;
-
   bool isFlipped = false;
+
+  Widget _RewardIcon(String imagePath) {
+    return Image.asset(
+      imagePath,
+      width: 24,
+      height: 24,
+    );
+  }
+
+  Widget _DialogCloseButton() {
+    return IconButton(
+      icon: const Icon(Icons.close, color: Colors.white),
+      onPressed: () => Navigator.of(context).pop(),
+    );
+  }
 
   late AnimationController _flipController1;
   late AnimationController _flipController2;
 
-  // Shoe selection state
   int? _selectedOption; // 1 = shoe1, 2 = shoe2
   int _coins = 0;
   int _hearts = 3;
@@ -43,8 +61,7 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
   bool _showWrongReward = false;
   bool _showCoinRewardOverlay = false;
   static const int _coinRewardAmount = 5;
-  
-  // Fly-to-card overlay animation
+
   final GlobalKey _leftCardKey = GlobalKey();
   final GlobalKey _rightCardKey = GlobalKey();
   late AnimationController _flyController;
@@ -68,7 +85,6 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
         _flyIsCorrect = false;
       }
     });
-    // stop timer on selection
     countdownTimer?.cancel();
     _rewardController.forward(from: 0);
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -85,7 +101,7 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
         final width = targetBox.size.width;
         setState(() {
           _flyLeft = pos.dx + width / 2 - 24;
-          _flyStartTop = _flyIsCorrect ? (screenSize.height - 120) : (screenSize.height - 120);
+          _flyStartTop = screenSize.height - 120;
           _flyEndTop = pos.dy - 36;
           _showFly = true;
         });
@@ -101,11 +117,9 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
       } else if (_selectedOption == 1) {
         _coins = (_coins - 5).clamp(0, 999);
       }
-
       _selectedOption = null;
     });
   }
-
 
   void _onNavTapped(int index) {
     setState(() => currentIndex = index);
@@ -117,6 +131,7 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
       Navigator.pushReplacementNamed(context, '/profile');
     }
   }
+
   void _startTimer() {
     countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (secondsRemaining == 0) {
@@ -127,7 +142,6 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
     });
   }
 
-
   @override
   void dispose() {
     _flipController1.dispose();
@@ -137,7 +151,6 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
     countdownTimer?.cancel();
     super.dispose();
   }
-
 
   @override
   void initState() {
@@ -152,13 +165,12 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
       vsync: this,
     );
 
-    
     _rewardController = AnimationController(
       duration: const Duration(milliseconds: 900),
       vsync: this,
     );
     _rewardAnimation = CurvedAnimation(parent: _rewardController, curve: Curves.easeOut);
-    
+
     _flyController = AnimationController(duration: const Duration(milliseconds: 1500), vsync: this);
     _flyAnim = CurvedAnimation(parent: _flyController, curve: Curves.easeInOutCubic);
     _flyController.addStatusListener((status) {
@@ -171,9 +183,6 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
     });
   }
 
-
-
-
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)?.settings.arguments;
@@ -184,7 +193,7 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
     return WillPopScope(
       onWillPop: () async {
         _showExitConfirmation(context);
-        return false; // prevent immediate exit
+        return false;
       },
       child: Scaffold(
         drawer: const AppDrawer(),
@@ -203,7 +212,6 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
             SafeArea(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -288,22 +296,15 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 28,
+                          fontSize: 24,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
                     const SizedBox(height: 40),
-                    // Inside your build method or main column (where the body is rendered)
-                    !_hasStarted
-                        ? buildStartPlaceholder()
-                        : _buildGameBody(),
-
-
-
+                    Expanded(child: !_hasStarted ? buildStartPlaceholder() : _buildGameBody()),
                     const SizedBox(height: 20),
                   ],
-                  ),
                 ),
               ),
             ),
@@ -312,7 +313,6 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
         bottomNavigationBar: CustomBottomNavBar(
           currentIndex: currentIndex,
           onTap: _onNavTapped,
-          isMarketplace: false,
           isGame: true,
         ),
       ),
@@ -320,111 +320,111 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
   }
 
   Widget _buildGameBody() {
-    return Stack(
-      alignment: Alignment.center,
+    return Column(
       children: [
-        Column(
-      children: [
-        // Add padding at the top to prevent clipping during animation
-        const SizedBox(height: 15),
-        Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-                // Left card with per-card feedback
-            Expanded(
-                  child: Column(
-                    children: [
-                      GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: () => _selectOption(1),
-                        child: Transform.translate(
-                          offset: Offset(0, _selectedOption == 1 ? -6 : 0),
-                          child: AnimatedScale(
-                            duration: const Duration(milliseconds: 220),
-                            curve: Curves.easeOut,
-                            scale: _selectedOption == 1 ? 1.06 : 1.0,
-                            child: KeyedSubtree(
-                              key: _leftCardKey,
-                  child: _selectionCard(
-                    imagePath: 'assets/images/shoe1.png',
-                    label: 'BALENCIAGA',
-                    showPrice: _selectedOption != null,
-                    price: _shoe1Price,
-                                glowColor: _selectedOption == 1 ? const Color(0x6633B642) : Colors.transparent,
-                                borderColor: _selectedOption == 1 ? const Color(0xFF33B642) : null,
-                                showCorrectAnswer: _selectedOption == 1,
-                  ),
-                ),
+        Expanded(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () => _selectOption(1),
+                      child: Transform.translate(
+                        offset: Offset(0, _selectedOption == 1 ? -6 : 0),
+                        child: AnimatedScale(
+                          duration: const Duration(milliseconds: 220),
+                          curve: Curves.easeOut,
+                          scale: _selectedOption == 1 ? 1.06 : 1.0,
+                          child: KeyedSubtree(
+                            key: _leftCardKey,
+                            child: _selectionCard(
+                              imagePath: 'assets/images/shoe1.png',
+                              label: 'BALENCIAGA',
+                              showPrice: _selectedOption != null,
+                              price: _shoe1Price,
+                              glowColor: _selectedOption == 1 ? const Color(0x6633B642) : Colors.transparent,
+                              borderColor: _selectedOption == 1 ? const Color(0xFF33B642) : null,
+                              showCorrectAnswer: _selectedOption == 1,
+                            ),
                           ),
                         ),
                       ),
-                      if (_selectedOption == 1) ...[
-                        const SizedBox(height: 14),
-                        const Text(
-                          'CORRECT ANSWER',
-                          style: TextStyle(
-                            color: Color(0xFF33B642), 
-                            fontSize: 16, 
-                            fontWeight: FontWeight.bold
+                    ),
+                    if (_selectedOption == 1) ...[
+                      const SizedBox(height: 14),
+                      const Text(
+                        'CORRECT ANSWER',
+                        style: TextStyle(
+                          color: Color(0xFF33B642),
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      _RewardIcon('assets/images/gold_star.png'),
+                    ],
+                  ],
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () => _selectOption(2),
+                      child: Transform.translate(
+                        offset: Offset(0, _selectedOption == 2 ? -6 : 0),
+                        child: AnimatedScale(
+                          duration: const Duration(milliseconds: 220),
+                          curve: Curves.easeOut,
+                          scale: _selectedOption == 2 ? 1.06 : 1.0,
+                          child: KeyedSubtree(
+                            key: _rightCardKey,
+                            child: _selectionCard(
+                              imagePath: 'assets/images/shoe2.png',
+                              label: 'CONVERSE',
+                              showPrice: _selectedOption != null,
+                              price: _shoe2Price,
+                              glowColor: _selectedOption == 2 ? const Color(0x80CA3232) : Colors.transparent,
+                              borderColor: _selectedOption == 2 ? const Color(0xB2CA3232) : null,
+                              showWrongAnswer: _selectedOption == 2,
+                            ),
                           ),
                         ),
-                        const SizedBox(height: 2),
-                        const _RewardIcon('assets/images/gold_star.png'),
-                      ],
+                      ),
+                    ),
+                    if (_selectedOption == 2) ...[
+                      const SizedBox(height: 14),
+                      const Text(
+                        'WRONG ANSWER',
+                        style: TextStyle(
+                          color: Color(0xB2CA3232),
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      _RewardIcon('assets/images/heartwrong.png'),
                     ],
-              ),
-            ),
-            const SizedBox(width: 16),
-                // Right card with per-card feedback
-            Expanded(
-                  child: Column(
-                    children: [
-                      GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: () => _selectOption(2),
-                        child: Transform.translate(
-                          offset: Offset(0, _selectedOption == 2 ? -6 : 0),
-                          child: AnimatedScale(
-                            duration: const Duration(milliseconds: 220),
-                            curve: Curves.easeOut,
-                            scale: _selectedOption == 2 ? 1.06 : 1.0,
-                            child: KeyedSubtree(
-                              key: _rightCardKey,
-                  child: _selectionCard(
-                    imagePath: 'assets/images/shoe2.png',
-                    label: 'CONVERSE',
-                    showPrice: _selectedOption != null,
-                    price: _shoe2Price,
-                                glowColor: _selectedOption == 2 ? const Color(0x80CA3232) : Colors.transparent,
-                                borderColor: _selectedOption == 2 ? const Color(0xB2CA3232) : null,
-                                showWrongAnswer: _selectedOption == 2,
-                              ),
-                  ),
+                  ],
                 ),
               ),
-            ),
-            if (_selectedOption == 2) ...[
-              const SizedBox(height: 14),
-              const Text(
-                'WRONG ANSWER',
-                style: TextStyle(
-                  color: Color(0xB2CA3232), 
-                  fontSize: 16, 
-                  fontWeight: FontWeight.bold
-                ),
-              ),
-              const SizedBox(height: 2),
-              const _RewardIcon('assets/images/heartwrong.png'),
             ],
-          ],
+          ),
         ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            if (_hasStarted)
-              Center(
-                child: Text(
+        const SizedBox(height: 16),
+        if (_hasStarted) ...[
+          Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
                   "00:${secondsRemaining.toString().padLeft(2, '0')}",
                   style: const TextStyle(
                     color: Colors.white,
@@ -432,60 +432,136 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-              ),
-            const SizedBox(height: 18),
-            
-            // Action buttons centered below both cards
-            if (_selectedOption != null) ...[
-              const SizedBox(height: 12.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+                const SizedBox(width: 10),
+                Image.asset(
+                  'assets/images/diamond.png',
+                  width: 24,
+                  height: 24,
+                ),
+              ],
+            ),
+          ),
+        ],
+        const SizedBox(height: 10),
+        if (_selectedOption == null) ...[
+          // Hint and Skip buttons when no answer is selected
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Stack(
+                clipBehavior: Clip.none,
                 children: [
-                  if (_selectedOption == 2)
-                    _primaryButton('Undo', _undoSelection),
-                  if (_selectedOption == 2)
-                    const SizedBox(width: 12),
-                  _primaryButton('Next', () {
-                    setState(() {
-                      _selectedOption = null; // reset for next round
-                      _showWrongReward = false;
-                      secondsRemaining = 15;
-                    });
-                    countdownTimer?.cancel();
-                    _startTimer();
-                  }),
-                  const SizedBox(width: 12),
-                  _primaryButton('Exit', () {
-                    _showExitConfirmation(context);
-                  }),
+                  _primaryButton(
+                    "Hint",
+                    () => _showSkipDialog(
+                      context,
+                      "Are you sure you want a hint?",
+                      "Hint 5",
+                    ),
+                  ),
+                  Positioned(
+                    top: -8,
+                    right: -8,
+                    child: Transform.rotate(
+                      angle: 0.9,
+                      child: Image.asset(
+                        'assets/images/diamond.png',
+                        height: 24,
+                        width: 24,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(width: 12),
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  _primaryButton(
+                    "Skip",
+                    () => _showSkipDialog(
+                      context,
+                      "Are you sure you want to skip?",
+                      "Skip 5",
+                    ),
+                  ),
+                  Positioned(
+                    top: 6,
+                    left: 84,
+                    child: Transform.rotate(
+                      angle: -54.54 * (math.pi / 180),
+                      child: Image.asset(
+                        'assets/images/diamond.png',
+                        width: 17.71,
+                        height: 16.2,
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ],
-            if (_selectedOption == null)
-              Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            _ActionButton(
-              label: "Hint",
-              onPressed: () => _showSkipDialog(
-                context,
-                "Are you sure you want a hint?",
-                "Hint 5",
+          ),
+        ] else if (_selectedOption == 1) ...[
+          // Next and Exit buttons for correct answer
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _primaryButton('Next', () {
+                setState(() {
+                  _selectedOption = null;
+                  _showWrongReward = false;
+                  secondsRemaining = 15;
+                });
+                countdownTimer?.cancel();
+                _startTimer();
+              }),
+              const SizedBox(width: 12),
+              _primaryButton('Exit', () {
+                _showExitConfirmation(context);
+              }),
+            ],
+          ),
+        ] else if (_selectedOption == 2) ...[
+          // Undo, Next, and Exit buttons for wrong answer
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  _primaryButton('Undo', _undoSelection),
+                  Positioned(
+                    top: -8,
+                    right: -8,
+                    child: Transform.rotate(
+                      angle: 0.9,
+                      child: Image.asset(
+                        'assets/images/diamond.png',
+                        height: 24,
+                        width: 24,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ),
-            const SizedBox(width: 16),
-            _ActionButton(
-              label: "Skip",
-              onPressed: () => _showSkipDialog(
-                context,
-                "Are you sure you want to skip?",
-                "Skip 5",
-              ),
-            ),
-          ],
-              ),
-          ],
-        ),
+              const SizedBox(width: 12),
+              _primaryButton('Next', () {
+                setState(() {
+                  _selectedOption = null;
+                  _showWrongReward = false;
+                  secondsRemaining = 15;
+                });
+                countdownTimer?.cancel();
+                _startTimer();
+              }),
+              const SizedBox(width: 12),
+              _primaryButton('Exit', () {
+                _showExitConfirmation(context);
+              }),
+            ],
+          ),
+        ],
+        const SizedBox(height: 15),
       ],
     );
   }
@@ -495,7 +571,6 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
       children: [
         Row(
           children: [
-            // 🔹 Left card (flip from left)
             Expanded(
               child: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 600),
@@ -522,10 +597,7 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
                 switchOutCurve: Curves.easeInOut,
               ),
             ),
-
             const SizedBox(width: 16),
-
-            // 🔹 Right card (flip from right)
             Expanded(
               child: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 600),
@@ -554,18 +626,13 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
             ),
           ],
         ),
-
         const SizedBox(height: 60),
-
-        // 🔹 Start Now button
         Center(
           child: GestureDetector(
             onTap: () {
               setState(() {
                 isFlipped = true;
               });
-
-              // Delay before actually starting game
               Future.delayed(const Duration(milliseconds: 800), () {
                 setState(() {
                   _hasStarted = true;
@@ -610,7 +677,7 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildPlaceholderCard(String label, {Key ? key}) {
+  Widget _buildPlaceholderCard(String label, {Key? key}) {
     return Container(
       key: key,
       margin: const EdgeInsets.only(top: 10),
@@ -652,26 +719,44 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
               Positioned(
                 top: -1.5,
                 right: -1,
-                child: Container(
-                  width: 36,
-                  height: 36,
-                  decoration: BoxDecoration(
-                    color: Colors.black,
-                    border: Border.all(color: Color(0xFF491E75), width: 2),
-                    borderRadius: const BorderRadius.only(
-                      bottomLeft: Radius.circular(12),
-                      topRight: Radius.circular(12),
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.4),
-                        blurRadius: 4,
-                        offset: const Offset(2, 2),
+                child: GestureDetector(
+                  onTap: () {
+                    String productName = label == "Option 1" ? "BALENCIAGA" : "CONVERSE";
+                    String price = label == "Option 1" ? _shoe1Price : _shoe2Price;
+                    String imagePath = label == "Option 1" ? 'assets/images/shoe1.png' : 'assets/images/shoe2.png';
+                    SavedItems.addItem(
+                      imagePath: imagePath,
+                      label: productName,
+                      price: price
+                    );
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('$productName added to saved items'),
+                        duration: const Duration(seconds: 2),
                       ),
-                    ],
-                  ),
-                  child: const Center(
-                    child: Icon(Icons.bookmark_border, size: 20, color: Color(0xFF491E75)),
+                    );
+                  },
+                  child: Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      color: Colors.black,
+                      border: Border.all(color: Color(0xFF491E75), width: 2),
+                      borderRadius: const BorderRadius.only(
+                        bottomLeft: Radius.circular(12),
+                        topRight: Radius.circular(12),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.4),
+                          blurRadius: 4,
+                          offset: const Offset(2, 2),
+                        ),
+                      ],
+                    ),
+                    child: const Center(
+                      child: Icon(Icons.bookmark_border, size: 20, color: Color(0xFF491E75)),
+                    ),
                   ),
                 ),
               ),
@@ -743,118 +828,113 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
                         ),
                       ),
                       child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        title,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 28),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          // CONTINUE BUTTON
-                          Container(
-                            decoration: BoxDecoration(
-                              gradient: const RadialGradient(
-                                center: Alignment(0.1, 0.1),
-                                radius: 8,
-                                colors: [
-                                  Color.fromRGBO(0, 0, 0, 0.8),
-                                  Color.fromRGBO(147, 51, 234, 0.4),
-                                ],
-                              ),
-                              border: Border.all(
-                                color: Color(0xFFAEAEAE),
-                                width: 1,
-                              ),
-                              borderRadius: BorderRadius.circular(21),
-                              boxShadow: const [
-                                BoxShadow(
-                                  color: Color(0x66000000),
-                                  offset: Offset(0, 4),
-                                  blurRadius: 4,
-                                ),
-                              ],
-                            ),
-                            child: TextButton(
-                              style: TextButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(24),
-                                ),
-                                foregroundColor: Colors.white,
-                              ),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: const Text(
-                                'Continue',
-                                style: TextStyle(fontSize: 15),
-                              ),
+                          Text(
+                            title,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-
-                          const SizedBox(width: 10),
-
-                          // SKIP/HINT BUTTON
-                          Container(
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: const Color.fromRGBO(55, 23, 74, 0.8),
-                                width: 2.0,
-                              ),
-                              borderRadius: BorderRadius.circular(24),
-                            ),
-                            padding: const EdgeInsets.all(1.5),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Colors.transparent,
-                                borderRadius: BorderRadius.circular(24),
-                              ),
-                              child: TextButton(
-                                style: TextButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(horizontal: 18),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(28),
+                          const SizedBox(height: 28),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  gradient: const RadialGradient(
+                                    center: Alignment(0.1, 0.1),
+                                    radius: 8,
+                                    colors: [
+                                      Color.fromRGBO(0, 0, 0, 0.8),
+                                      Color.fromRGBO(147, 51, 234, 0.4),
+                                    ],
                                   ),
-                                  foregroundColor: const Color(0xffe2c1ff),
-                                ),
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                  // TODO: Add logic for hint or skip here
-                                },
-                                child: Row(
-                                  children: [
-                                    Text(
-                                      buttonText,
-                                      style: const TextStyle(fontSize: 16),
-                                    ),
-                                    const SizedBox(width: 6),
-                                    Transform.rotate(
-                                      angle: 1.2,
-                                      child: Image.asset(
-                                        'assets/images/diamond.png',
-                                        width: 24,
-                                        height: 24,
-                                      ),
+                                  border: Border.all(
+                                    color: Color(0xFFAEAEAE),
+                                    width: 1,
+                                  ),
+                                  borderRadius: BorderRadius.circular(21),
+                                  boxShadow: const [
+                                    BoxShadow(
+                                      color: Color(0x66000000),
+                                      offset: Offset(0, 4),
+                                      blurRadius: 4,
                                     ),
                                   ],
                                 ),
+                                child: TextButton(
+                                  style: TextButton.styleFrom(
+                                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(24),
+                                    ),
+                                    foregroundColor: Colors.white,
+                                  ),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: const Text(
+                                    'Continue',
+                                    style: TextStyle(fontSize: 15),
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
+                              const SizedBox(width: 10),
+                              Container(
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: const Color.fromRGBO(55, 23, 74, 0.8),
+                                    width: 2.0,
+                                  ),
+                                  borderRadius: BorderRadius.circular(24),
+                                ),
+                                padding: const EdgeInsets.all(1.5),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.transparent,
+                                    borderRadius: BorderRadius.circular(24),
+                                  ),
+                                  child: TextButton(
+                                    style: TextButton.styleFrom(
+                                      padding: const EdgeInsets.symmetric(horizontal: 18),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(28),
+                                      ),
+                                      foregroundColor: const Color(0xffe2c1ff),
+                                    ),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: Row(
+                                      children: [
+                                        Text(
+                                          buttonText,
+                                          style: const TextStyle(fontSize: 16),
+                                        ),
+                                        const SizedBox(width: 6),
+                                        Transform.rotate(
+                                          angle: 1.2,
+                                          child: Image.asset(
+                                            'assets/images/diamond.png',
+                                            width: 24,
+                                            height: 24,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          )
                         ],
-                      )
-                    ],
                       ),
                     ),
-                    const _DialogCloseButton(),
+                    _DialogCloseButton(),
                   ],
                 ),
               ),
@@ -864,7 +944,6 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
       },
     );
   }
-
 
   void _showExitConfirmation(BuildContext context) {
     showDialog(
@@ -889,108 +968,99 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
                         border: Border.all(color: Colors.white.withOpacity(0.15)),
                       ),
                       child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Text(
-                        'Are you sure you want to leave?',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 28),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          // CONTINUE BUTTON
-                          Container(
-                            decoration: BoxDecoration(
-                              gradient: const RadialGradient(
-                                center: Alignment(0.1, 0.1),
-                                radius: 8,
-                                colors: [
-                                  Color.fromRGBO(0, 0, 0, 0.8),
-                                  Color.fromRGBO(147, 51, 234, 0.4),
-                                ],
-                              ),
-                              border: Border.all(color: Color(0xFFAEAEAE), width: 1),
-                              borderRadius: BorderRadius.circular(21),
-                            ),
-                            child: TextButton(
-                              onPressed: () => Navigator.of(context).pop(),
-                              style: TextButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                                foregroundColor: Colors.white,
-                              ),
-                              child: const Text('Continue', style: TextStyle(fontSize: 15)),
+                          const Text(
+                            'Are you sure you want to leave?',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-
-                          const SizedBox(width: 10),
-
-                          // EXIT BUTTON WITH HEART ON TOP-RIGHT
-                          Stack(
-                            clipBehavior: Clip.none,
+                          const SizedBox(height: 28),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Container(
                                 decoration: BoxDecoration(
-                                  border: Border.all(
-                                    color: const Color.fromRGBO(55, 23, 74, 0.8),
-                                    width: 2.0,
+                                  gradient: const RadialGradient(
+                                    center: Alignment(0.1, 0.1),
+                                    radius: 8,
+                                    colors: [
+                                      Color.fromRGBO(0, 0, 0, 0.8),
+                                      Color.fromRGBO(147, 51, 234, 0.4),
+                                    ],
                                   ),
-                                  borderRadius: BorderRadius.circular(24),
+                                  border: Border.all(color: Color(0xFFAEAEAE), width: 1),
+                                  borderRadius: BorderRadius.circular(21),
                                 ),
-                                padding: const EdgeInsets.all(1.5),
                                 child: TextButton(
-                                  onPressed: () {
-                                    // Close dialog then pop GamePage to return to Game Modes
-                                    Navigator.of(context).pop();
-                                    Navigator.of(context).pop();
-                                  },
+                                  onPressed: () => Navigator.of(context).pop(),
                                   style: TextButton.styleFrom(
-                                    padding: const EdgeInsets.symmetric(horizontal: 36),
-                                    foregroundColor: const Color(0xffe2c1ff),
+                                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                                    foregroundColor: Colors.white,
                                   ),
-                                  child: const Text("Exit", style: TextStyle(fontSize: 15)),
+                                  child: const Text('Continue', style: TextStyle(fontSize: 15)),
                                 ),
                               ),
-
-                              // Positioned Heart
-                              Positioned(
-                                top: -10,
-                                right: -6,
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: const [
-                                    Text(
-                                      "-",
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
+                              const SizedBox(width: 10),
+                              Stack(
+                                clipBehavior: Clip.none,
+                                children: [
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: const Color.fromRGBO(55, 23, 74, 0.8),
+                                        width: 2.0,
                                       ),
+                                      borderRadius: BorderRadius.circular(24),
                                     ),
-                                    SizedBox(width: 2),
-                                    // Keep existing heart asset path
-                                    Image(
-                                      image: AssetImage('assets/images/heart.png'),
-                                      width: 22,
-                                      height: 22,
+                                    padding: const EdgeInsets.all(1.5),
+                                    child: TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                        Navigator.of(context).pop();
+                                      },
+                                      style: TextButton.styleFrom(
+                                        padding: const EdgeInsets.symmetric(horizontal: 36),
+                                        foregroundColor: const Color(0xffe2c1ff),
+                                      ),
+                                      child: const Text("Exit", style: TextStyle(fontSize: 15)),
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                  Positioned(
+                                    top: -10,
+                                    right: -6,
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: const [
+                                        Text(
+                                          "-",
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        SizedBox(width: 2),
+                                        Image(
+                                          image: AssetImage('assets/images/heart.png'),
+                                          width: 22,
+                                          height: 22,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ),
-
                             ],
                           ),
                         ],
                       ),
-                    ],
-                      ),
                     ),
-                    const _DialogCloseButton(),
+                    _DialogCloseButton(),
                   ],
                 ),
               ),
@@ -1000,11 +1070,6 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
       },
     );
   }
-
-
-
-
-
 
   void _showSettingsDialog(BuildContext context) {
     showDialog(
@@ -1061,91 +1126,91 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
 
   Widget _buildOptionCard(String imagePath, String label) {
     return Container(
-        margin: const EdgeInsets.only(top: 8),
-        decoration: BoxDecoration(
-          gradient: const RadialGradient(
-            center: Alignment(0.08, 0.08),
-            radius: 7.98,
-            colors: [
-              Color.fromRGBO(0, 0, 0, 0.8),
-              Color.fromRGBO(147, 51, 234, 0.4),
-            ],
-            stops: [0.0, 0.5],
-          ),
-          border: Border.all(color: Color(0xFFAEAEAE), width: 1),
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: const [
-            BoxShadow(color: Color(0x66000000), offset: Offset(0, 4), blurRadius: 4),
+      margin: const EdgeInsets.only(top: 8),
+      decoration: BoxDecoration(
+        gradient: const RadialGradient(
+          center: Alignment(0.08, 0.08),
+          radius: 7.98,
+          colors: [
+            Color.fromRGBO(0, 0, 0, 0.8),
+            Color.fromRGBO(147, 51, 234, 0.4),
           ],
+          stops: [0.0, 0.5],
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Stack(
-              clipBehavior: Clip.none,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-                  child: Center(
-                    child: Image.asset(imagePath, height: 130, fit: BoxFit.contain),
-                  ),
+        border: Border.all(color: Color(0xFFAEAEAE), width: 1),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: const [
+          BoxShadow(color: Color(0x66000000), offset: Offset(0, 4), blurRadius: 4),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                child: Center(
+                  child: Image.asset(imagePath, height: 130, fit: BoxFit.contain),
                 ),
-                Positioned(
-                  top: -1.5,
-                  right: -1,
-                  child: Container(
-                    width: 36,
-                    height: 36,
-                    decoration: BoxDecoration(
-                      color: Colors.black,
-                      border: Border.all(color: Color(0xFF491E75), width: 2),
-                      borderRadius: const BorderRadius.only(
-                        bottomLeft: Radius.circular(12),
-                        topRight: Radius.circular(12),
+              ),
+              Positioned(
+                top: -1.5,
+                right: -1,
+                child: Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: Colors.black,
+                    border: Border.all(color: Color(0xFF491E75), width: 2),
+                    borderRadius: const BorderRadius.only(
+                      bottomLeft: Radius.circular(12),
+                      topRight: Radius.circular(12),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.4),
+                        blurRadius: 4,
+                        offset: const Offset(2, 2),
                       ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.4),
-                          blurRadius: 4,
-                          offset: const Offset(2, 2),
-                        ),
-                      ],
-                    ),
-                    child: const Center(
-                      child: Icon(Icons.bookmark_border, size: 20, color: Color(0xFF491E75)),
-                    ),
+                    ],
+                  ),
+                  child: const Center(
+                    child: Icon(Icons.bookmark_border, size: 20, color: Color(0xFF491E75)),
                   ),
                 ),
-              ],
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              decoration: BoxDecoration(
-                gradient: const RadialGradient(
-                  center: Alignment(0.08, 0.08),
-                  radius: 7.98,
-                  colors: [
-                    Color.fromRGBO(0, 0, 0, 0.8),
-                    Color.fromRGBO(147, 51, 234, 0.4),
-                  ],
-                  stops: [0.0, 0.5],
-                ),
-                border: const Border(
-                  top: BorderSide(color: Color(0xFFAEAEAE), width: 1),
-                ),
-                borderRadius: const BorderRadius.vertical(bottom: Radius.circular(16)),
               ),
-              child: Text(
-                label,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
+            ],
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            decoration: BoxDecoration(
+              gradient: const RadialGradient(
+                center: Alignment(0.08, 0.08),
+                radius: 7.98,
+                colors: [
+                  Color.fromRGBO(0, 0, 0, 0.8),
+                  Color.fromRGBO(147, 51, 234, 0.4),
+                ],
+                stops: [0.0, 0.5],
+              ),
+              border: const Border(
+                top: BorderSide(color: Color(0xFFAEAEAE), width: 1),
+              ),
+              borderRadius: const BorderRadius.vertical(bottom: Radius.circular(16)),
+            ),
+            child: Text(
+              label,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
               ),
             ),
-          ],
+          ),
+        ],
       ),
     );
   }
@@ -1161,16 +1226,13 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
     bool showWrongAnswer = false,
   }) {
     final bool isSelected = glowColor != Colors.transparent;
-    // Determine palette based on which card this is
     final bool isGreen = borderColor == const Color(0xFF33B642) || showCorrectAnswer;
-    // Solid glow colors
     const Color solidGreen = Color(0xFF276630);
     const Color solidRed = Color(0xFF952B2C);
 
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        // Blurred gradient glow behind card when selected
         if (isSelected)
           Positioned.fill(
             child: IgnorePointer(
@@ -1191,19 +1253,17 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
               ),
             ),
           ),
-
-        // Original card container (no outer glow/border outlines)
         Container(
-      decoration: BoxDecoration(
-        gradient: const RadialGradient(
-          center: Alignment(0.08, 0.08),
-          radius: 7.98,
-          colors: [
+          decoration: BoxDecoration(
+            gradient: const RadialGradient(
+              center: Alignment(0.08, 0.08),
+              radius: 7.98,
+              colors: [
                 Color.fromRGBO(0, 0, 0, 0.86),
                 Color.fromRGBO(147, 51, 234, 0.46),
-          ],
-          stops: [0.0, 0.5],
-        ),
+              ],
+              stops: [0.0, 0.5],
+            ),
             border: Border.all(
               color: isSelected ? Colors.transparent : const Color(0xFFAEAEAE),
               width: 1,
@@ -1265,90 +1325,136 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
               ),
             ],
           ),
-          // Bottom area: when selected, hide strip and divider; when not, show them
-          if (isSelected)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              child: Column(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Stack(
+                clipBehavior: Clip.none,
                 children: [
-                  Text(
-                    _selectedOption == null ? (imagePath.contains('shoe1') ? 'Option 1' : 'Option 2') : label,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                    child: Center(
+                      child: Image.asset(imagePath, height: 130, fit: BoxFit.contain),
                     ),
                   ),
-                  if (showPrice)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 6),
-                      child: Text(
-                        price,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
+                  Positioned(
+                    top: -1.5,
+                    right: -1,
+                    child: GestureDetector(
+                      onTap: () {
+                        SavedItems.addItem(imagePath: imagePath, label: label, price: price);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('$label added to saved items'),
+                            duration: const Duration(seconds: 2),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        width: 36,
+                        height: 36,
+                        decoration: BoxDecoration(
+                          color: Colors.black,
+                          border: Border.all(color: const Color(0xFF491E75), width: 2),
+                          borderRadius: const BorderRadius.only(
+                            bottomLeft: Radius.circular(12),
+                            topRight: Radius.circular(12),
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.4),
+                              blurRadius: 4,
+                              offset: const Offset(2, 2),
+                            ),
+                          ],
+                        ),
+                        child: const Center(
+                          child: Icon(Icons.bookmark_border, size: 20, color: Color(0xFF491E75)),
                         ),
                       ),
                     ),
-                ],
-              ),
-            )
-          else
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            decoration: const BoxDecoration(
-              gradient: RadialGradient(
-                center: Alignment(0.08, 0.08),
-                radius: 7.98,
-                colors: [
-                  Color.fromRGBO(0, 0, 0, 0.8),
-                  Color.fromRGBO(147, 51, 234, 0.4),
-                ],
-                stops: [0.0, 0.5],
-              ),
-              border: Border(
-                top: BorderSide(color: Color(0xFFAEAEAE), width: 1),
-              ),
-              borderRadius: BorderRadius.vertical(bottom: Radius.circular(16)),
-            ),
-            child: Column(
-              children: [
-                Text(
-                    _selectedOption == null ? (imagePath.contains('shoe1') ? 'Option 1' : 'Option 2') : label,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                    fontSize: 16,
                   ),
-                ),
-                if (showPrice)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 6),
-                    child: Text(
-                      price,
-                      style: const TextStyle(
-                          color: Colors.white70,
-                          fontWeight: FontWeight.w600,
+                ],
+              ),
+              isSelected
+                  ? Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      child: Column(
+                        children: [
+                          Text(
+                            _selectedOption == null ? (imagePath.contains('shoe1') ? 'Option 1' : 'Option 2') : label,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          if (showPrice)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 6),
+                              child: Text(
+                                price,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    )
+                  : Container(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      decoration: const BoxDecoration(
+                        gradient: RadialGradient(
+                          center: Alignment(0.08, 0.08),
+                          radius: 7.98,
+                          colors: [
+                            Color.fromRGBO(0, 0, 0, 0.8),
+                            Color.fromRGBO(147, 51, 234, 0.4),
+                          ],
+                          stops: [0.0, 0.5],
+                        ),
+                        border: Border(
+                          top: BorderSide(color: Color(0xFFAEAEAE), width: 1),
+                        ),
+                        borderRadius: BorderRadius.vertical(bottom: Radius.circular(16)),
+                      ),
+                      child: Column(
+                        children: [
+                          Text(
+                            _selectedOption == null ? (imagePath.contains('shoe1') ? 'Option 1' : 'Option 2') : label,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
+                            ),
+                          ),
+                          if (showPrice)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 6),
+                              child: Text(
+                                price,
+                                style: const TextStyle(
+                                  color: Colors.white70,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
                     ),
-                  ),
-              ],
-            ),
+            ],
           ),
-        ],
-      ),
         ),
       ],
     );
   }
 
-  Widget _primaryButton(String label, VoidCallback onPressed) {
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        Container(
+  Widget _primaryButton(String label, VoidCallback? onPressed) {
+    return Container(
       decoration: BoxDecoration(
         gradient: const RadialGradient(
           center: Alignment(0.08, 0.08),
@@ -1374,92 +1480,9 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
         ),
         child: Text(label, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
       ),
-        ),
-        if (label.toLowerCase() == 'undo')
-          Positioned(
-            top: -8,
-            right: -8,
-            child: Transform.rotate(
-              angle: 0.9,
-              child: Image.asset(
-                'assets/images/diamond.png',
-                height: 24,
-                width: 24,
-              ),
-            ),
-          ),
-      ],
-    );
-  }
-
-
-}
-
-// Hint / Skip Button
-class _ActionButton extends StatelessWidget {
-  final String label;
-  final VoidCallback onPressed;
-
-  const _ActionButton({required this.label, required this.onPressed});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onPressed,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
-            decoration: BoxDecoration(
-              gradient: const RadialGradient(
-                center: Alignment(0.08, 0.08),
-                radius: 7.98,
-                colors: [
-                  Color.fromRGBO(0, 0, 0, 0.8),
-                  Color.fromRGBO(147, 51, 234, 0.4),
-                ],
-                stops: [0.0, 0.5],
-              ),
-              border: Border.all(color: Color(0xFFAEAEAE), width: 1),
-              borderRadius: BorderRadius.circular(24),
-              boxShadow: const [
-                BoxShadow(
-                  color: Color(0x66000000),
-                  offset: Offset(0, 4),
-                  blurRadius: 4,
-                ),
-              ],
-            ),
-            child: Text(
-              label,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
-            ),
-          ),
-          Positioned(
-            top: -8,
-            right: -8,
-            child: Transform.rotate(
-              angle: 0.9,
-              child: Image.asset(
-                'assets/images/diamond.png',
-                height: 24,
-                width: 24,
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
-
-
-// Audio Settings Dialog
 
 class _AudioSettingsPopup extends StatefulWidget {
   const _AudioSettingsPopup();
@@ -1481,7 +1504,7 @@ class _AudioSettingsPopupState extends State<_AudioSettingsPopup> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final popupWidth = math.min(screenWidth * 0.79, 500.0); // 90% of screen or 500 max
+    final popupWidth = math.min(screenWidth * 0.79, 500.0);
 
     return Center(
       child: UnconstrainedBox(
@@ -1494,29 +1517,26 @@ class _AudioSettingsPopupState extends State<_AudioSettingsPopup> {
                 borderRadius: BorderRadius.circular(20),
                 child: BackdropFilter(
                   filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      SingleChildScrollView(
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            gradient: const RadialGradient(
-                              center: Alignment(0, -0.2),
-                              radius: 1.2,
-                              colors: [
-                                Color(0x2FFFFFFF),
-                                Color(0x33FFFFFF),
-                              ],
-                              stops: [0.1, 1.0],
-                            ),
-                            border: Border.all(color: Colors.white24, width: 1),
-                          ),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
+                  child: SingleChildScrollView(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        gradient: const RadialGradient(
+                          center: Alignment(0, -0.2),
+                          radius: 1.2,
+                          colors: [
+                            Color(0x2FFFFFFF),
+                            Color(0x33FFFFFF),
+                          ],
+                          stops: [0.1, 1.0],
+                        ),
+                        border: Border.all(color: Colors.white24, width: 1),
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
                           const SizedBox(height: 20),
                           Text(
                             "SETTINGS",
@@ -1541,7 +1561,7 @@ class _AudioSettingsPopupState extends State<_AudioSettingsPopup> {
                               if (val > 0) isSfxMuted = false;
                             });
                           }),
-                          const SizedBox(height: 24),
+                          const SizedBox(height: 32),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -1579,7 +1599,6 @@ class _AudioSettingsPopupState extends State<_AudioSettingsPopup> {
                             ],
                           ),
                           const SizedBox(height: 24),
-                          // Action pills
                           Wrap(
                             alignment: WrapAlignment.center,
                             spacing: 16,
@@ -1607,12 +1626,21 @@ class _AudioSettingsPopupState extends State<_AudioSettingsPopup> {
                               ),
                             ],
                           ),
-                            ],
-                          ),
-                        ),
+                        ],
                       ),
-                      const _DialogCloseButton(),
-                    ],
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                top: 5,
+                right: 5,
+                child: GestureDetector(
+                  onTap: () => Navigator.of(context).pop(),
+                  child: const CircleAvatar(
+                    radius: 14,
+                    backgroundColor: Colors.white30,
+                    child: Icon(Icons.close, size: 16, color: Colors.white),
                   ),
                 ),
               ),

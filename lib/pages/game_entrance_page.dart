@@ -58,18 +58,17 @@ class _GameEntrancePageState extends State<GameEntrancePage> {
         ),
         centerTitle: true,
         title: Image.asset('assets/images/logo.png', height: 40),
-        actions: [
-          const Padding(
+        actions: const [
+          Padding(
             padding: EdgeInsets.only(right: 0),
             child: NotificationBell(),
           ),
         ],
-
       ),
       bottomNavigationBar: CustomBottomNavBar(
         currentIndex: currentIndex,
         onTap: _onNavTapped,
-        isGame: true,
+        // Removed isGame: true, since your CustomBottomNavBar only accepts currentIndex and onTap
       ),
       body: Stack(
         children: [
@@ -86,93 +85,154 @@ class _GameEntrancePageState extends State<GameEntrancePage> {
             child: Padding(
               padding: const EdgeInsets.all(20),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 10),
+                  // 🔹 Top row: Back + Settings
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 1.0),
-                        child: GestureDetector(
-                          onTap: () => Navigator.pushNamed(context, '/home'),
-                          child: Row(
-                            children: const [
-                              Icon(Icons.arrow_back, color: Colors.white),
-                              SizedBox(width: 8),
-                              Text("Back", style: TextStyle(color: Colors.white, fontSize: 16)),
+                      GestureDetector(
+                        onTap: () => Navigator.pushNamed(context, '/home'),
+                        child: Row(
+                          children: const [
+                            Icon(Icons.arrow_back, color: Colors.white),
+                            SizedBox(width: 8),
+                            Text("Back",
+                                style: TextStyle(color: Colors.white, fontSize: 16)),
+                          ],
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () => _showSettingsDialog(context),
+                        child: const Icon(Icons.settings, color: Colors.white),
+                      ),
+                    ],
+                  ),
+
+                  // 🔹 Expanded Center Section
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // 🟪 LIT GAME Layout
+                        Center(
+                          child: Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              Container(
+                                width: 340,
+                                padding: const EdgeInsets.only(top: 20, bottom: 24),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(18),
+                                  border: Border.all(color: Colors.white, width: 3),
+                                  color: const Color(0xFF1B0428).withOpacity(0.85),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    buildShoeCard('assets/images/violet-shoe.png', -math.pi / 15),
+                                    const SizedBox(width: 8),
+                                    // 🎨 VS
+                                    Stack(
+                                      alignment: Alignment.center,
+                                      children: [
+                                        Text(
+                                          'VS',
+                                          style: TextStyle(
+                                            fontSize: 56,
+                                            fontWeight: FontWeight.w900,
+                                            foreground: Paint()
+                                              ..style = PaintingStyle.stroke
+                                              ..strokeWidth = 5
+                                              ..color = Colors.black,
+                                          ),
+                                        ),
+                                        ShaderMask(
+                                          shaderCallback: (Rect bounds) {
+                                            return const LinearGradient(
+                                              colors: [Color(0xFFB497D6), Color(0xFF6B4F9E)],
+                                              begin: Alignment.topLeft,
+                                              end: Alignment.bottomRight,
+                                            ).createShader(bounds);
+                                          },
+                                          child: const Text(
+                                            'VS',
+                                            style: TextStyle(
+                                              fontSize: 50,
+                                              fontWeight: FontWeight.w900,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(width: 8),
+                                    buildShoeCard('assets/images/blue-shoe.png', math.pi / 15),
+                                  ],
+                                ),
+                              ),
+
+                              // 🟪 LIT GAME Tab
+                              Positioned(
+                                top: -26,
+                                left: 0,
+                                right: 0,
+                                child: Center(
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 26, vertical: 12),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFF200D33),
+                                      borderRadius: BorderRadius.circular(14),
+                                      border: Border.all(color: Colors.white, width: 3),
+                                    ),
+                                    child: const Text(
+                                      'LIT GAME',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18,
+                                        color: Colors.white,
+                                        letterSpacing: 1.4,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(right: 1.0),
-                        child: GestureDetector(
-                          onTap: () => _showSettingsDialog(context),
-                          child: const Icon(Icons.settings, color: Colors.white),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  const SizedBox.shrink(),
 
-                  const SizedBox(height: 20),
-                  Center(
-                    child: SizedBox(
-                      width: 500,
-                      height: 300,
-                      child: Image.asset(
-                        'assets/images/game entrance.png',
-                        fit: BoxFit.contain,
-                        errorBuilder: (context, error, stack) {
-                          return const Center(
-                            child: Text(
-                              'Image not found',
-                              style: TextStyle(color: Colors.white70),
-                            ),
-                          );
-                        },
-                      ),
+                        const SizedBox(height: 50),
+
+                        // 🔹 Buttons
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 30),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: _buildGameButton("Play Now", onTap: () {
+                                  Navigator.pushNamed(context, '/game-modes');
+                                }),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: _buildGameButton("Shop", onTap: () {
+                                  Navigator.pushNamed(context, '/game-shop');
+                                }),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 100),
+                          child: _buildGameButton("Friend list", onTap: () {
+                            Navigator.pushNamed(context, '/friend-list');
+                          }),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 10),
-                  Column(
-                    children: [
-                      const SizedBox(height: 42),
-
-                      // Top Row: Play Now & Shop
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 30),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: _buildGameButton("Play Now", onTap: () {
-                              Navigator.pushNamed(context,'/game-modes' );
-                            }),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: _buildGameButton("Shop", onTap: () {
-                              Navigator.pushNamed(context,'/game-shop' );
-                            }),
-                          ),
-                        ],
-                      ),
-                      ),
-
-                      const SizedBox(height: 16),
-
-                      // Bottom: Friend List with less horizontal padding
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 100), // 👈 Reduce this as needed
-                        child: _buildGameButton("Friend list", onTap: () {
-                          Navigator.pushNamed(context,'/friend-list' );
-                        }),
-                      ),
-                    ],
-                  ),
-
                 ],
               ),
             ),
@@ -181,6 +241,7 @@ class _GameEntrancePageState extends State<GameEntrancePage> {
       ),
     );
   }
+
   Widget buildShoeCard(String imgPath, double angle) {
     return Transform.rotate(
       angle: angle,
@@ -241,6 +302,7 @@ class _GameEntrancePageState extends State<GameEntrancePage> {
       ),
     );
   }
+
   Widget _buildGameButton(String text, {required VoidCallback onTap}) {
     return GestureDetector(
       onTap: onTap,
@@ -257,10 +319,7 @@ class _GameEntrancePageState extends State<GameEntrancePage> {
             ],
             stops: [0.0, 0.5],
           ),
-          border: Border.all(
-            color: Color(0xFFAEAEAE),
-            width: 1,
-          ),
+          border: Border.all(color: Color(0xFFAEAEAE), width: 1),
           borderRadius: BorderRadius.circular(25),
           boxShadow: const [
             BoxShadow(
@@ -282,10 +341,7 @@ class _GameEntrancePageState extends State<GameEntrancePage> {
       ),
     );
   }
-
 }
-
-// ✅ Audio Settings Popup
 
 class _AudioSettingsPopup extends StatefulWidget {
   const _AudioSettingsPopup();
@@ -454,7 +510,8 @@ class _AudioSettingsPopupState extends State<_AudioSettingsPopup> {
     );
   }
 
-  Widget _settingsPill({required IconData icon, required String label, required VoidCallback onTap}) {
+  Widget _settingsPill(
+      {required IconData icon, required String label, required VoidCallback onTap}) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -482,7 +539,8 @@ class _AudioSettingsPopupState extends State<_AudioSettingsPopup> {
     );
   }
 
-  Widget _buildVolumeRow(String label, double value, ValueChanged<double> onChanged) {
+  Widget _buildVolumeRow(
+      String label, double value, ValueChanged<double> onChanged) {
     return Row(
       children: [
         SizedBox(
@@ -502,11 +560,15 @@ class _AudioSettingsPopupState extends State<_AudioSettingsPopup> {
               return GestureDetector(
                 behavior: HitTestBehavior.opaque,
                 onPanUpdate: (details) {
-                  final newWidth = (details.localPosition.dx / constraints.maxWidth).clamp(0.0, 1.0);
+                  final newWidth = (details.localPosition.dx /
+                          constraints.maxWidth)
+                      .clamp(0.0, 1.0);
                   onChanged(newWidth);
                 },
                 onTapDown: (details) {
-                  final newWidth = (details.localPosition.dx / constraints.maxWidth).clamp(0.0, 1.0);
+                  final newWidth = (details.localPosition.dx /
+                          constraints.maxWidth)
+                      .clamp(0.0, 1.0);
                   onChanged(newWidth);
                 },
                 child: Container(
@@ -526,7 +588,10 @@ class _AudioSettingsPopupState extends State<_AudioSettingsPopup> {
                           child: Container(
                             decoration: const BoxDecoration(
                               gradient: LinearGradient(
-                                colors: [Color(0xFFE0E0E0), Color(0xFF8B8B8B)],
+                                colors: [
+                                  Color(0xFFE0E0E0),
+                                  Color(0xFF8B8B8B)
+                                ],
                                 begin: Alignment.centerLeft,
                                 end: Alignment.centerRight,
                               ),
@@ -560,10 +625,7 @@ class _AudioIconButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
 
-  const _AudioIconButton({
-    required this.icon,
-    required this.onTap,
-  });
+  const _AudioIconButton({required this.icon, required this.onTap});
 
   @override
   Widget build(BuildContext context) {

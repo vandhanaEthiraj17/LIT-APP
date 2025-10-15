@@ -3,8 +3,10 @@ import 'package:provider/provider.dart';
 import 'package:lit/pages/notifications_page.dart';
 import 'package:lit/providers/notification_provider.dart';
 
+
 class NotificationBell extends StatefulWidget {
-  const NotificationBell({super.key});
+  final double? size;
+  const NotificationBell({super.key, this.size});
 
   @override
   State<NotificationBell> createState() => _NotificationBellState();
@@ -51,7 +53,10 @@ class _NotificationBellState extends State<NotificationBell> with SingleTickerPr
             ScaleTransition(
               scale: _scaleAnimation,
               child: IconButton(
-                icon: const Icon(Icons.notifications_none, color: Colors.white),
+                icon: Icon(Icons.notifications_none, 
+                  color: Colors.white,
+                  size: widget.size,
+                ),
                 onPressed: () {
                   Navigator.push(
                     context,
