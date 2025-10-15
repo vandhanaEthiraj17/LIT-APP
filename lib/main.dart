@@ -40,6 +40,7 @@ import 'package:lit/ecommerce/billing_history.dart';
 import 'package:lit/ecommerce/selection_address.dart';
 import 'package:lit/ecommerce/cart_page.dart';
 import 'package:lit/ecommerce/payment_page.dart';
+import 'package:lit/payment/payment_success_page.dart';
 void main() {
   // Enable performance optimizations
   WidgetsFlutterBinding.ensureInitialized();
@@ -114,7 +115,11 @@ class MyApp extends StatelessWidget {
         '/payment-methods': (context) => const PaymentMethodsPage(),
         '/subscription-plan-details': (context) => const SubscriptionPlanPage(),
         '/notifications': (context) => const NotificationsPage(),
-        '/payment-gateway': (context) => const PaymentGatewayPage(),
+        '/payment-gateway': (context) {
+          final args = ModalRoute.of(context)!.settings.arguments;
+          final cartItems = (args is List<Map<String, dynamic>>) ? args : <Map<String, dynamic>>[];
+          return PaymentGatewayPage(cartItems: cartItems);
+        },
         '/game-entrance': (context) => const GameEntrancePage(),
         '/game-shop': (context) => const ShopPage(),
         '/friend-list': (context) => const FriendListPage(),
@@ -126,6 +131,16 @@ class MyApp extends StatelessWidget {
         '/cart': (context) {
           final cartItems = ModalRoute.of(context)!.settings.arguments as List<Map<String, dynamic>>;
           return CartPage(cartItems: cartItems);
+        },
+
+        '/payment-success': (context) {
+          final args = ModalRoute.of(context)!.settings.arguments;
+          String? orderId;
+          if (args is Map) {
+            final raw = args['orderId'];
+            if (raw is String) orderId = raw;
+          }
+          return PaymentSuccessPage(orderId: orderId);
         },
 
       },

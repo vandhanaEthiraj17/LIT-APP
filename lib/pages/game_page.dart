@@ -11,10 +11,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lit/data/saved_items.dart';
 import 'package:lit/pages/saved_item_page.dart';
 
-// Dummy implementations for missing imports
-class SavedItems {
-  static void addItem({required String imagePath, required String label, required String price}) {}
-}
 
 class GamePage extends StatefulWidget {
   const GamePage({super.key});
@@ -1325,57 +1321,7 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
               ),
             ],
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-                    child: Center(
-                      child: Image.asset(imagePath, height: 130, fit: BoxFit.contain),
-                    ),
-                  ),
-                  Positioned(
-                    top: -1.5,
-                    right: -1,
-                    child: GestureDetector(
-                      onTap: () {
-                        SavedItems.addItem(imagePath: imagePath, label: label, price: price);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('$label added to saved items'),
-                            duration: const Duration(seconds: 2),
-                          ),
-                        );
-                      },
-                      child: Container(
-                        width: 36,
-                        height: 36,
-                        decoration: BoxDecoration(
-                          color: Colors.black,
-                          border: Border.all(color: const Color(0xFF491E75), width: 2),
-                          borderRadius: const BorderRadius.only(
-                            bottomLeft: Radius.circular(12),
-                            topRight: Radius.circular(12),
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.4),
-                              blurRadius: 4,
-                              offset: const Offset(2, 2),
-                            ),
-                          ],
-                        ),
-                        child: const Center(
-                          child: Icon(Icons.bookmark_border, size: 20, color: Color(0xFF491E75)),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+          
               isSelected
                   ? Padding(
                       padding: const EdgeInsets.symmetric(vertical: 12),

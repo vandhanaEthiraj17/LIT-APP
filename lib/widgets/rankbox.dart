@@ -214,7 +214,7 @@ class RankBoxWidget extends StatelessWidget {
             children: [
               Image.asset(
                 isGold
-                    ? 'assets/images/gold_star.png'
+                    ? 'assets/images/star.png'
                     : 'assets/images/purple_star.png',
                 width: 20,
                 height: 20,

@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:lit/widgets/app_drawer.dart';
+import 'package:lit/widgets/common_button.dart';
 import 'package:lit/pages/notifications_page.dart';
 import 'package:lit/ecommerce/address_page.dart';
 class PaymentPage extends StatefulWidget {
@@ -11,6 +12,7 @@ class PaymentPage extends StatefulWidget {
 }
 
 class _PaymentPageState extends State<PaymentPage> {
+  int currentIndex = 1;
   int? expandedPaymentMethod;
   final cardNumberController = TextEditingController();
   final cvvController = TextEditingController();
@@ -23,6 +25,9 @@ class _PaymentPageState extends State<PaymentPage> {
   // State variables
   bool saveCardDetails = false;
   bool _isCardExpanded = false;
+  bool _isNetBankingExpanded = false;
+  bool _isPaypalExpanded = false;
+  bool _isUpiExpanded = false;
   bool _cardValid = false;
   bool _cvvValid = false;
   bool _validThruValid = false;
@@ -76,36 +81,14 @@ class _PaymentPageState extends State<PaymentPage> {
           ),
         ],
       ),
-      bottomNavigationBar: Container(
-        height: 60,
-        color: Colors.black,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            IconButton(
-              icon: const Icon(Icons.home, color: Colors.white),
-              onPressed: () {
-                Navigator.pushReplacementNamed(context, '/home');
-              },
-            ),
-            IconButton(
-              icon: Image.asset(
-                'assets/images/grocery-store.png',
-                color: Colors.white,
-                height: 24,
-              ),
-              onPressed: () {
-                Navigator.pushReplacementNamed(context, '/ecommerce/cart_page');
-              },
-            ),
-            IconButton(
-              icon: const Icon(Icons.person, color: Colors.white),
-              onPressed: () {
-                Navigator.pushReplacementNamed(context, '/profile');
-              },
-            ),
-          ],
-        ),
+      bottomNavigationBar: CustomBottomNavBar(
+        currentIndex: currentIndex,
+        onTap: (index) {
+          setState(() {
+            currentIndex = index;
+          });
+        },
+        isMarketplace: true,
       ),
       body: Stack(
         children: [
@@ -192,23 +175,13 @@ class _PaymentPageState extends State<PaymentPage> {
                   child: ListView(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     children: [
-                      // Credit/Debit Card
-                      _buildCreditDebitCard(),
-                      
+                      _buildCardSection(),
                       SizedBox(height: 16),
-                      
-                      // Net Banking
-                      _buildNetBanking(),
-                      
+                      _buildNetBankingSection(),
                       SizedBox(height: 16),
-                      
-                      // Paypal
-                      _buildPaypal(),
-                      
+                      _buildPaypalSection(),
                       SizedBox(height: 16),
-                      
-                      // UPI
-                      _buildUPI(),
+                      _buildUpiSection(),
                     ],
                   ),
                 ),
@@ -814,26 +787,6 @@ class _PaymentPageState extends State<PaymentPage> {
       ),
     );
   }
-}
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  _buildCardSection(),
-                  const SizedBox(height: 16),
-                  _buildNetBankingSection(),
-                  const SizedBox(height: 16),
-                  _buildPaypalSection(),
-                  const SizedBox(height: 16),
-                  _buildUpiSection(),
-                  const SizedBox(height: 100),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   // Debit / Credit Card Section
   Widget _buildCardSection() {
@@ -891,28 +844,28 @@ class _PaymentPageState extends State<PaymentPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildInputField(controller: _cardController, label: "Card Number", hint: "Card Number", isValid: _cardValid),
+                      _buildInputField(controller: cardNumberController, label: "Card Number", hint: "Card Number", isValid: _cardValid),
                       const SizedBox(height: 16),
                       Row(
                         children: [
                           Expanded(
-                            child: _buildInputField(controller: _cvvController, label: "CVV/CVC No.", hint: "CVV", isValid: _cvvValid),
+                            child: _buildInputField(controller: cvvController, label: "CVV/CVC No.", hint: "CVV", isValid: _cvvValid),
                           ),
                           const SizedBox(width: 16),
                           Expanded(
-                            child: _buildInputField(controller: _validThruController, label: "Valid Thru", hint: "MM/YY", isValid: _validThruValid),
+                            child: _buildInputField(controller: validThruController, label: "Valid Thru", hint: "MM/YY", isValid: _validThruValid),
                           ),
                         ],
                       ),
                       const SizedBox(height: 16),
-                      _buildInputField(controller: _fullNameController, label: "Full Name", hint: "Name on card"),
+                      _buildInputField(controller: fullNameController, label: "Full Name", hint: "Name on card"),
                       const SizedBox(height: 20),
                       ElevatedButton(
                         onPressed: () {
                           setState(() {
-                            _cardValid = _cardController.text.length == 16;
-                            _cvvValid = _cvvController.text.length == 3;
-                            _validThruValid = _validThruController.text.isNotEmpty;
+                            _cardValid = cardNumberController.text.length == 16;
+                            _cvvValid = cvvController.text.length == 3;
+                            _validThruValid = validThruController.text.isNotEmpty;
                           });
                           if (_cardValid && _cvvValid && _validThruValid) {
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -1084,7 +1037,7 @@ class _PaymentPageState extends State<PaymentPage> {
               color: Colors.white.withOpacity(0.1),
             ),
             child: TextField(
-              controller: _paypalController,
+              controller: paypalIdController,
               style: const TextStyle(color: Colors.white),
               decoration: const InputDecoration(
                 hintText: "Enter PayPal ID",
@@ -1096,7 +1049,7 @@ class _PaymentPageState extends State<PaymentPage> {
           GestureDetector(
             onTap: () {
               setState(() {
-                _paypalIdValid = _paypalController.text.contains("@");
+                _paypalIdValid = paypalIdController.text.contains("@");
               });
             },
             child: Container(

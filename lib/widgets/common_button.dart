@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:lit/data/global_data.dart';
+import 'package:lit/ecommerce/cart_page.dart';
 
 // Define cartItems list if it's not defined in global_data.dart
 List<Map<String, dynamic>> cartItems = [];
@@ -78,16 +79,17 @@ class CustomBottomNavBar extends StatelessWidget {
                       ),
                     ),
 
-                    // 🔹 Save Icon with Badge
+                    // 🔹 Middle Action Icon with Badge (Cart or IR or Save)
                     GestureDetector(
                       onTap: () {
                         if (isGame) {
                           Navigator.pushNamed(context, '/save-products');
                         } else if (isMarketplace) {
-                          Navigator.pushNamed(
+                          Navigator.push(
                             context,
-                            '/cart',
-                            arguments: cartItems, // pass current items
+                            MaterialPageRoute(
+                              builder: (_) => CartPage(cartItems: cartItems),
+                            ),
                           );
                         } else {
                           Navigator.pushNamed(context, '/ir-icon');
@@ -138,7 +140,12 @@ class CustomBottomNavBar extends StatelessWidget {
                     // 🔹 Grocery Store Icon (only for game pages)
                     if (isGame)
                       GestureDetector(
-                        onTap: () => Navigator.pushNamed(context, '/cart'),
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => CartPage(cartItems: cartItems),
+                          ),
+                        ),
                         child: Image.asset(
                           'assets/images/grocery-store.png',
                           width: 24,

@@ -214,7 +214,7 @@ class _CartPageState extends State<CartPage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const AddressPage(),
+                  builder: (context) => AddressPage(cartItems: cartItems),
                 ),
               );
             },

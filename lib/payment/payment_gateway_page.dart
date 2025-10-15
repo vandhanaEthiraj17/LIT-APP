@@ -7,7 +7,8 @@ import 'package:lit/widgets/common_button.dart';
 import '../widgets/notification_bell.dart';
 
 class PaymentGatewayPage extends StatefulWidget {
-  const PaymentGatewayPage({super.key});
+  final List<Map<String, dynamic>> cartItems;
+  const PaymentGatewayPage({super.key, required this.cartItems});
 
   @override
   State<PaymentGatewayPage> createState() => _PaymentGatewayPageState();
@@ -27,6 +28,114 @@ class _PaymentGatewayPageState extends State<PaymentGatewayPage> {
     {'name': 'ICICI Bank', 'logo': 'assets/images/icic.png'},
     {'name': 'Axis Bank', 'logo': 'assets/images/axis.png'},
   ];
+
+  // Card form controllers
+  final TextEditingController _cardNumberCtl = TextEditingController();
+  final TextEditingController _cvvCtl = TextEditingController();
+  final TextEditingController _validThruCtl = TextEditingController();
+  final TextEditingController _fullNameCtl = TextEditingController();
+  final TextEditingController _paypalCtl = TextEditingController();
+  // UPI
+  final TextEditingController _upiCtl = TextEditingController();
+  final FocusNode _upiFocus = FocusNode();
+  int? _selectedUpiIndex; // 0: gpay, 1: phonepe, 2: amazonpay
+  String _upiState = 'idle'; // idle | verifying | valid | invalid
+  bool _upiSave = false;
+
+  // Card form validation states
+  bool _cardError = false;
+  bool _cvvError = false;
+  bool _validThruError = false;
+  bool _saveCard = false;
+  bool _paypalError = false;
+  bool _paypalSuccess = false;
+
+  void _validateCardNumber(String v) {
+    setState(() {
+      final digitsOnly = v.replaceAll(RegExp(r'\D'), '');
+      _cardError = digitsOnly.length != 16;
+    });
+  }
+
+  Widget _buildValidatedField({
+    required String label,
+    required TextEditingController controller,
+    required bool isError,
+    required String errorText,
+    TextInputType? keyboardType,
+    void Function(String)? onChanged,
+    bool obscureText = false,
+    String? hintText,
+  }) {
+    final Color labelColor = isError ? Colors.redAccent : Colors.white70;
+    final Color textColor = isError ? Colors.redAccent : Colors.white;
+    final Color borderColor = isError ? Colors.redAccent : Colors.white30;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(color: labelColor, fontSize: 14),
+        ),
+        const SizedBox(height: 6),
+        TextField(
+          controller: controller,
+          onChanged: onChanged,
+          keyboardType: keyboardType,
+          obscureText: obscureText,
+          style: TextStyle(color: textColor),
+          decoration: InputDecoration(
+            contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+            filled: true,
+            fillColor: Colors.white.withOpacity(0.05),
+            hintText: hintText,
+            hintStyle: const TextStyle(color: Colors.white54),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(color: borderColor),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(color: borderColor),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(color: borderColor, width: 1.5),
+            ),
+          ),
+        ),
+        if (isError) ...[
+          const SizedBox(height: 6),
+          Text(
+            errorText,
+            style: const TextStyle(color: Colors.redAccent, fontSize: 12),
+          ),
+        ],
+      ],
+    );
+  }
+
+  void _validateCVV(String v) {
+    setState(() {
+      final digitsOnly = v.replaceAll(RegExp(r'\D'), '');
+      _cvvError = digitsOnly.length != 3;
+    });
+  }
+
+  void _validateValidThru(String v) {
+    setState(() {
+      final match = RegExp(r'^(0[1-9]|1[0-2])\/[0-9]{2}$').firstMatch(v.trim());
+      _validThruError = match == null;
+    });
+  }
+
+  void _resetCardErrors() {
+    setState(() {
+      _cardError = false;
+      _cvvError = false;
+      _validThruError = false;
+    });
+  }
 
 
 
@@ -174,7 +283,15 @@ class _PaymentGatewayPageState extends State<PaymentGatewayPage> {
       child: Column(
         children: [
           GestureDetector(
-            onTap: () => setState(() => _isCardExpanded = !_isCardExpanded),
+            onTap: () {
+              setState(() {
+                _isCardExpanded = !_isCardExpanded;
+                if (!_isCardExpanded) {
+                  // Reset all field error states when collapsing
+                  _resetCardErrors();
+                }
+              });
+            },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -204,26 +321,83 @@ class _PaymentGatewayPageState extends State<PaymentGatewayPage> {
           if (_isCardExpanded) ...[
             const SizedBox(height: 16),
 
-            // Card Number
-            _buildTextField("Card Number"),
+            // Card Number (with validation)
+            _buildValidatedField(
+              label: "Card Number",
+              controller: _cardNumberCtl,
+              isError: _cardError,
+              errorText: "Enter valid number",
+              keyboardType: TextInputType.number,
+            ),
 
             const SizedBox(height: 12),
 
             // CVV & Valid Thru
             Row(
               children: [
-                Expanded(child: _buildTextField("CVV/CVC No.")),
+                Expanded(
+                  child: _buildValidatedField(
+                    label: "CVV/CVC No.",
+                    controller: _cvvCtl,
+                    isError: _cvvError,
+                    errorText: "Enter valid CVV",
+                    keyboardType: TextInputType.number,
+                    obscureText: true,
+                  ),
+                ),
                 const SizedBox(width: 12),
-                Expanded(child: _buildTextField("Valid Thru")),
+                Expanded(
+                  child: _buildValidatedField(
+                    label: "Valid Thru",
+                    controller: _validThruCtl,
+                    isError: _validThruError,
+                    errorText: "Enter valid date",
+                    keyboardType: TextInputType.datetime,
+                    hintText: "MM/YY",
+                  ),
+                ),
               ],
             ),
 
             const SizedBox(height: 12),
 
-            // Full Name
-            _buildTextField("Full Name"),
+            // Full Name (no validation styling)
+            _buildValidatedField(
+              label: "Full Name",
+              controller: _fullNameCtl,
+              isError: false,
+              errorText: "",
+            ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 12),
+
+            // Save card checkbox (outlined, white tick)
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: Checkbox(
+                      value: _saveCard,
+                      onChanged: (v) => setState(() => _saveCard = v ?? false),
+                      fillColor: MaterialStateProperty.all(Colors.transparent),
+                      checkColor: Colors.white,
+                      side: const BorderSide(color: Colors.white70, width: 1.5),
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  const Text(
+                    "Save card details for future use",
+                    style: TextStyle(color: Colors.white70, fontSize: 14),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 16),
 
             // Send OTP Button
             SizedBox(
@@ -239,7 +413,6 @@ class _PaymentGatewayPageState extends State<PaymentGatewayPage> {
                     ],
                     stops: [0.0, 0.7],
                   ),
-
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: const [
                     BoxShadow(
@@ -249,9 +422,17 @@ class _PaymentGatewayPageState extends State<PaymentGatewayPage> {
                     ),
                   ],
                 ),
-
                 child: TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    _validateCardNumber(_cardNumberCtl.text);
+                    _validateCVV(_cvvCtl.text);
+                    _validateValidThru(_validThruCtl.text);
+                    if (!_cardError && !_cvvError && !_validThruError) {
+                      Navigator.pushNamed(context, '/payment-success', arguments: {
+                        'orderId': DateTime.now().millisecondsSinceEpoch.toString(),
+                      });
+                    }
+                  },
                   child: const Text(
                     "Send OTP",
                     style: TextStyle(color: Colors.white),
@@ -259,31 +440,11 @@ class _PaymentGatewayPageState extends State<PaymentGatewayPage> {
                 ),
               ),
             ),
-
-            const SizedBox(height: 12),
-
-            // Save Details
-
-            Row(
-              children: [
-                Checkbox(
-                  value: false,
-                  onChanged: (val) {},
-                  activeColor: Colors.purple,
-                ),
-                const Text(
-                  "Save details for future",
-                  style: TextStyle(color: Colors.white70),
-                ),
-              ],
-            ),
           ],
         ],
       ),
     );
   }
-
-
 
   Widget _buildTextField(String label) {
     return Column(
@@ -369,7 +530,9 @@ class _PaymentGatewayPageState extends State<PaymentGatewayPage> {
             const SizedBox(height: 8),
             DropdownButtonFormField<Map<String, String>>(
               value: _selectedBank,
+              isExpanded: true,
               dropdownColor: Colors.black87,
+              icon: const Icon(Icons.keyboard_arrow_down, color: Colors.white),
               iconEnabledColor: Colors.white,
               decoration: InputDecoration(
                 contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
@@ -478,10 +641,8 @@ class _PaymentGatewayPageState extends State<PaymentGatewayPage> {
                     ),
                   ],
                 ),
-                Icon(
-                  _isPaypalExpanded
-                      ? Icons.keyboard_arrow_up
-                      : Icons.keyboard_arrow_down,
+                const Icon(
+                  Icons.keyboard_arrow_down,
                   color: Colors.white,
                 ),
               ],
@@ -489,12 +650,14 @@ class _PaymentGatewayPageState extends State<PaymentGatewayPage> {
           ),
           if (_isPaypalExpanded) ...[
             const SizedBox(height: 16),
-            const Align(
+            Align(
               alignment: Alignment.centerLeft,
               child: Text(
                 "Paypal ID",
                 style: TextStyle(
-                  color: Colors.white,
+                  color: _paypalSuccess
+                      ? Colors.greenAccent
+                      : (_paypalError ? Colors.redAccent : Colors.white),
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
                 ),
@@ -507,20 +670,45 @@ class _PaymentGatewayPageState extends State<PaymentGatewayPage> {
                   child: SizedBox(
                     height: 48,
                     child: TextField(
-                      style: const TextStyle(color: Colors.white),
+                      controller: _paypalCtl,
+                      style: TextStyle(
+                        color: _paypalSuccess
+                            ? Colors.greenAccent
+                            : (_paypalError ? Colors.redAccent : Colors.white),
+                      ),
                       decoration: InputDecoration(
-                        hintText: "Name",
+                        hintText: "Paypal ID",
                         hintStyle: const TextStyle(color: Colors.white54),
                         contentPadding: const EdgeInsets.symmetric(horizontal: 12),
                         filled: true,
                         fillColor: Colors.white.withOpacity(0.05),
+                        suffixIcon: _paypalError
+                            ? const Icon(Icons.error_outline, color: Colors.redAccent)
+                            : null,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(color: Colors.white30),
+                          borderSide: BorderSide(
+                            color: _paypalSuccess
+                                ? Colors.greenAccent
+                                : (_paypalError ? Colors.redAccent : Colors.white30),
+                          ),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(color: Colors.white30),
+                          borderSide: BorderSide(
+                            color: _paypalSuccess
+                                ? Colors.greenAccent
+                                : (_paypalError ? Colors.redAccent : Colors.white30),
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                            color: _paypalSuccess
+                                ? Colors.greenAccent
+                                : (_paypalError ? Colors.redAccent : Colors.white30),
+                            width: 1.5,
+                          ),
                         ),
                       ),
                     ),
@@ -551,13 +739,25 @@ class _PaymentGatewayPageState extends State<PaymentGatewayPage> {
                     ),
                     child: TextButton(
                       onPressed: () {
-                        // Handle confirm
+                        setState(() {
+                          if (_paypalError) {
+                            // Retry: reset to neutral state
+                            _paypalError = false;
+                            _paypalSuccess = false;
+                          } else {
+                            // Validate on Confirm (dummy)
+                            final txt = _paypalCtl.text.trim();
+                            final valid = RegExp(r'^\S+@\S+$').hasMatch(txt);
+                            _paypalSuccess = valid;
+                            _paypalError = !valid;
+                          }
+                        });
                       },
-                      child: const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 12),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
                         child: Text(
-                          "Confirm",
-                          style: TextStyle(color: Colors.white),
+                          _paypalError ? "Retry" : "Confirm",
+                          style: const TextStyle(color: Colors.white),
                         ),
                       ),
                     ),
@@ -565,11 +765,22 @@ class _PaymentGatewayPageState extends State<PaymentGatewayPage> {
                 ),
               ],
             ),
+            if (_paypalError) ...[
+              const SizedBox(height: 6),
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "Enter valid ID",
+                  style: TextStyle(color: Colors.redAccent, fontSize: 12),
+                ),
+              ),
+            ],
           ],
         ],
       ),
     );
   }
+
   Widget _buildUPICard() {
     return Container(
       decoration: BoxDecoration(
@@ -580,7 +791,17 @@ class _PaymentGatewayPageState extends State<PaymentGatewayPage> {
       child: Column(
         children: [
           GestureDetector(
-            onTap: () => setState(() => _isUpiExpanded = !_isUpiExpanded),
+            onTap: () => setState(() {
+              _isUpiExpanded = !_isUpiExpanded;
+              if (!_isUpiExpanded) {
+                // Reset all when collapsing
+                _upiState = 'idle';
+                _upiCtl.clear();
+                _selectedUpiIndex = null;
+                _upiSave = false;
+                _upiFocus.unfocus();
+              }
+            }),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -608,59 +829,25 @@ class _PaymentGatewayPageState extends State<PaymentGatewayPage> {
             ),
           ),
           if (_isUpiExpanded) ...[
-            const SizedBox(height: 16),
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                "Choose App",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
             const SizedBox(height: 12),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildUpiAppIcon("assets/images/gpay.png"),
-                _buildUpiAppIcon("assets/images/paytm.png"),
-                _buildUpiAppIcon("assets/images/phonepe.png"),
-                _buildUpiAppIcon("assets/images/amazonpay.png"),
-              ],
-            ),
-            const SizedBox(height: 20),
-            Row(
-              children: const [
-                Expanded(
-                  child: Divider(
-                    color: Colors.white24,
-                    thickness: 1,
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 10),
-                  child: Text(
-                    "Or",
-                    style: TextStyle(color: Colors.white70),
-                  ),
-                ),
-                Expanded(
-                  child: Divider(
-                    color: Colors.white24,
-                    thickness: 1,
-                  ),
-                ),
+                _buildSelectableUpiApp(0, "assets/images/gpay.png", 'Google Pay'),
+                _buildSelectableUpiApp(1, "assets/images/paytm.png", 'Paytm'),
+                _buildSelectableUpiApp(2, "assets/images/phonepe.png", 'PhonePe'),
+                _buildSelectableUpiApp(3, "assets/images/amazonpay.png", 'Amazon Pay'),
               ],
             ),
             const SizedBox(height: 16),
-            const Align(
+            Align(
               alignment: Alignment.centerLeft,
               child: Text(
                 "Enter UPI ID",
                 style: TextStyle(
-                  color: Colors.white,
+                  color: _upiState == 'valid'
+                      ? Colors.greenAccent
+                      : (_upiState == 'invalid' ? Colors.redAccent : Colors.white),
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
                 ),
@@ -673,20 +860,55 @@ class _PaymentGatewayPageState extends State<PaymentGatewayPage> {
                   child: SizedBox(
                     height: 48,
                     child: TextField(
-                      style: const TextStyle(color: Colors.white),
+                      controller: _upiCtl,
+                      focusNode: _upiFocus,
+                      enabled: _upiState != 'verifying',
+                      style: TextStyle(
+                        color: _upiState == 'valid'
+                            ? Colors.greenAccent
+                            : (_upiState == 'invalid' ? Colors.redAccent : Colors.white),
+                      ),
                       decoration: InputDecoration(
-                        hintText: "Name",
+                        hintText: "Enter UPI ID",
                         hintStyle: const TextStyle(color: Colors.white54),
                         contentPadding: const EdgeInsets.symmetric(horizontal: 12),
                         filled: true,
                         fillColor: Colors.white.withOpacity(0.05),
+                        // No loading spinner inside the input; only show invalid icon
+                        suffixIcon: (_upiState == 'invalid'
+                                ? const Padding(
+                                    padding: EdgeInsets.only(right: 8),
+                                    child: Icon(
+                                      Icons.error_outline,
+                                      color: Colors.redAccent,
+                                      size: 20,
+                                    ),
+                                  )
+                                : null),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(color: Colors.white30),
+                          borderSide: BorderSide(
+                            color: _upiState == 'valid'
+                                ? Colors.greenAccent
+                                : (_upiState == 'invalid' ? Colors.redAccent : Colors.white30),
+                          ),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(color: Colors.white30),
+                          borderSide: BorderSide(
+                            color: _upiState == 'valid'
+                                ? Colors.greenAccent
+                                : (_upiState == 'invalid' ? Colors.redAccent : Colors.white30),
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                            color: _upiState == 'valid'
+                                ? Colors.greenAccent
+                                : (_upiState == 'invalid' ? Colors.redAccent : Colors.white70),
+                            width: 1.5,
+                          ),
                         ),
                       ),
                     ),
@@ -694,6 +916,7 @@ class _PaymentGatewayPageState extends State<PaymentGatewayPage> {
                 ),
                 const SizedBox(width: 12),
                 SizedBox(
+                  width: 120,
                   height: 48,
                   child: Container(
                     decoration: BoxDecoration(
@@ -716,18 +939,72 @@ class _PaymentGatewayPageState extends State<PaymentGatewayPage> {
                       ],
                     ),
                     child: TextButton(
-                      onPressed: () {
-                        // handle verify
+                      onPressed: () async {
+                        if (_selectedUpiIndex == null) return; // need app selection
+                        final txt = _upiCtl.text.trim();
+                        if (txt.isEmpty) return; // ignore empty input
+                        setState(() => _upiState = 'verifying');
+                        await Future.delayed(const Duration(seconds: 2));
+                        final valid = RegExp(r'^\S+@\S+$').hasMatch(txt);
+                        setState(() => _upiState = valid ? 'valid' : 'invalid');
                       },
-                      child: const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 12),
-                        child: Text(
-                          "Verify",
-                          style: TextStyle(color: Colors.white),
-                        ),
+                      child: AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 150),
+                        transitionBuilder: (c, a) => FadeTransition(opacity: a, child: c),
+                        child: (_upiState == 'verifying')
+                            ? Row(
+                                key: const ValueKey('verifying'),
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: const [
+                                  SizedBox(
+                                    width: 14,
+                                    height: 14,
+                                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                                  ),
+                                  SizedBox(width: 8),
+                                  Text("Verifying", style: TextStyle(color: Colors.white)),
+                                ],
+                              )
+                            : Text(
+                                _upiState == 'invalid' ? 'Retry' : 'Verify',
+                                key: ValueKey(_upiState),
+                                style: const TextStyle(color: Colors.white),
+                              ),
                       ),
                     ),
                   ),
+                ),
+              ],
+            ),
+            if (_upiState == 'invalid') ...[
+              const SizedBox(height: 6),
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "Enter valid ID",
+                  style: TextStyle(color: Colors.redAccent, fontSize: 12),
+                ),
+              ),
+            ],
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: Checkbox(
+                    value: _upiSave,
+                    onChanged: (v) => setState(() => _upiSave = v ?? false),
+                    fillColor: MaterialStateProperty.all(Colors.transparent),
+                    checkColor: Colors.white,
+                    side: const BorderSide(color: Colors.white70, width: 1.5),
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                const Text(
+                  "Save details for future use",
+                  style: TextStyle(color: Colors.white70, fontSize: 14),
                 ),
               ],
             ),
@@ -737,17 +1014,25 @@ class _PaymentGatewayPageState extends State<PaymentGatewayPage> {
     );
   }
 
-  Widget _buildUpiAppIcon(String assetPath) {
-    return Container(
-      width: 60,
-      height: 60,
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.white30),
-      ),
-      child: Center(
-        child: Image.asset(assetPath, width: 32, height: 32),
+  Widget _buildSelectableUpiApp(int index, String assetPath, String tooltip) {
+    final selected = _selectedUpiIndex == index;
+    final double iconSize = assetPath.contains('paytm') ? 36 : 32;
+    return Tooltip(
+      message: tooltip,
+      child: GestureDetector(
+        onTap: () => setState(() => _selectedUpiIndex = index),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 160),
+          curve: Curves.easeOut,
+          width: 60,
+          height: 60,
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.05),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: selected ? Colors.white70 : Colors.white30, width: selected ? 1.5 : 1),
+          ),
+          child: Center(child: Image.asset(assetPath, width: iconSize, height: iconSize)),
+        ),
       ),
     );
   }
