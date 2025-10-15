@@ -17,16 +17,10 @@ class SavedItemPage extends StatefulWidget {
 class _SavedItemPageState extends State<SavedItemPage> {
   int currentIndex = 1; // For bottom navigation bar
 
-  // Sample product for the new card design
-  final Map<String, dynamic> sampleProduct = {
-    'imagePath': 'assets/images/b1.jpg',
-    'label': 'Calvin Klein Vibrant Orange Waist belt',
-    'price': '₹4,999',
-  };
 
   void _removeItem(int index) {
     setState(() {
-      SavedItems.items.removeAt(index);
+      SavedItems.removeItem(index);
     });
   }
 
@@ -146,11 +140,7 @@ class _SavedItemPageState extends State<SavedItemPage> {
                           ),
                         ),
                       )
-                    : Column(
-                        children: [
-                          _buildNewProductCard(sampleProduct),
-                          const SizedBox(height: 20),
-                          GridView.builder(
+                    : GridView.builder(
                             physics: const NeverScrollableScrollPhysics(),
                             shrinkWrap: true,
                             gridDelegate:
@@ -165,8 +155,6 @@ class _SavedItemPageState extends State<SavedItemPage> {
                               final item = SavedItems.items[index];
                               return _buildSavedItemCard(item, index);
                             },
-                          ),
-                        ],
                       ),
               ],
             ),
@@ -195,7 +183,7 @@ class _SavedItemPageState extends State<SavedItemPage> {
             ),
             IconButton(
               onPressed: () => _onNavTapped(2),
-              icon: Image.asset('assets/images/grocery_store.png', width: 30, height: 30),
+              icon: const Icon(Icons.shopping_bag, color: Colors.white, size: 30),
             ),
             IconButton(
               onPressed: () => _onNavTapped(3),
@@ -210,74 +198,115 @@ class _SavedItemPageState extends State<SavedItemPage> {
   Widget _buildSavedItemCard(Map<String, dynamic> item, int index) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(16),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.5),
+          color: Colors.black,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.purple.withOpacity(0.3), width: 1),
           ),
-          width: double.infinity,
           child: Column(
+          mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+            // 🔹 Top Image Section
               Stack(
                 children: [
-                  ClipRRect(
-                    borderRadius: const BorderRadius.only(
+                Container(
+                  decoration: const BoxDecoration(
+                    color: Colors.black,
+                    borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(16),
                       topRight: Radius.circular(16),
                     ),
+                    ),
                     child: Image.asset(
                       item['imagePath'],
-                      height: 120,
+                    height: 150,
                       width: double.infinity,
-                      fit: BoxFit.cover,
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) {
+                      return const SizedBox(
+                        height: 150,
+                        child: Center(
+                          child: Icon(Icons.broken_image, color: Colors.white54, size: 60),
+                        ),
+                      );
+                    },
                     ),
                   ),
                   Positioned(
                     top: 8,
                     right: 8,
                     child: Container(
-                      padding: const EdgeInsets.all(4),
+                    padding: const EdgeInsets.all(6),
                       decoration: BoxDecoration(
                         color: Colors.black.withOpacity(0.5),
-                        borderRadius: BorderRadius.circular(8),
+                      shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.bookmark, color: Colors.orange, size: 20),
+                    child: const Icon(Icons.bookmark, color: Colors.white, size: 18),
                     ),
                   ),
                 ],
               ),
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0, left: 8.0, right: 8.0),
-                child: Text(
+
+            const SizedBox(height: 8),
+
+            // 🔹 Bottom Glassmorphism Section
+            ClipRRect(
+              borderRadius: const BorderRadius.only(
+                bottomLeft: Radius.circular(16),
+                bottomRight: Radius.circular(16),
+              ),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.06),
+                    border: Border.all(color: Colors.white.withOpacity(0.1)),
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.white.withOpacity(0.18),
+                        Colors.white.withOpacity(0.03),
+                      ],
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.3),
+                        blurRadius: 20,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
                   item['label'],
                   textAlign: TextAlign.center,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.poppins(
+                          color: const Color(0xFF9333EA),
+                          fontWeight: FontWeight.w600,
                     fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4.0),
-                child: Text(
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
                   item['price'] ?? '₹0',
+                        textAlign: TextAlign.center,
                   style: GoogleFonts.poppins(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
                     fontSize: 16,
-                    color: const Color(0xFF9333EA),
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+
+                      // 🔹 Button + Delete
+                      Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Expanded(
@@ -291,21 +320,33 @@ class _SavedItemPageState extends State<SavedItemPage> {
                           );
                         },
                         child: Container(
-                          height: 36,
+                                height: 38,
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            gradient: const LinearGradient(
-                              colors: [Color(0xFF6A1B9A), Color(0xFF9333EA)],
-                              begin: Alignment.centerLeft,
-                              end: Alignment.centerRight,
-                            ),
+                                  borderRadius: BorderRadius.circular(10),
+                                  gradient: const RadialGradient(
+                                    center: Alignment(0.08, 0.08),
+                                    radius: 7.98,
+                                    colors: [
+                                      Color.fromRGBO(0, 0, 0, 0.8),
+                                      Color.fromRGBO(147, 51, 234, 0.4),
+                                    ],
+                                    stops: [0.0, 0.5],
+                                  ),
+                                  border: Border.all(color: Color(0xFFAEAEAE), width: 1),
+                                  boxShadow: const [
+                                    BoxShadow(
+                                      color: Color(0x66000000),
+                                      offset: Offset(0, 4),
+                                      blurRadius: 4,
+                                    ),
+                                  ],
                           ),
                           child: Center(
                             child: Text(
                               'VIEW IN STORE',
                               style: GoogleFonts.poppins(
                                 color: Colors.white,
-                                fontSize: 10,
+                                      fontSize: 11,
                                 fontWeight: FontWeight.w600,
                                 letterSpacing: 0.5,
                               ),
@@ -317,125 +358,19 @@ class _SavedItemPageState extends State<SavedItemPage> {
                     const SizedBox(width: 8),
                     GestureDetector(
                       onTap: () => _removeItem(index),
-                      child: SvgPicture.asset(
-                        'assets/images/trash.svg',
-                        width: 20,
-                        height: 20,
-                        colorFilter: const ColorFilter.mode(Colors.red, BlendMode.srcIn),
+                            child: const Icon(Icons.delete, color: Colors.redAccent, size: 22),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNewProductCard(Map<String, dynamic> product) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.7),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Stack(
-            children: [
-              ClipRRect(
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(12),
-                  topRight: Radius.circular(12),
-                ),
-                child: Image.asset(
-                  product['imagePath'],
-                  height: 200,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                ),
-              ),
-              Positioned(
-                top: 10,
-                right: 10,
-                child: Container(
-                  padding: const EdgeInsets.all(6),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.6),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Icon(Icons.bookmark, color: Colors.orange, size: 24),
-                ),
-              ),
-            ],
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  product['label'],
-                  style: GoogleFonts.poppins(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.purple,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      product['price'],
-                      style: GoogleFonts.poppins(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                    SvgPicture.asset(
-                      'assets/images/trash.svg',
-                      width: 24,
-                      height: 24,
-                      colorFilter: ColorFilter.mode(
-                        Colors.white.withOpacity(0.7),
-                        BlendMode.srcIn,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                Container(
-                  height: 40,
-                  width: 150,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF6A1B9A), Color(0xFF9333EA)],
-                      begin: Alignment.centerLeft,
-                      end: Alignment.centerRight,
-                    ),
-                  ),
-                  child: Center(
-                    child: Text(
-                      'VIEW IN STORE',
-                      style: GoogleFonts.poppins(
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 0.5,
+                    ],
                       ),
                     ),
                   ),
                 ),
               ],
             ),
-          ),
-        ],
       ),
     );
   }
+
 }

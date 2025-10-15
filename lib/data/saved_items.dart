@@ -1,12 +1,21 @@
 class SavedItems {
-  // Simple in-memory store for saved items across pages
-  static final List<Map<String, String>> items = <Map<String, String>>[];
+  static List<Map<String, dynamic>> items = [];
 
-  static void addItem({required String imagePath, required String label}) {
-    items.add({'image': imagePath, 'label': label});
+  static void addItem({
+    required String imagePath,
+    required String label,
+    required String price,
+  }) {
+    if (!items.any((item) => item['label'] == label)) {
+      items.add({
+        'imagePath': imagePath,
+        'label': label,
+        'price': price,
+      });
+    }
   }
 
-  static void removeAt(int index) {
+  static void removeItem(int index) {
     if (index >= 0 && index < items.length) {
       items.removeAt(index);
     }
