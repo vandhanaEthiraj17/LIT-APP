@@ -1025,97 +1025,11 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
       context: context,
       barrierDismissible: true,
       builder: (context) {
-        return Dialog(
-          backgroundColor: Colors.transparent,
-          insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
-          child: Center(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(20),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-                child: Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    Container(
-                      width: 320,
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: const Color.fromRGBO(255, 255, 255, 0.06),
-                        border: Border.all(color: Colors.white24, width: 1),
-                      ),
-                      child: Stack(
-                        clipBehavior: Clip.none,
-                        children: [
-                          // Decorative side flames with exact positions
-                          Positioned(
-                            left: -31,
-                            top: 90,
-                            child: Transform.rotate(
-                              angle: -23.21 * (math.pi / 180),
-                              child: Image.asset('assets/images/fire.png', width: 78, height: 78),
-                            ),
-                          ),
-                          Positioned(
-                            left: 6,
-                            top: 208,
-                            child: Image.asset('assets/images/fire.png', width: 78, height: 78),
-                          ),
-                          Positioned(
-                            left: 289,
-                            top: 36,
-                            child: Image.asset('assets/images/fire.png', width: 78, height: 78),
-                          ),
-                          Positioned(
-                            left: 296.76,
-                            top: 151.75,
-                            child: Transform.rotate(
-                              angle: 10.82 * (math.pi / 180),
-                              child: Image.asset('assets/images/fire.png', width: 78, height: 78),
-                            ),
-                          ),
-                          Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Row(
-                                children: [
-                                  ClipOval(
-                                    child: Image.asset('assets/images/avatar.jpg', width: 32, height: 32, fit: BoxFit.cover),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  const Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text('LuxuryinTaste', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                                      Text('Beginner', style: TextStyle(color: Colors.white70, fontSize: 12)),
-                                    ],
-                                  )
-                                ],
-                              ),
-                              const SizedBox(height: 16),
-                              Text('$_streakDays', style: const TextStyle(color: Colors.white, fontSize: 64, fontWeight: FontWeight.bold)),
-                              const Text('DAYS', style: TextStyle(color: Colors.white70, fontSize: 16, fontWeight: FontWeight.w600, letterSpacing: 2)),
-                              const SizedBox(height: 16),
-                              const Text("You're On A Streak", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
-                              const SizedBox(height: 10),
-                              const Text(
-                                'Your Consistency Is Unmatched — And We\nNotice. Keep The Streak Alive And Hit 30 For A\nSurprise Reward',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(color: Colors.white70, fontSize: 12, height: 1.4),
-                              ),
-                              const SizedBox(height: 12),
-                              const Text('Next Milestone : 30 Days', style: TextStyle(color: Colors.white70, fontSize: 12)),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    const _DialogCloseButton(),
-                  ],
-                ),
-              ),
-            ),
-          ),
+        return StreakDialog(
+          avatarPath: 'assets/images/avatar.jpg',
+          username: 'LuxuryinTaste',
+          userTier: 'Beginner',
+          streakDays: _streakDays,
         );
       },
     );
@@ -1313,8 +1227,17 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
                 right: -1,
                 child: GestureDetector(
                   onTap: () {
-                    SavedItems.addItem(imagePath: imagePath, label: label);
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => const SavedItemPage()));
+                    SavedItems.addItem(
+                      imagePath: imagePath,
+                      label: label,
+                      price: price,
+                    );
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('$label added to Saved Products'),
+                        duration: Duration(seconds: 2),
+                      ),
+                    );
                   },
                 child: Container(
                   width: 36,
@@ -1908,5 +1831,325 @@ class _RewardIconState extends State<_RewardIcon> with SingleTickerProviderState
       position: _offsetAnim,
       child: Image.asset(widget.assetPath, width: 44, height: 44),
     );
+  }
+}
+
+/// --- IMPROVED STREAK DIALOG DESIGN ---
+/// GOAL: Match the second image reference (bigger flames, clear fadefire background, balanced layout)
+/// NOTE: Keep the rest of GamePage unchanged.
+
+class StreakDialog extends StatefulWidget {
+  final String avatarPath;
+  final String username;
+  final String userTier;
+  final int streakDays;
+
+  const StreakDialog({
+    Key? key,
+    required this.avatarPath,
+    required this.username,
+    required this.userTier,
+    required this.streakDays,
+  }) : super(key: key);
+
+  @override
+  State<StreakDialog> createState() => _StreakDialogState();
+}
+
+class _StreakDialogState extends State<StreakDialog>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _entryController;
+  late Animation<double> _scaleAnim;
+  late Animation<double> _fadeAnim;
+
+  @override
+  void initState() {
+    super.initState();
+    _entryController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 380),
+    );
+    _scaleAnim = Tween<double>(begin: 0.95, end: 1.0).animate(
+      CurvedAnimation(parent: _entryController, curve: Curves.easeOutBack),
+    );
+    _fadeAnim =
+        CurvedAnimation(parent: _entryController, curve: Curves.easeInOut);
+    _entryController.forward();
+  }
+
+  @override
+  void dispose() {
+    _entryController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final double dialogWidth = math.min(MediaQuery.of(context).size.width * 0.86, 380.0);
+
+    return Center(
+      child: FadeTransition(
+        opacity: _fadeAnim,
+        child: ScaleTransition(
+          scale: _scaleAnim,
+          child: Stack(
+            alignment: Alignment.center,
+            clipBehavior: Clip.none,
+            children: [
+              // 🔹 Background blurred layer
+              ClipRRect(
+                borderRadius: BorderRadius.circular(24),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 20.0, sigmaY: 20.0),
+                  child: Container(
+                    width: dialogWidth,
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 22, horizontal: 18),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(24),
+                      color: Colors.white.withOpacity(0.08),
+                      border: Border.all(color: Colors.white.withOpacity(0.25), width: 1.2),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.4),
+                          blurRadius: 20,
+                          offset: const Offset(0, 6),
+                        ),
+                      ],
+                    ),
+                    child: DefaultTextStyle.merge(
+                      style: const TextStyle(
+                        decoration: TextDecoration.none,
+                        decorationColor: Colors.transparent,
+                      ),
+                      child: Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        // 🔸 Faded fire texture behind everything
+                        Positioned.fill(
+                          child: IgnorePointer(
+                            child: Opacity(
+                              opacity: 0.25,
+                              child: Image.asset(
+                                'assets/images/fadefire.png',
+                                fit: BoxFit.cover,
+                                alignment: Alignment.center,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        // 🔥 EDGE FLAMES (exact layout like Figma)
+                        _flame(left: -40, top: 40, angle: -0.3),
+                        _flame(right: -40, top: 40, angle: 0.3),
+                        _flame(left: -40, bottom: -10, angle: 0.2),
+                        _flame(right: -40, bottom: -10, angle: -0.2),
+
+                        // 🧱 CONTENT
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Row(
+                              children: [
+                                ClipOval(
+                                  child: Image.asset(
+                                    widget.avatarPath,
+                                    width: 38,
+                                    height: 38,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      widget.username,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      widget.userTier,
+                                      style: const TextStyle(
+                                        color: Colors.white70,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 24),
+
+                            // 🔹 STREAK DAYS
+                            Text(
+                              '${widget.streakDays}',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 72,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const Text(
+                              'DAYS',
+                              style: TextStyle(
+                                color: Colors.white70,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 3,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+
+                            const Text(
+                              "You're On A Streak",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+
+                            ConstrainedBox(
+                              constraints: const BoxConstraints(maxWidth: 300),
+                              child: const Text(
+                                'Your Consistency Is Unmatched — And We Notice.\nKeep The Streak Alive And Hit 30 For A Surprise Reward',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 13,
+                                  height: 1.4,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+
+                            const Text(
+                              'Next Milestone : 30 Days',
+                              style: TextStyle(
+                                color: Colors.white70,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        // ❌ CLOSE BUTTON (same as Figma)
+                        Positioned(
+                          top: -10,
+                          right: -10,
+                          child: GestureDetector(
+                            onTap: () => Navigator.of(context).pop(),
+                            child: SizedBox(
+                              width: 42,
+                              height: 42,
+                              child: Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  Image.asset(
+                                    'assets/images/Rectangle.png',
+                                    width: 42,
+                                    height: 42,
+                                    fit: BoxFit.contain,
+                                  ),
+                                  const Icon(Icons.close,
+                                      size: 18, color: Colors.white),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// --- 🔥 FLAME BUILDER (with flicker + proper scale) ---
+  Widget _flame({
+    double? left,
+    double? right,
+    double? top,
+    double? bottom,
+    double angle = 0,
+  }) {
+    return Positioned(
+      left: left,
+      right: right,
+      top: top,
+      bottom: bottom,
+      child: _FlameFlicker(
+        child: Transform.rotate(
+          angle: angle,
+          child: Container(
+            decoration: BoxDecoration(
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.orange.withOpacity(0.5),
+                  blurRadius: 25,
+                  spreadRadius: 10,
+                ),
+              ],
+            ),
+            child: Image.asset(
+              'assets/images/fire.png',
+              width: 100,
+              height: 100,
+              fit: BoxFit.contain,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// --- Flicker Animation for Flames ---
+class _FlameFlicker extends StatefulWidget {
+  final Widget child;
+  const _FlameFlicker({required this.child});
+  @override
+  State<_FlameFlicker> createState() => _FlameFlickerState();
+}
+
+class _FlameFlickerState extends State<_FlameFlicker>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _opacity;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: Duration(
+        milliseconds: 700 + (300 * (math.Random().nextDouble())).toInt(),
+      ),
+    )..repeat(reverse: true);
+    _opacity = Tween(begin: 0.7, end: 1.0)
+        .animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FadeTransition(opacity: _opacity, child: widget.child);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 }
