@@ -41,6 +41,7 @@ import 'package:lit/ecommerce/selection_address.dart';
 import 'package:lit/ecommerce/cart_page.dart';
 import 'package:lit/ecommerce/payment_page.dart';
 import 'package:lit/payment/payment_success_page.dart';
+import 'package:lit/payment/order_confirmation_page.dart';
 void main() {
   // Enable performance optimizations
   WidgetsFlutterBinding.ensureInitialized();
@@ -142,6 +143,8 @@ class MyApp extends StatelessWidget {
           }
           return PaymentSuccessPage(orderId: orderId);
         },
+
+        '/order-confirmation': (context) => const OrderConfirmationPage(),
 
       },
     );

@@ -430,6 +430,7 @@ class _PaymentGatewayPageState extends State<PaymentGatewayPage> {
                     if (!_cardError && !_cvvError && !_validThruError) {
                       Navigator.pushNamed(context, '/payment-success', arguments: {
                         'orderId': DateTime.now().millisecondsSinceEpoch.toString(),
+                        'cartItems': widget.cartItems,
                       });
                     }
                   },
@@ -487,7 +488,14 @@ class _PaymentGatewayPageState extends State<PaymentGatewayPage> {
       child: Column(
         children: [
           GestureDetector(
-            onTap: () => setState(() => _isNetBankingExpanded = !_isNetBankingExpanded),
+            onTap: () => setState(() {
+              _isNetBankingExpanded = !_isNetBankingExpanded;
+              if (!_isNetBankingExpanded) {
+                // Reset to original unselected state on collapse
+                _selectedBank = null;
+                FocusScope.of(context).unfocus();
+              }
+            }),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -528,50 +536,80 @@ class _PaymentGatewayPageState extends State<PaymentGatewayPage> {
               ),
             ),
             const SizedBox(height: 8),
-            DropdownButtonFormField<Map<String, String>>(
-              value: _selectedBank,
-              isExpanded: true,
-              dropdownColor: Colors.black87,
-              icon: const Icon(Icons.keyboard_arrow_down, color: Colors.white),
-              iconEnabledColor: Colors.white,
-              decoration: InputDecoration(
-                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                filled: true,
-                fillColor: Colors.white.withOpacity(0.05),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(color: Colors.white30),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(color: Colors.white30),
-                ),
-              ),
-              style: const TextStyle(color: Colors.white),
-              hint: const Text("Select Bank", style: TextStyle(color: Colors.white54)),
-              items: _banks.map((bank) {
-                return DropdownMenuItem<Map<String, String>>(
-                  value: bank,
-                  child: Row(
-                    children: [
-                      Image.asset(
-                        bank['logo']!,
-                        width: 30,
-                        height: 30,
+            Builder(
+              builder: (fieldCtx) {
+                return GestureDetector(
+                  onTap: () async {
+                    final box = fieldCtx.findRenderObject() as RenderBox;
+                    final overlay = Overlay.of(fieldCtx).context.findRenderObject() as RenderBox;
+                    final offset = box.localToGlobal(Offset.zero, ancestor: overlay);
+                    final selected = await showMenu<Map<String, String>>(
+                      context: fieldCtx,
+                      elevation: 8,
+                      color: const Color(0xF0121212),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      position: RelativeRect.fromLTRB(
+                        offset.dx,
+                        offset.dy + box.size.height + 4,
+                        overlay.size.width - (offset.dx + box.size.width),
+                        0,
                       ),
-                      const SizedBox(width: 12),
-                      Text(
-                        bank['name']!,
-                        style: const TextStyle(color: Colors.white),
-                      ),
-                    ],
+                      items: _banks.map((bank) {
+                        return PopupMenuItem<Map<String, String>>(
+                          value: bank,
+                          child: Row(
+                            children: [
+                              Image.asset(bank['logo']!, width: 24, height: 24),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  bank['name']!,
+                                  style: const TextStyle(color: Colors.white),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                    );
+                    if (selected != null) {
+                      setState(() => _selectedBank = selected);
+                    }
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.05),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Colors.white30),
+                    ),
+                    child: Row(
+                      children: [
+                        if (_selectedBank != null) ...[
+                          Image.asset(_selectedBank!['logo']!, width: 24, height: 24),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              _selectedBank!['name']!,
+                              style: const TextStyle(color: Colors.white),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ] else ...[
+                          const Expanded(
+                            child: Text(
+                              'Select Bank',
+                              style: TextStyle(color: Colors.white54),
+                            ),
+                          ),
+                        ],
+                        const SizedBox(width: 8),
+                        const Icon(Icons.keyboard_arrow_down, color: Colors.white),
+                      ],
+                    ),
                   ),
                 );
-              }).toList(), // ✅ This closes `.map()` properly
-              onChanged: (value) {
-                setState(() {
-                  _selectedBank = value;
-                });
               },
             ),
             const SizedBox(height: 20),
@@ -599,7 +637,10 @@ class _PaymentGatewayPageState extends State<PaymentGatewayPage> {
                 ),
                 child: TextButton(
                   onPressed: () {
-                    // Handle proceed
+                    Navigator.pushNamed(context, '/payment-success', arguments: {
+                      'orderId': DateTime.now().millisecondsSinceEpoch.toString(),
+                      'cartItems': widget.cartItems,
+                    });
                   },
                   child: const Text(
                     "Proceed",

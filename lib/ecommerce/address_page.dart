@@ -54,10 +54,18 @@ class _AddressPageState extends State<AddressPage> {
               child: const Text("Cancel",
                   style: TextStyle(color: Colors.white70, fontSize: 14)),
             ),
-            TextButton(
+            OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                side: const BorderSide(color: Colors.redAccent, width: 1),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
               onPressed: () => Navigator.pop(context, true),
-              child: const Text("Delete",
-                  style: TextStyle(color: Colors.redAccent, fontSize: 14)),
+              child: const Text(
+                "Delete",
+                style: TextStyle(color: Colors.redAccent, fontSize: 14),
+              ),
             ),
           ],
         ),
@@ -90,25 +98,27 @@ class _AddressPageState extends State<AddressPage> {
       drawer: const AppDrawer(),
       extendBodyBehindAppBar: true,
       extendBody: true,
-      resizeToAvoidBottomInset: true,
+      resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
-          // Background with blur
-          Container(
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage("assets/images/background.png"),
-                fit: BoxFit.cover,
+          // Background with blur (fills entire screen, including under bottom bar)
+          Positioned.fill(
+            child: Container(
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage("assets/images/background.png"),
+                  fit: BoxFit.cover,
+                ),
               ),
-            ),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
-              child: Container(color: Colors.black.withOpacity(0.6)),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
+                child: Container(color: Colors.black.withOpacity(0.6)),
+              ),
             ),
           ),
           SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.only(bottom: 160),
+              padding: const EdgeInsets.only(bottom: 140),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -237,64 +247,66 @@ class _AddressPageState extends State<AddressPage> {
         ],
       ),
       bottomNavigationBar: SafeArea(
-        top: false,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              SizedBox(
-                width: 158.5,
-                height: 60,
-                child: OutlinedButton(
-                  style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: Color(0x4D9333EA), width: 1),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(6),
+              Expanded(
+                child: SizedBox(
+                  height: 60,
+                  child: OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      side: const BorderSide(color: Color(0x4D9333EA), width: 1),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6),
+                      ),
                     ),
-                  ),
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text(
-                    "Back",
-                    style: TextStyle(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text(
+                      "Back",
+                      style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
-                        fontSize: 16),
+                        fontSize: 16,
+                      ),
+                    ),
                   ),
                 ),
               ),
               const SizedBox(width: 16),
-              SizedBox(
-                width: 158.5,
-                height: 60,
-                child: GestureDetector(
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => PaymentGatewayPage(
-                        cartItems: widget.cartItems,
+              Expanded(
+                child: SizedBox(
+                  height: 60,
+                  child: GestureDetector(
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => PaymentGatewayPage(
+                          cartItems: widget.cartItems,
+                        ),
                       ),
                     ),
-                  ),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: const RadialGradient(
-                        center: Alignment(0.08, 0.08),
-                        radius: 8,
-                        colors: [
-                          Color.fromRGBO(0, 0, 0, 0.8),
-                          Color.fromRGBO(147, 51, 234, 0.4),
-                        ],
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: const RadialGradient(
+                          center: Alignment(0.08, 0.08),
+                          radius: 8,
+                          colors: [
+                            Color.fromRGBO(0, 0, 0, 0.8),
+                            Color.fromRGBO(147, 51, 234, 0.4),
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(6),
                       ),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: const Center(
-                      child: Text(
-                        "Next",
-                        style: TextStyle(
+                      child: const Center(
+                        child: Text(
+                          "Next",
+                          style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.w600,
-                            fontSize: 16),
+                            fontSize: 16,
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -306,7 +318,7 @@ class _AddressPageState extends State<AddressPage> {
       ),
     );
   }
-
+}
   Widget _stepCircle(String icon, String label1, String label2, bool active) {
     return Row(
       children: [
@@ -339,7 +351,6 @@ class _AddressPageState extends State<AddressPage> {
       ],
     );
   }
-}
 
 // --------------------------- Top-Level Widgets ---------------------------
 
@@ -632,5 +643,6 @@ class _DashedLinePainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
+
 
 
