@@ -42,6 +42,7 @@ import 'package:lit/ecommerce/cart_page.dart';
 import 'package:lit/ecommerce/payment_page.dart';
 import 'package:lit/payment/payment_success_page.dart';
 import 'package:lit/payment/order_confirmation_page.dart';
+import 'package:lit/payment/payment_failure_page.dart';
 void main() {
   // Enable performance optimizations
   WidgetsFlutterBinding.ensureInitialized();
@@ -101,6 +102,7 @@ class MyApp extends StatelessWidget {
         '/forgot_password': (context) => const ForgotPasswordPage(),
         '/game-category': (context) => const GameCategoryPage(),
         '/ir-icon': (context) => const IrIconPage(),
+        '/scan': (context) => const IrIconPage(),
         '/game': (context) => const GamePage(),
         '/game-leaderboard': (context) => const GameLeaderboardPage(),
         '/game-modes': (context) => const GameModesPage(),
@@ -145,6 +147,15 @@ class MyApp extends StatelessWidget {
         },
 
         '/order-confirmation': (context) => const OrderConfirmationPage(),
+
+        '/payment-failure': (context) {
+          final args = ModalRoute.of(context)!.settings.arguments;
+          List<Map<String, dynamic>> cartItems = const [];
+          if (args is Map && args['cartItems'] is List) {
+            cartItems = (args['cartItems'] as List).cast<Map<String, dynamic>>();
+          }
+          return PaymentFailurePage(cartItems: cartItems);
+        },
 
       },
     );

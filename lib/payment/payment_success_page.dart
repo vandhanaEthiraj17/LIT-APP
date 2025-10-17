@@ -263,10 +263,12 @@ class _PulsingSuccessIconState extends State<_PulsingSuccessIcon>
               ),
             ),
             // White tick mark
-            Icon(
-              Icons.check,
-              color: Colors.white,
-              size: 42,
+            Center(
+              child: Icon(
+                Icons.check,
+                color: Colors.white,
+                size: 52,
+              ),
             ),
           ],
         ),

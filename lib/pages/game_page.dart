@@ -288,7 +288,7 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 28,
+                          fontSize: 24,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -421,46 +421,53 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            // Pin timer slightly above bottom so it's always visible
             if (_hasStarted)
-              Center(
-                child: Text(
-                  "00:${secondsRemaining.toString().padLeft(2, '0')}",
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: _selectedOption != null ? 180 : 88,
+                child: Center(
+                  child: Text(
+                    "00:${secondsRemaining.toString().padLeft(2, '0')}",
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
-            const SizedBox(height: 18),
-            
-            // Action buttons centered below both cards
-            if (_selectedOption != null) ...[
-              const SizedBox(height: 12.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  if (_selectedOption == 2)
-                    _primaryButton('Undo', _undoSelection),
-                  if (_selectedOption == 2)
+
+            // Pin action buttons above bottom so they don't go off screen
+            if (_selectedOption != null)
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 120,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if (_selectedOption == 2) ...[
+                      _primaryButton('Undo', _undoSelection),
+                      const SizedBox(width: 12),
+                    ],
+                    _primaryButton('Next', () {
+                      setState(() {
+                        _selectedOption = null; // reset for next round
+                        _showWrongReward = false;
+                        secondsRemaining = 15;
+                      });
+                      countdownTimer?.cancel();
+                      _startTimer();
+                    }),
                     const SizedBox(width: 12),
-                  _primaryButton('Next', () {
-                    setState(() {
-                      _selectedOption = null; // reset for next round
-                      _showWrongReward = false;
-                      secondsRemaining = 15;
-                    });
-                    countdownTimer?.cancel();
-                    _startTimer();
-                  }),
-                  const SizedBox(width: 12),
-                  _primaryButton('Exit', () {
-                    _showExitConfirmation(context);
-                  }),
-                ],
+                    _primaryButton('Exit', () {
+                      _showExitConfirmation(context);
+                    }),
+                  ],
+                ),
               ),
-            ],
             if (_selectedOption == null)
               Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -1194,22 +1201,22 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
 
         // Original card container (no outer glow/border outlines)
         Container(
-      decoration: BoxDecoration(
-        gradient: const RadialGradient(
-          center: Alignment(0.08, 0.08),
-          radius: 7.98,
-          colors: [
+          decoration: BoxDecoration(
+            gradient: const RadialGradient(
+              center: Alignment(0.08, 0.08),
+              radius: 7.98,
+              colors: [
                 Color.fromRGBO(0, 0, 0, 0.86),
                 Color.fromRGBO(147, 51, 234, 0.46),
-          ],
-          stops: [0.0, 0.5],
-        ),
+              ],
+              stops: [0.0, 0.5],
+            ),
             border: Border.all(
               color: isSelected ? Colors.transparent : const Color(0xFFAEAEAE),
               width: 1,
             ),
-        borderRadius: BorderRadius.circular(16),
-      ),
+            borderRadius: BorderRadius.circular(16),
+          ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -1265,80 +1272,79 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
               ),
             ],
           ),
-          // Bottom area: when selected, hide strip and divider; when not, show them
-          if (isSelected)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              child: Column(
-                children: [
-                  Text(
-                    _selectedOption == null ? (imagePath.contains('shoe1') ? 'Option 1' : 'Option 2') : label,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                  if (showPrice)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 6),
-                      child: Text(
-                        price,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
+          
+              isSelected
+                  ? Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      child: Column(
+                        children: [
+                          Text(
+                            _selectedOption == null ? (imagePath.contains('shoe1') ? 'Option 1' : 'Option 2') : label,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          if (showPrice)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 6),
+                              child: Text(
+                                price,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    )
+                  : Container(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      decoration: const BoxDecoration(
+                        gradient: RadialGradient(
+                          center: Alignment(0.08, 0.08),
+                          radius: 7.98,
+                          colors: [
+                            Color.fromRGBO(0, 0, 0, 0.8),
+                            Color.fromRGBO(147, 51, 234, 0.4),
+                          ],
+                          stops: [0.0, 0.5],
                         ),
+                        border: Border(
+                          top: BorderSide(color: Color(0xFFAEAEAE), width: 1),
+                        ),
+                        borderRadius: BorderRadius.vertical(bottom: Radius.circular(16)),
+                      ),
+                      child: Column(
+                        children: [
+                          Text(
+                            _selectedOption == null ? (imagePath.contains('shoe1') ? 'Option 1' : 'Option 2') : label,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
+                            ),
+                          ),
+                          if (showPrice)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 6),
+                              child: Text(
+                                price,
+                                style: const TextStyle(
+                                  color: Colors.white70,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
                     ),
-                ],
-              ),
-            )
-          else
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            decoration: const BoxDecoration(
-              gradient: RadialGradient(
-                center: Alignment(0.08, 0.08),
-                radius: 7.98,
-                colors: [
-                  Color.fromRGBO(0, 0, 0, 0.8),
-                  Color.fromRGBO(147, 51, 234, 0.4),
-                ],
-                stops: [0.0, 0.5],
-              ),
-              border: Border(
-                top: BorderSide(color: Color(0xFFAEAEAE), width: 1),
-              ),
-              borderRadius: BorderRadius.vertical(bottom: Radius.circular(16)),
-            ),
-            child: Column(
-              children: [
-                Text(
-                    _selectedOption == null ? (imagePath.contains('shoe1') ? 'Option 1' : 'Option 2') : label,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                    fontSize: 16,
-                  ),
-                ),
-                if (showPrice)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 6),
-                    child: Text(
-                      price,
-                      style: const TextStyle(
-                          color: Colors.white70,
-                          fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-              ],
-            ),
+            ],
           ),
-        ],
-      ),
         ),
       ],
     );
@@ -1939,11 +1945,13 @@ class _StreakDialogState extends State<StreakDialog>
                           ),
                         ),
 
-                        // 🔥 EDGE FLAMES (exact layout like Figma)
-                        _flame(left: -40, top: 40, angle: -0.3),
-                        _flame(right: -40, top: 40, angle: 0.3),
-                        _flame(left: -40, bottom: -10, angle: 0.2),
-                        _flame(right: -40, bottom: -10, angle: -0.2),
+                        // 🔥 EDGE FLAMES (use specific assets per side)
+                        // Left side: fire1 (top), fire2 (bottom)
+                        _flame(asset: 'assets/images/fire1.png', left: -42, top: 30, angle: -0.2, size: 110),
+                        _flame(asset: 'assets/images/fire2.png', left: -46, bottom: -12, angle: 0.15, size: 120),
+                        // Right side: fire3 (top), fire4 (bottom)
+                        _flame(asset: 'assets/images/fire3.png', right: -42, top: 28, angle: 0.2, size: 110),
+                        _flame(asset: 'assets/images/fire4.png', right: -48, bottom: -14, angle: -0.15, size: 120),
 
                         // 🧱 CONTENT
                         Column(
@@ -2084,6 +2092,8 @@ class _StreakDialogState extends State<StreakDialog>
     double? top,
     double? bottom,
     double angle = 0,
+    String asset = 'assets/images/fire.png',
+    double size = 100,
   }) {
     return Positioned(
       left: left,
@@ -2104,9 +2114,9 @@ class _StreakDialogState extends State<StreakDialog>
               ],
             ),
             child: Image.asset(
-              'assets/images/fire.png',
-              width: 100,
-              height: 100,
+              asset,
+              width: size,
+              height: size,
               fit: BoxFit.contain,
             ),
           ),

@@ -78,6 +78,7 @@ flutter:
     - assets/images/amazonpay.png
     - assets/images/circle-check-solid-full.svg
     - assets/images/Vector.png
+    - assets/images/robo.svg
     
     - assets/images/d5.jpg
     - assets/images/d6.jpg
@@ -120,6 +121,10 @@ flutter:
     - assets/images/avatar11.jpg
     - assets/images/fire.png
     - assets/images/fadefire.png
+    - assets/images/fire1.png
+    - assets/images/fire2.png
+    - assets/images/fire3.png
+    - assets/images/fire4.png
     - assets/images/shoe1.png
     - assets/images/shoe2.png
     - assets/images/india-flag.png

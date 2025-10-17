@@ -793,6 +793,14 @@ class _PaymentGatewayPageState extends State<PaymentGatewayPage> {
                             _paypalError = !valid;
                           }
                         });
+                        // Navigate to payment failure screen on Confirm tap
+                        Navigator.pushNamed(
+                          context,
+                          '/payment-failure',
+                          arguments: {
+                            'cartItems': widget.cartItems,
+                          },
+                        );
                       },
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 12),
