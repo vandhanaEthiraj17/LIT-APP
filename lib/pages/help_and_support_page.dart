@@ -1,8 +1,7 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:lit/widgets/app_drawer.dart';
 import 'package:lit/pages/notifications_page.dart';
-import 'package:lit/pages/profile_page.dart';
-import 'package:lit/screens/home/home_page.dart';
 import 'package:lit/widgets/common_button.dart'; // ✅ Use your shared bottom nav file
 
 class HelpAndSupportPage extends StatefulWidget {
@@ -35,15 +34,11 @@ class _HelpAndSupportPageState extends State<HelpAndSupportPage> {
   void _onBottomNavTapped(int index) {
     setState(() => _selectedIndex = index);
     if (index == 0) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const HomePage()),
-      );
+      Navigator.pushReplacementNamed(context, '/home');
+    } else if (index == 1) {
+      Navigator.pushReplacementNamed(context, '/ir-icon');
     } else if (index == 2) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => ProfilePage()),
-      );
+      Navigator.pushReplacementNamed(context, '/profile');
     }
   }
 
@@ -52,6 +47,7 @@ class _HelpAndSupportPageState extends State<HelpAndSupportPage> {
     return Scaffold(
       backgroundColor: Colors.black,
       extendBodyBehindAppBar: true,
+      resizeToAvoidBottomInset: false,
       drawer: const AppDrawer(),
       body: Stack(
         children: [
@@ -65,109 +61,249 @@ class _HelpAndSupportPageState extends State<HelpAndSupportPage> {
 
           /// 🧭 Main Content
           SafeArea(
-            child: Column(
-              children: [
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
-                    child: Column(
-                      children: [
-                        /// 🔝 Header
-                        _buildHeader(),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
+              child: Column(
+                children: [
+                  /// 🔝 Header
+                  _buildHeader(),
 
-                        const SizedBox(height: 20),
+                  const SizedBox(height: 20),
 
-                        const Text(
-                          "Submit a response",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.w500,
-                            letterSpacing: 0.6,
-                            fontFamily: 'Poppins',
-                          ),
-                        ),
-
-                        const SizedBox(height: 28),
-
-                        buildLabel("Please select an issue that you are having"),
-                        buildDropdown(),
-
-                        const SizedBox(height: 16),
-                        buildLabel("Your email address"),
-                        buildInputField(emailController),
-
-                        const SizedBox(height: 16),
-                        buildLabel("What is your Player/Unique ID"),
-                        buildInputField(playerIdController),
-
-                        const SizedBox(height: 16),
-                        buildLabel(
-                            "Please do not add more than 100 characters here. If you wish to share more information with us, please add it to the 'Description' box below."),
-                        buildInputField(messageController,
-                            hint: "write here.....", maxLines: 3),
-
-                        const SizedBox(height: 16),
-                        buildLabel("Attachments (optional)"),
-                        buildUploadBox(),
-
-                        const SizedBox(height: 28),
-
-                        /// 🌈 Submit Button
-                        Align(
-                          alignment: Alignment.center,
-                          child: Container(
-                            width: 130,
-                            height: 38,
-                            decoration: BoxDecoration(
-                              gradient: sustainableGradient,
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                color: Colors.white24,
-                                width: 0.5,
-                              ),
-                            ),
-                            child: ElevatedButton(
-                              onPressed: () {},
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.transparent,
-                                shadowColor: Colors.transparent,
-                                padding: EdgeInsets.zero,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                              ),
-                              child: const Text(
-                                "Submit",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 14.5,
-                                  letterSpacing: 0.4,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(height: 60),
-                      ],
+                  const Text(
+                    "Submit a response",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 22,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.8,
+                      fontFamily: 'Poppins',
                     ),
                   ),
-                ),
 
-                /// 🧭 Bottom Navigation Bar (From common_button.dart)
-                CustomBottomNavBar(
-                  currentIndex: _selectedIndex,
-                  onTap: _onBottomNavTapped,
-                ),
-              ],
+                  const SizedBox(height: 28),
+
+                  buildLabel("Please select an issue that you are having"),
+                  buildDropdown(),
+
+                  const SizedBox(height: 16),
+                  buildLabel("Your email address"),
+                  buildInputField(emailController),
+
+                  const SizedBox(height: 16),
+                  buildLabel("What is your Player/Unique ID"),
+                  buildInputField(playerIdController),
+
+                  const SizedBox(height: 16),
+                  buildLabel(
+                      "Please do not add more than 100 characters here. If you wish to share more information with us, please add it to the 'Description' box below."),
+                  buildInputField(messageController,
+                      hint: "write here.....", maxLines: 3),
+
+                  const SizedBox(height: 16),
+                  buildLabel("Attachments (optional)"),
+                  buildUploadBox(),
+
+                  const SizedBox(height: 28),
+
+                  /// 🌈 Submit Button
+                  Align(
+                    alignment: Alignment.center,
+                    child: Container(
+                      width: 130,
+                      height: 38,
+                      decoration: BoxDecoration(
+                        gradient: sustainableGradient,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: Colors.white24,
+                          width: 0.5,
+                        ),
+                      ),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          if (_isFormValid()) {
+                            _showSubmitConfirmation();
+                          } else {
+                            _showValidationError();
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                          shadowColor: Colors.transparent,
+                          padding: EdgeInsets.zero,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        child: const Text(
+                          "Submit",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14.5,
+                            letterSpacing: 0.4,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 100), // Space for bottom navigation
+                ],
+              ),
             ),
           ),
         ],
       ),
+      // 🔹 Bottom Navigation Bar
+      bottomNavigationBar: CustomBottomNavBar(
+        currentIndex: _selectedIndex,
+        onTap: _onBottomNavTapped,
+        isMarketplace: false,
+      ),
     );
+  }
+
+  /// ✅ Validate Form Fields
+  bool _isFormValid() {
+    // Check if email is valid
+    bool isValidEmail = emailController.text.isNotEmpty && 
+        RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(emailController.text);
+    
+    // Check if issue is selected
+    bool isIssueSelected = selectedIssue != null && selectedIssue!.isNotEmpty;
+    
+    // Check if message has content
+    bool hasMessage = messageController.text.trim().isNotEmpty;
+    
+    return isValidEmail && isIssueSelected && hasMessage;
+  }
+
+  /// 📝 Show Submit Confirmation Popup
+  void _showSubmitConfirmation() {
+    // Clear all form fields immediately after submission
+    _clearFormFields();
+    
+    showModalBottomSheet(
+      backgroundColor: Colors.transparent,
+      context: context,
+      isDismissible: true,
+      enableDrag: true,
+      builder: (BuildContext context) {
+        return BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+          child: Container(
+            margin: const EdgeInsets.all(16),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+            decoration: BoxDecoration(
+              gradient: sustainableGradient,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: Colors.white24,
+                width: 0.5,
+              ),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(height: 16),
+                const Text(
+                  "✅ Your response has been submitted.",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    letterSpacing: 0.3,
+                  ),
+                ),
+                const SizedBox(height: 20),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+
+    // Auto-dismiss after 2.5 seconds
+    Future.delayed(const Duration(milliseconds: 2500), () {
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
+    });
+  }
+
+  /// 🧹 Clear Form Fields
+  void _clearFormFields() {
+    setState(() {
+      // Clear text controllers
+      emailController.clear();
+      messageController.clear();
+      
+      // Reset dropdown selection
+      selectedIssue = null;
+      
+      // Note: playerIdController is not cleared as it has a default value
+    });
+  }
+
+  /// ❌ Show Validation Error
+  void _showValidationError() {
+    showModalBottomSheet(
+      backgroundColor: Colors.transparent,
+      context: context,
+      isDismissible: true,
+      enableDrag: true,
+      builder: (BuildContext context) {
+        return BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+          child: Container(
+            margin: const EdgeInsets.all(16),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+            decoration: BoxDecoration(
+              gradient: sustainableGradient,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: Colors.red.withOpacity(0.3),
+                width: 0.5,
+              ),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(
+                  Icons.warning,
+                  color: Colors.orange,
+                  size: 48,
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  "Please fill all required fields:\n• Valid email address\n• Select an issue\n• Write your message",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    letterSpacing: 0.3,
+                    height: 1.4,
+                  ),
+                ),
+                const SizedBox(height: 20),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+
+    // Auto-dismiss after 3 seconds
+    Future.delayed(const Duration(milliseconds: 3000), () {
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
+    });
   }
 
   /// 🧩 Header

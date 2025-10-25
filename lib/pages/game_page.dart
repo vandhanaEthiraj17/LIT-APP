@@ -10,6 +10,7 @@ import '../widgets/notification_bell.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lit/data/saved_items.dart';
 import 'package:lit/pages/saved_item_page.dart';
+import 'help_and_support_page.dart';
 
 class GamePage extends StatefulWidget {
   const GamePage({super.key});
@@ -1609,7 +1610,13 @@ class _AudioSettingsPopupState extends State<_AudioSettingsPopup> {
                               _settingsPill(
                                 icon: Icons.headset_mic_outlined,
                                 label: 'Help And Support',
-                                onTap: () {},
+                                onTap: () {
+                                  Navigator.of(context).pop(); // Close settings popup
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (_) => const HelpAndSupportPage()),
+                                  );
+                                },
                               ),
                             ],
                           ),

@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 
 import '../providers/notification_provider.dart';
 import '../widgets/notification_bell.dart';
+import 'help_and_support_page.dart';
 
 class FriendListPage extends StatefulWidget {
   const FriendListPage({super.key});
@@ -1371,7 +1372,13 @@ class _AudioSettingsPopupState extends State<_AudioSettingsPopup> {
                               _settingsPill(
                                 icon: Icons.headset_mic_outlined,
                                 label: 'Help And Support',
-                                onTap: () {},
+                                onTap: () {
+                                  Navigator.of(context).pop(); // Close settings popup
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (_) => const HelpAndSupportPage()),
+                                  );
+                                },
                               ),
                             ],
                           ),

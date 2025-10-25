@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:lit/ecommerce/wishlist_service.dart';
+import 'package:lit/ecommerce/cart_service.dart';
 import 'package:lit/global_data.dart';
 import 'package:lit/pages/notifications_page.dart';
 import 'package:lit/ecommerce/cart_page.dart';
@@ -47,8 +48,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   }
 
   void addToCart() {
-    cartItems.add(widget.product);
-    setState(() {});
+    Provider.of<CartService>(context, listen: false).add(widget.product);
     ScaffoldMessenger.of(context)
         .showSnackBar(const SnackBar(content: Text("Item added to bag")));
   }
@@ -57,8 +57,9 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   Widget build(BuildContext context) {
     final product = widget.product;
     final wishlist = Provider.of<WishlistService>(context);
+    final cart = Provider.of<CartService>(context);
     final wishlistCount = wishlist.items.length;
-    final cartCount = cartItems.length;
+    final cartCount = cart.count;
 
     final ratingDouble =
         (product['rating'] is num) ? (product['rating'] as num).toDouble() : 4.5;

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:lit/global_data.dart';
 import 'package:lit/ecommerce/wishlist_service.dart';
+import 'package:lit/ecommerce/cart_service.dart';
 import 'package:lit/ecommerce/product_detail_page.dart'; // ✅ make sure this file exists
 
 class ProductCard extends StatelessWidget {
@@ -17,7 +17,7 @@ class ProductCard extends StatelessWidget {
   });
 
   void addToCart(BuildContext context, Map<String, dynamic> product) {
-    cartItems.add(product);
+    Provider.of<CartService>(context, listen: false).add(product);
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Item added to cart')),

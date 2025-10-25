@@ -6,6 +6,7 @@ import 'dart:ui';
 import 'dart:math' as math;
 import '../widgets/notification_bell.dart';
 import 'package:lit/data/global_data.dart';
+import 'help_and_support_page.dart';
 
 
 
@@ -810,7 +811,13 @@ class _AudioSettingsPopupState extends State<_AudioSettingsPopup> {
                               _settingsPill(
                                 icon: Icons.headset_mic_outlined,
                                 label: 'Help And Support',
-                                onTap: () {},
+                                onTap: () {
+                                  Navigator.of(context).pop(); // Close settings popup
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (_) => const HelpAndSupportPage()),
+                                  );
+                                },
                               ),
                             ],
                           ),

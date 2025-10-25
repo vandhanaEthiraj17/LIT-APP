@@ -1,10 +1,8 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:lit/data/global_data.dart';
+import 'package:provider/provider.dart';
 import 'package:lit/ecommerce/cart_page.dart';
-
-// Define cartItems list if it's not defined in global_data.dart
-List<Map<String, dynamic>> cartItems = [];
+import 'package:lit/ecommerce/cart_service.dart';
 
 class CustomBottomNavBar extends StatelessWidget {
   final int currentIndex;
@@ -20,13 +18,12 @@ class CustomBottomNavBar extends StatelessWidget {
     this.isGame = false,
   });
 
-  void addToCart(BuildContext context, Map<String, dynamic> product) {
-    cartItems.add(product); // Using the global cartItems list
-  }
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
+    return Consumer<CartService>(
+      builder: (context, cartService, child) {
+        return ClipRRect(
       borderRadius: const BorderRadius.only(
         topLeft: Radius.circular(20),
         topRight: Radius.circular(20),
@@ -88,7 +85,7 @@ class CustomBottomNavBar extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => CartPage(cartItems: cartItems),
+                              builder: (_) => CartPage(cartItems: cartService.items),
                             ),
                           );
                         } else {
@@ -113,7 +110,7 @@ class CustomBottomNavBar extends StatelessWidget {
                           ),
 
                           // 🔹 Badge (Cart Count)
-                          if (isMarketplace && cartItems.isNotEmpty)
+                          if (isMarketplace && cartService.count > 0)
                             Positioned(
                               right: -6,
                               top: -6,
@@ -124,7 +121,7 @@ class CustomBottomNavBar extends StatelessWidget {
                                   shape: BoxShape.circle,
                                 ),
                                 child: Text(
-                                  '${cartItems.length}',
+                                  '${cartService.count}',
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 10,
@@ -143,7 +140,7 @@ class CustomBottomNavBar extends StatelessWidget {
                         onTap: () => Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => CartPage(cartItems: cartItems),
+                            builder: (_) => CartPage(cartItems: cartService.items),
                           ),
                         ),
                         child: Image.asset(
@@ -175,6 +172,8 @@ class CustomBottomNavBar extends StatelessWidget {
           ),
         ),
       ),
+    );
+      },
     );
   }
 }

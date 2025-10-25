@@ -6,6 +6,7 @@ import 'package:lit/widgets/common_button.dart';
 import 'dart:ui';
 import 'dart:math' as math;
 import '../widgets/notification_bell.dart';
+import 'help_and_support_page.dart';
 
 class GameCategoryPage extends StatefulWidget {
   const GameCategoryPage({super.key});
@@ -536,7 +537,13 @@ class _AudioSettingsPopupState extends State<_AudioSettingsPopup> {
                               _settingsPill(
                                 icon: Icons.headset_mic_outlined,
                                 label: 'Help And Support',
-                                onTap: () {},
+                                onTap: () {
+                                  Navigator.of(context).pop(); // Close settings popup
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (_) => const HelpAndSupportPage()),
+                                  );
+                                },
                               ),
                             ],
                           ),

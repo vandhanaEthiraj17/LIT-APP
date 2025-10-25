@@ -1,7 +1,6 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:lit/screens/main_layout.dart';
 import 'package:lit/screens/home/home_page.dart';
@@ -14,36 +13,63 @@ class SignInPage extends StatefulWidget {
   State<SignInPage> createState() => _SignInPageState();
 }
 
+// Shared radial gradient for sustainable theme buttons
+const RadialGradient sustainableGradient = RadialGradient(
+  center: Alignment(0.08, 0.08),
+  radius: 7.98,
+  colors: [
+    Color.fromRGBO(0, 0, 0, 0.8),
+    Color.fromRGBO(147, 51, 234, 0.4),
+  ],
+  stops: [0.0, 0.5],
+);
+
 class _SignInPageState extends State<SignInPage> {
   bool _showFacebookPopup = false;
 
   // ---------------- GOOGLE SIGN-IN ----------------
-  Future<void> _handleGoogleSignIn(BuildContext context) async {
-    final messenger = ScaffoldMessenger.of(context);
-    try {
-      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-      if (googleUser == null) {
-        messenger.showSnackBar(
-          const SnackBar(content: Text('Google sign-in cancelled')),
-        );
-        return;
-      }
-      messenger.showSnackBar(
-        SnackBar(content: Text('Signed in as ${googleUser.email}')),
-      );
+  // ---------------- GOOGLE SIGN-IN (v7.x compatible) ----------------
+Future<void> _handleGoogleSignIn(BuildContext context) async {
+  final messenger = ScaffoldMessenger.of(context);
+  try {
+    final GoogleSignIn googleSignIn = GoogleSignIn(
+      scopes: ['email', 'https://www.googleapis.com/auth/userinfo.profile'],
+    );
 
-      // ✅ After Google sign-in, go to HomePage
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const HomePage()),
-      );
-
-    } catch (error) {
+    final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+    if (googleUser == null) {
       messenger.showSnackBar(
-        SnackBar(content: Text('Google Sign-In failed: $error')),
+        const SnackBar(content: Text('Google sign-in cancelled')),
       );
+      return;
     }
+
+    final GoogleSignInAuthentication googleAuth =
+        await googleUser.authentication;
+
+    final OAuthCredential credential = GoogleAuthProvider.credential(
+      idToken: googleAuth.idToken,
+      accessToken: googleAuth.serverAuthCode, // ✅ updated for v7.x
+    );
+
+    // ✅ Sign in to Firebase with the obtained credential
+    await FirebaseAuth.instance.signInWithCredential(credential);
+
+    messenger.showSnackBar(
+      SnackBar(content: Text('✅ Signed in as ${googleUser.email}')),
+    );
+
+    // ✅ Navigate to MainLayout after login
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const MainLayout()),
+    );
+  } catch (error) {
+    messenger.showSnackBar(
+      SnackBar(content: Text('❌ Google Sign-In failed: $error')),
+    );
   }
+}
 
   // ---------------- UI ----------------
   @override
@@ -131,7 +157,7 @@ class _SignInPageState extends State<SignInPage> {
                       child: const Text(
                         "Sign Up",
                         style: TextStyle(
-                          color: Color.fromRGBO(147, 51, 234, 0.9),
+                          color: Color(0xFF9333EA),
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
                         ),
@@ -333,14 +359,7 @@ class _SignInPageState extends State<SignInPage> {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [
-            Color.fromRGBO(147, 51, 234, 0.9),
-            Color.fromRGBO(0, 0, 0, 0.85)
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        gradient: sustainableGradient,
         borderRadius: BorderRadius.circular(20),
       ),
       child: ElevatedButton(
