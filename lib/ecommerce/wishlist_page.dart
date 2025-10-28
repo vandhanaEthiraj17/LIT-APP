@@ -6,6 +6,8 @@ import 'package:lit/widgets/common_button.dart';
 import 'package:lit/ecommerce/wishlist_service.dart';
 import 'package:lit/pages/notifications_page.dart'; // ✅ added import
 import 'package:provider/provider.dart';
+import 'package:lit/ecommerce/product_detail_page.dart';
+import 'package:lit/ecommerce/cart_service.dart';
 
 class WishlistPage extends StatelessWidget {
   const WishlistPage({super.key});
@@ -24,7 +26,7 @@ class WishlistPage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // 🔹 Top Row: Drawer + Logo + Notifications
+                // 🔹 Top Row: Menu Icon + Logo + Notification
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -47,7 +49,6 @@ class WishlistPage extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 4),
-
                 // 🔹 Back Option
                 GestureDetector(
                   onTap: () => Navigator.pop(context),
@@ -100,6 +101,7 @@ class WishlistPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // 🔹 WISHLIST Title
                   Center(
                     child: Text(
                       'WISHLIST',
@@ -177,99 +179,132 @@ class WishlistPage extends StatelessWidget {
                           ),
                           itemBuilder: (context, index) {
                             final item = wishlist.items[index];
-                            return Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(16),
-                                gradient: const RadialGradient(
-                                  center: Alignment(0.08, 0.08),
-                                  radius: 7.98,
-                                  colors: [
-                                    Color.fromRGBO(0, 0, 0, 0.8),
-                                    Color.fromRGBO(147, 51, 234, 0.4),
-                                  ],
-                                  stops: [0.0, 0.5],
-                                ),
-                                border: Border.all(color: Color(0xFF864AFE), width: 0.8),
-                              ),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(16),
-                                child: BackdropFilter(
-                                  filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      ClipRRect(
-                                        borderRadius: const BorderRadius.only(
-                                          topLeft: Radius.circular(16),
-                                          topRight: Radius.circular(16),
-                                        ),
-                                        child: Image.asset(
-                                          item['image'],
-                                          width: double.infinity,
-                                          height: 140,
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.all(12.0),
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              item['brand'],
-                                              style: const TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                            const SizedBox(height: 4),
-                                            Text(
-                                              item['title'],
-                                              style: const TextStyle(
-                                                color: Colors.white70,
-                                                fontSize: 13,
-                                              ),
-                                            ),
-                                            const SizedBox(height: 10),
-                                            Text(
-                                              'Rs. ${item['price']}',
-                                              style: const TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 15,
-                                              ),
-                                            ),
-                                            const SizedBox(height: 6),
-                                            SizedBox(
-                                              width: double.infinity,
-                                              child: ElevatedButton(
-                                                style: ElevatedButton.styleFrom(
-                                                  backgroundColor:
-                                                      Colors.white.withOpacity(0.1),
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(30),
-                                                  ),
-                                                  padding: const EdgeInsets.symmetric(
-                                                      vertical: 8),
-                                                ),
-                                                onPressed: () {
-                                                  wishlist.remove(item);
-                                                },
-                                                child: const Text(
-                                                  'Remove',
-                                                  style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => ProductDetailPage(product: item),
                                   ),
+                                );
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white12,
+                                  borderRadius: BorderRadius.circular(16),
+                                  border: Border.all(color: Colors.white24, width: 1),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: const BorderRadius.only(
+                                        topLeft: Radius.circular(15),
+                                        topRight: Radius.circular(15),
+                                      ),
+                                      child: Image.asset(
+                                        item['image'],
+                                        width: double.infinity,
+                                        height: 140,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(12.0),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            item['brand'],
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            item['title'],
+                                            style: const TextStyle(
+                                              color: Colors.white70,
+                                              fontSize: 13,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 10),
+                                          Text(
+                                            'Rs. ${item['price']}',
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 15,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 6),
+                                          Row(
+                                            children: [
+                                              // Left: Add to Cart (gradient fill)
+                                              Expanded(
+                                                child: Container(
+                                                  padding: const EdgeInsets.symmetric(vertical: 8),
+                                                  decoration: BoxDecoration(
+                                                    gradient: const RadialGradient(
+                                                      center: Alignment(0.08, 0.08),
+                                                      radius: 4.98,
+                                                      colors: [
+                                                        Color.fromRGBO(0, 0, 0, 0.8),
+                                                        Color.fromRGBO(147, 51, 234, 0.4),
+                                                      ],
+                                                      stops: [0.0, 0.5],
+                                                    ),
+                                                    borderRadius: BorderRadius.circular(16),
+                                                  ),
+                                                  child: GestureDetector(
+                                                    onTap: () {
+                                                      Provider.of<CartService>(context, listen: false).add(item);
+                                                      ScaffoldMessenger.of(context).showSnackBar(
+                                                        const SnackBar(
+                                                          backgroundColor: Colors.white,
+                                                          content: Text('Item added to cart', style: TextStyle(color: Colors.black)),
+                                                          duration: Duration(seconds: 1),
+                                                        ),
+                                                      );
+                                                    },
+                                                    child: const Center(
+                                                      child: Text(
+                                                        'Add to Cart',
+                                                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              const SizedBox(width: 8),
+                                              // Right: Remove (outlined)
+                                              Expanded(
+                                                child: Container(
+                                                  padding: const EdgeInsets.symmetric(vertical: 8),
+                                                  decoration: BoxDecoration(
+                                                    borderRadius: BorderRadius.circular(16),
+                                                    border: Border.all(color: const Color(0xFFB794F4), width: 1.6),
+                                                  ),
+                                                  child: GestureDetector(
+                                                    onTap: () {
+                                                      wishlist.remove(item);
+                                                    },
+                                                    child: const Center(
+                                                      child: Text(
+                                                        'Remove',
+                                                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             );

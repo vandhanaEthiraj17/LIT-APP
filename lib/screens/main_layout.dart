@@ -26,8 +26,10 @@ class _MainLayoutState extends State<MainLayout> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       backgroundColor: Colors.black,
       drawer: const AppDrawer(), // ⬅️ Common drawer
+      drawerScrimColor: Colors.black.withOpacity(0.75),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,

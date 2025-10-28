@@ -38,7 +38,15 @@ class ProductCard extends StatelessWidget {
       },
       child: Container(
         decoration: BoxDecoration(
-          color: const Color(0xFF1C1C1E),
+          gradient: const RadialGradient(
+            center: Alignment(0.08, 0.08),
+            radius: 7.98,
+            colors: [
+              Color.fromRGBO(0, 0, 0, 0.8),
+              Color.fromRGBO(147, 51, 234, 0.4),
+            ],
+            stops: [0.0, 0.5],
+          ),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Column(
@@ -196,32 +204,24 @@ class ProductCard extends StatelessWidget {
                       // Add to Cart
                       Expanded(
                         child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 7),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(14),
-                            gradient: const LinearGradient(
-                              colors: [Color(0xFF9333EA), Color(0xFF6B21A8)],
+                            border: GradientBoxBorder(
+                              gradient: const LinearGradient(colors: [Color(0xFFB794F4), Color(0xFF9333EA)]),
+                              width: 1.6,
                             ),
                           ),
-                          padding: const EdgeInsets.all(1.2),
                           child: GestureDetector(
                             onTap: onAddToCart ??
                                 () => addToCart(context, product),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF1C1C1E),
-                                borderRadius: BorderRadius.circular(13),
-                              ),
-                              child: const Center(
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 6),
-                                  child: Text(
-                                    'Add to Cart',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
+                            child: const Center(
+                              child: Text(
+                                'Add to Cart',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
                             ),
@@ -238,4 +238,44 @@ class ProductCard extends StatelessWidget {
       ),
     );
   }
+}
+
+/// GradientBoxBorder paints a gradient stroke around a rounded rect.
+/// Note: do NOT use const when creating this border in a BoxDecoration.
+class GradientBoxBorder extends BoxBorder {
+  final Gradient gradient;
+  final double width;
+
+  GradientBoxBorder({required this.gradient, this.width = 1.0});
+
+  @override
+  EdgeInsetsGeometry get dimensions => EdgeInsets.all(width);
+
+  @override
+  bool get isUniform => true;
+
+  @override
+  BorderSide get top => BorderSide.none;
+
+  @override
+  BorderSide get bottom => BorderSide.none;
+
+  @override
+  void paint(Canvas canvas, Rect rect, {TextDirection? textDirection, BoxShape shape = BoxShape.rectangle, BorderRadius? borderRadius}) {
+    final paint = Paint()
+      ..shader = gradient.createShader(rect)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = width;
+
+    if (shape == BoxShape.circle) {
+      final radius = rect.shortestSide / 2;
+      canvas.drawCircle(rect.center, radius - width / 2, paint);
+    } else {
+      final rrect = RRect.fromRectAndRadius(rect.deflate(width / 2), borderRadius?.topLeft ?? const Radius.circular(14));
+      canvas.drawRRect(rrect, paint);
+    }
+  }
+
+  @override
+  ShapeBorder scale(double t) => GradientBoxBorder(gradient: gradient, width: width * t);
 }

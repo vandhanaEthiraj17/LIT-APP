@@ -8,6 +8,8 @@ import 'package:lit/ecommerce/wishlist_service.dart';
 import 'package:provider/provider.dart';
 import '../ecommerce/widgets/sortby_bottomsheet.dart';
 import 'package:lit/ecommerce/cart_service.dart';
+import 'package:lit/ecommerce/cart_page.dart';
+import 'package:lit/ecommerce/buy_now_page.dart';
 
 class CategoryPage extends StatefulWidget {
   final String title;
@@ -39,6 +41,7 @@ class _CategoryPageState extends State<CategoryPage> {
     }).toList();
 
     return Scaffold(
+      extendBodyBehindAppBar: true,
       backgroundColor: Colors.black,
       drawer: const AppDrawer(),
       appBar: AppBar(
@@ -109,9 +112,13 @@ class _CategoryPageState extends State<CategoryPage> {
             child: Container(color: Colors.black.withOpacity(0.6)),
           ),
 
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+          Padding(
+            padding: EdgeInsets.only(
+              top: kToolbarHeight + MediaQuery.of(context).padding.top,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
                 child: GestureDetector(
@@ -198,7 +205,13 @@ class _CategoryPageState extends State<CategoryPage> {
                       return ProductCard(
                         product: product,
                         onBuyNow: () {
-                          Navigator.pushNamed(context, '/buy-now', arguments: product);
+                          // Navigate to buy now page with the selected product
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => BuyNowPage(buyNowItems: [product]),
+                            ),
+                          );
                         },
                         onAddToCart: () {
                           Provider.of<CartService>(context, listen: false).add(product);
@@ -224,23 +237,31 @@ class _CategoryPageState extends State<CategoryPage> {
               ),
             ],
           ),
+          ),
         ],
       ),
 
       bottomNavigationBar: CustomBottomNavBar(
-  currentIndex: 1,
-  isMarketplace: true,
-  onTap: (index) {
-    // Handle navigation
-    if (index == 0) {
-      Navigator.pushNamed(context, '/home');
-    } else if (index == 1) {
-      Navigator.pushNamed(context, '/cart');
-    } else if (index == 2) {
-      Navigator.pushNamed(context, '/profile');
-    }
-  },
-),
+        currentIndex: 1,
+        isMarketplace: true,
+        onTap: (index) {
+          // Handle navigation
+          if (index == 0) {
+            Navigator.pushNamed(context, '/home');
+          } else if (index == 1) {
+            // Navigate to cart using the same pattern as CustomBottomNavBar
+            final cartService = Provider.of<CartService>(context, listen: false);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => CartPage(cartItems: cartService.items),
+              ),
+            );
+          } else if (index == 2) {
+            Navigator.pushNamed(context, '/profile');
+          }
+        },
+      ),
     );
   }
 }

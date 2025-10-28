@@ -5,6 +5,7 @@ import 'package:lit/ecommerce/address_page.dart';
 import 'package:lit/widgets/app_drawer.dart';
 import 'package:lit/widgets/common_button.dart';
 import 'package:lit/pages/notifications_page.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class CartPage extends StatefulWidget {
   final List<dynamic> cartItems;
@@ -93,13 +94,30 @@ class _CartPageState extends State<CartPage> {
                 );
 
                 if (cartItems.isEmpty) {
-                  return const Center(
-                    child: Text(
-                      "Your cart is empty",
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold),
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Your Cart is',
+                          style: GoogleFonts.kronaOne(
+                            fontSize: 22,
+                            color: Colors.white,
+                            letterSpacing: 1.5,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          'Empty',
+                          style: GoogleFonts.kronaOne(
+                            fontSize: 22,
+                            color: Colors.white,
+                            letterSpacing: 1.5,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
                     ),
                   );
                 }
@@ -540,36 +558,39 @@ class _CartPageState extends State<CartPage> {
                   style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
             ],
           ),
-          Container(
-            width: 110,
-            height: 40,
-            decoration: BoxDecoration(
-              gradient: const RadialGradient(
-                center: Alignment(0.08, 0.08),
-                radius: 7.98,
-                colors: [Color.fromRGBO(0, 0, 0, 0.8), Color.fromRGBO(147, 51, 234, 0.4)],
-                stops: [0.0, 0.5],
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AddressPage(
+                      cartItems: cartItems.cast<Map<String, dynamic>>()),
+                ),
+              );
+            },
+            child: Container(
+              width: 150,
+              height: 40,
+              decoration: const BoxDecoration(
+                gradient: RadialGradient(
+                  center: Alignment(0.08, 0.08),
+                  radius: 7.98,
+                  colors: [
+                    Color.fromRGBO(0, 0, 0, 0.8),
+                    Color.fromRGBO(147, 51, 234, 0.4)
+                  ],
+                  stops: [0.0, 0.5],
+                ),
+                borderRadius: BorderRadius.all(Radius.circular(30)),
               ),
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: const [BoxShadow(color: Color(0x884E4AFE), offset: Offset(0, 0), blurRadius: 5.5)],
-            ),
-            child: TextButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => AddressPage(
-                        cartItems: cartItems.cast<Map<String, dynamic>>()),
-                  ),
-                );
-              },
-              style: TextButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                foregroundColor: Colors.white,
+              alignment: Alignment.center,
+              child: const Text(
+                "Buy Now",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16),
               ),
-              child: const Text('Buy Now',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.white)),
             ),
           ),
         ],

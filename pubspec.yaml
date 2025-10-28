@@ -102,7 +102,6 @@ flutter:
     - assets/images/amazonpay.png
     - assets/images/circle-check-solid-full.svg
     - assets/images/Vector.png
-    - assets/images/robo.svg
     - assets/images/men_collection.png
     - assets/images/women_collection.png
     - assets/images/diamond.png
@@ -207,3 +206,9 @@ flutter:
     - assets/images/box.png
     - assets/images/maps.png
     - assets/images/Button.png
+    - assets/images/skill-icons_instagram.png
+    - assets/images/logos_pinterest.png
+    - assets/images/logos_facebook.png
+    - assets/images/fa6-brands_square-x-twitter.png
+    - assets/images/logos_whatsapp-icon.png
+    - assets/images/robo.png

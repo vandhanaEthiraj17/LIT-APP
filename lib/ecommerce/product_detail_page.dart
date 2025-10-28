@@ -11,7 +11,7 @@ import 'package:lit/pages/notifications_page.dart';
 import 'package:lit/ecommerce/cart_page.dart';
 import 'package:lit/ecommerce/wishlist_page.dart';
 import 'package:lit/widgets/app_drawer.dart';
-
+import 'package:lit/widgets/common_button.dart';
 /// Main radial gradient reused across UI
 const RadialGradient sustainableGradient = RadialGradient(
   center: Alignment(0.08, 0.08),
@@ -67,7 +67,6 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     final ratingText = "${ratingDouble.toStringAsFixed(1)} ($ratingCount)";
 
     return Scaffold(
-      drawer: const AppDrawer(),
       body: Stack(
         children: [
           // background image and dark overlay
@@ -88,7 +87,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 _buildTopHeader(context),
 
                 // Header 2: Back - wishlist/cart icons
-                _buildSubHeader(context, wishlistCount, cartCount),
+                _buildSubHeader(context, wishlistCount, cartCount, cart),
 
                 // Main content
                 Expanded(
@@ -111,7 +110,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                               padding: const EdgeInsets.only(top: 8.0),
                               child: _buildProductDescription()),
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 8),
                         ExpandableSection(
                           title: "Delivery & Return Information",
                           initiallyExpanded: false,
@@ -133,21 +132,42 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           ),
         ],
       ),
+      bottomNavigationBar: CustomBottomNavBar(
+        currentIndex: 1,
+        isMarketplace: true,
+        onTap: (index) {
+          // Handle navigation
+          if (index == 0) {
+            Navigator.pushNamed(context, '/home');
+          } else if (index == 1) {
+            // Navigate to cart
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => CartPage(cartItems: cart.items)),
+            );
+          } else if (index == 2) {
+            Navigator.pushNamed(context, '/profile');
+          }
+        },
+      ),
     );
   }
 
   // Top header: menu, logo, notifications
   Widget _buildTopHeader(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
+      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 2.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Builder(
-            builder: (context) => IconButton(
-              icon: const Icon(Icons.menu, color: Colors.white),
-              onPressed: () => Scaffold.of(context).openDrawer(),
-            ),
+          IconButton(
+            icon: const Icon(Icons.menu, color: Colors.white),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const AppDrawer()),
+              );
+            },
           ),
           Expanded(
             child: Center(
@@ -158,14 +178,30 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               ),
             ),
           ),
-          IconButton(
-            icon: const Icon(Icons.notifications, color: Colors.white),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const NotificationsPage()),
-              );
-            },
+          Stack(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.notifications, color: Colors.white),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const NotificationsPage()),
+                  );
+                },
+              ),
+              Positioned(
+                right: 8,
+                top: 8,
+                child: Container(
+                  height: 14,
+                  width: 14,
+                  decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle),
+                  child: const Center(
+                    child: Text('1', style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold)),
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -173,9 +209,9 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   }
 
   // Sub header: back & small icons
-  Widget _buildSubHeader(BuildContext context, int wishlistCount, int cartCount) {
+  Widget _buildSubHeader(BuildContext context, int wishlistCount, int cartCount, CartService cart) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 2.0),
+      padding: const EdgeInsets.only(left: 12.0, right: 12.0, top: 0.0, bottom: 0.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -184,8 +220,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             onTap: () => Navigator.pop(context),
             child: Row(
               children: const [
-                Icon(Icons.arrow_back_ios, color: Colors.white),
-                SizedBox(width: 6),
+                Icon(Icons.arrow_back_ios, color: Colors.white, size: 16),
+                SizedBox(width: 4),
                 Text("Back",
                     style: TextStyle(
                         color: Color(0xFFB794F4),
@@ -215,7 +251,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     icon: const Icon(Icons.shopping_bag_outlined, color: Colors.white),
                     onPressed: () async {
                       await Navigator.push(
-                          context, MaterialPageRoute(builder: (context) => CartPage(cartItems: cartItems)));
+                          context, MaterialPageRoute(builder: (context) => CartPage(cartItems: cart.items)));
                       setState(() {});
                     },
                   ),
@@ -231,15 +267,52 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 
   // Product image with rounded corners
   Widget _buildProductImage(Map<String, dynamic> product) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(16),
-      child: Image.asset(
-        product['image'],
-        width: double.infinity,
-        height: 360,
-        fit: BoxFit.cover,
-        errorBuilder: (ctx, err, st) => Container(height: 360, color: Colors.grey[800]),
-      ),
+    return Column(
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: Image.asset(
+            product['image'],
+            width: double.infinity,
+            height: 360,
+            fit: BoxFit.cover,
+            errorBuilder: (ctx, err, st) => Container(height: 360, color: Colors.grey[800]),
+          ),
+        ),
+        const SizedBox(height: 8),
+        // Image dots indicator
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 8,
+              height: 8,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+              ),
+            ),
+            const SizedBox(width: 4),
+            Container(
+              width: 8,
+              height: 8,
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.3),
+                shape: BoxShape.circle,
+              ),
+            ),
+            const SizedBox(width: 4),
+            Container(
+              width: 8,
+              height: 8,
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.3),
+                shape: BoxShape.circle,
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 
@@ -283,7 +356,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             ),
           ),
           Row(children: [
-            const Icon(Icons.star, color: Color(0xFF9333EA), size: 18),
+            const Icon(Icons.star, color: Color(0xFF37105B), size: 18),
             const SizedBox(width: 4),
             RichText(
               text: TextSpan(children: [
@@ -301,7 +374,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
           const SizedBox(width: 10),
           Text(discount,
-              style: const TextStyle(color: Color(0xFF9333EA), fontSize: 16, fontWeight: FontWeight.bold)),
+              style: const TextStyle(color: Color(0xFF37105B), fontSize: 16, fontWeight: FontWeight.bold)),
         ]),
         const SizedBox(height: 4),
         Text("MRP Rs. $original",
@@ -318,7 +391,11 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         Expanded(
           child: Container(
             height: 48,
-            decoration: BoxDecoration(gradient: sustainableGradient, borderRadius: BorderRadius.circular(14)),
+            decoration: BoxDecoration(
+              gradient: sustainableGradient,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: const Color(0xFFB794F4), width: 1.6),
+            ),
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.transparent,
@@ -344,7 +421,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               ),
             ),
             child: OutlinedButton.icon(
-              icon: const Icon(Icons.shopping_bag_outlined, color: Colors.white, size: 18),
+              icon: const Icon(Icons.shopping_bag, color: Colors.white, size: 18),
               label: const Text("Add to Bag", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
               style: OutlinedButton.styleFrom(
                   backgroundColor: Colors.transparent,
@@ -358,7 +435,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     );
   }
 
-  // Size section - single row, outlined boxes - selected gets purple outline
+  // Size section - single row, outlined boxes - white background, selected gets purple outline
   Widget _buildSizeSection() {
     final sizes = ['XXS', 'XS', 'S', 'M', 'L', 'XL'];
     return Padding(
@@ -370,21 +447,37 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         ]),
         const SizedBox(height: 10),
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: sizes.map((size) {
             final isSelected = selectedSize == size;
-            return GestureDetector(
-              onTap: () => setState(() => selectedSize = size),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 160),
-                width: 52,
-                height: 46,
-                decoration: BoxDecoration(
-                  color: Colors.transparent,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: isSelected ? const Color(0xFF9333EA) : Colors.white70, width: isSelected ? 2.0 : 1.3),
+            return Expanded(
+              child: Container(
+                margin: const EdgeInsets.only(right: 6),
+                child: GestureDetector(
+                  onTap: () => setState(() => selectedSize = size),
+                                  child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 160),
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: Colors.white, 
+                      width: 1.0
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      size, 
+                      style: const TextStyle(
+                        color: Colors.white, 
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      )
+                    )
+                  ),
                 ),
-                child: Center(child: Text(size, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold))),
+                ),
               ),
             );
           }).toList(),
@@ -424,8 +517,12 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   Widget _buildDeliveryWithPincode() {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Container(
-        decoration: BoxDecoration(gradient: sustainableGradient, borderRadius: BorderRadius.circular(10), border: Border.all(color: Colors.white24)),
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+        decoration: BoxDecoration(
+          gradient: sustainableGradient,
+          borderRadius: BorderRadius.circular(10), 
+          border: Border.all(color: Colors.white, width: 1.0)
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         child: Form(
           key: _pincodeFormKey,
           child: Row(children: [
@@ -436,7 +533,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 maxLength: 6,
                 style: const TextStyle(color: Colors.white, fontSize: 16),
                 decoration: const InputDecoration(
-                    counterText: '', border: InputBorder.none, hintText: 'Enter a Pincode', hintStyle: TextStyle(color: Colors.white54)),
+                    counterText: '', border: InputBorder.none, hintText: 'Enter a Pincode', hintStyle: TextStyle(color: Colors.white)),
                 validator: (val) {
                   if (val == null || val.trim().isEmpty) return 'Enter pincode';
                   if (!RegExp(r'^\d{6}$').hasMatch(val.trim())) return 'Enter 6 digit PIN';
@@ -444,7 +541,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 },
               ),
             ),
-            Container(width: 1, height: 36, color: Colors.white24),
+            Container(width: 1, height: 36, color: Colors.white),
             const SizedBox(width: 8),
             TextButton(
               onPressed: () {
@@ -473,21 +570,21 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         const Text("Share", style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
         const SizedBox(height: 10),
         Row(children: [
-          _assetIcon('assets/images/logos_pinterest.png'),
+          _shareIcon('assets/images/logos_pinterest.png'),
           const SizedBox(width: 12),
-          _assetIcon('assets/images/logos_facebook.png'),
+          _shareIcon('assets/images/logos_facebook.png'),
           const SizedBox(width: 12),
-          _assetIcon('assets/images/fa6-brands_square-x-twitter.png'),
+          _shareIcon('assets/images/fa6-brands_square-x-twitter.png'),
           const SizedBox(width: 12),
-          _assetIcon('assets/images/logos_whatsapp-icon.png'),
+          _shareIcon('assets/images/logos_whatsapp-icon.png'),
           const SizedBox(width: 12),
-          _assetIcon('assets/images/skill-icons_instagram.png'),
+          _shareIcon('assets/images/skill-icons_instagram.png'),
         ]),
       ]),
     );
   }
 
-  Widget _assetIcon(String path) {
+  Widget _shareIcon(String path) {
     return Container(
       width: 44,
       height: 44,
@@ -518,7 +615,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         const Text("Rate & Review", style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
         const SizedBox(height: 10),
         Row(children: [
-          const Icon(Icons.star, color: Color(0xFF9333EA), size: 22),
+          const Icon(Icons.star, color: Color(0xFF37105B), size: 22),
           const SizedBox(width: 8),
           const Text("4.5", style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(width: 8),
@@ -532,14 +629,14 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 6.0),
             child: Row(children: [
-              Icon(Icons.star, size: 14, color: star >= 4 ? const Color(0xFF9333EA) : Colors.white54),
+              Icon(Icons.star, size: 14, color: star >= 4 ? const Color(0xFF37105B) : Colors.white54),
               const SizedBox(width: 6),
               Text('$star', style: const TextStyle(color: Colors.white70)),
               const SizedBox(width: 10),
               Expanded(
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(6),
-                  child: LinearProgressIndicator(value: frac, minHeight: 10, backgroundColor: Colors.white24, valueColor: const AlwaysStoppedAnimation(Color(0xFF9333EA))),
+                  child: LinearProgressIndicator(value: frac, minHeight: 10, backgroundColor: Colors.white24, valueColor: const AlwaysStoppedAnimation(Color(0xFF37105B))),
                 ),
               ),
               const SizedBox(width: 10),
@@ -666,28 +763,25 @@ class _ExpandableSectionState extends State<ExpandableSection> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
-      child: Container(
-        decoration: BoxDecoration(color: Colors.white.withOpacity(0.04), borderRadius: BorderRadius.circular(10), border: Border.all(color: Colors.white10)),
-        child: Column(
-          children: [
-            InkWell(
-              onTap: () => setState(() => isExpanded = !isExpanded),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 18.0),
-                child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                  Text(widget.title, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
-                  Icon(isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down, color: Colors.white),
-                ]),
-              ),
+      child: Column(
+        children: [
+          InkWell(
+            onTap: () => setState(() => isExpanded = !isExpanded),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 18.0),
+              child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                Text(widget.title, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                Icon(isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down, color: Colors.white),
+              ]),
             ),
-            AnimatedCrossFade(
-              firstChild: Padding(padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0), child: widget.child),
-              secondChild: const SizedBox.shrink(),
-              crossFadeState: isExpanded ? CrossFadeState.showFirst : CrossFadeState.showSecond,
-              duration: const Duration(milliseconds: 200),
-            )
-          ],
-        ),
+          ),
+          AnimatedCrossFade(
+            firstChild: Padding(padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0), child: widget.child),
+            secondChild: const SizedBox.shrink(),
+            crossFadeState: isExpanded ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+            duration: const Duration(milliseconds: 200),
+          )
+        ],
       ),
     );
   }

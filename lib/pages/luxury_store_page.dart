@@ -76,7 +76,9 @@ class _LuxuryStorePageState extends State<LuxuryStorePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       drawer: const AppDrawer(),
+      drawerScrimColor: Colors.black.withOpacity(0.75),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,

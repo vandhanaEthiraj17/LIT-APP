@@ -7,6 +7,7 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final double _topInset = kToolbarHeight + MediaQuery.of(context).padding.top;
     return Stack(
       children: [
         Positioned.fill(
@@ -20,16 +21,19 @@ class HomePage extends StatelessWidget {
             color: Colors.black.withOpacity(0.6),
           ),
         ),
-        const SingleChildScrollView(
-          child: Column(
-            children: [
-              LitGameSection(),
-              SizedBox(height: 22),
-              LuxurySustainableSection(),
-              SizedBox(height: 22),
-              NewsletterSection(),
-              SizedBox(height: 22),
-            ],
+        Padding(
+          padding: EdgeInsets.only(top: _topInset),
+          child: const SingleChildScrollView(
+            child: Column(
+              children: [
+                LitGameSection(),
+                SizedBox(height: 22),
+                LuxurySustainableSection(),
+                SizedBox(height: 22),
+                NewsletterSection(),
+                SizedBox(height: 22),
+              ],
+            ),
           ),
         ),
       ],

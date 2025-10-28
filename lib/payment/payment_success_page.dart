@@ -58,7 +58,7 @@ class PaymentSuccessPage extends StatelessWidget {
       bottomNavigationBar: CustomBottomNavBar(
         currentIndex: -1,
         onTap: (i) => _onNavTapped(context, i),
-        isMarketplace: false,
+        isMarketplace: true,
       ),
       body: Stack(
         children: [
@@ -250,25 +250,23 @@ class _PulsingSuccessIconState extends State<_PulsingSuccessIcon>
         );
       },
       child: SizedBox(
-        width: 36,
-        height: 36,
+        width: 70,
+        height: 70,
         child: Stack(
           alignment: Alignment.center,
           children: const [
             // Solid green circular background
             DecoratedBox(
               decoration: BoxDecoration(
-                color: Color(0xFF2E8F3C), // slightly darker circle fill
+                color: Color(0xFF2E8F3C),
                 shape: BoxShape.circle,
               ),
             ),
-            // White tick mark
-            Center(
-              child: Icon(
-                Icons.check,
-                color: Colors.white,
-                size: 52,
-              ),
+            // White tick mark (properly centered and sized)
+            Icon(
+              Icons.check,
+              color: Colors.white,
+              size: 40,
             ),
           ],
         ),

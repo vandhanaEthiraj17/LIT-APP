@@ -1,6 +1,5 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lit/payment/payment_gateway_page.dart';
 import 'package:lit/widgets/app_drawer.dart';
 import 'package:lit/widgets/notification_bell.dart';
@@ -40,142 +39,153 @@ class PaymentFailurePage extends StatelessWidget {
             ),
           ),
           SafeArea(
-            child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    GestureDetector(
-                      onTap: () => Navigator.pop(context),
-                      child: const Row(
+            child: Stack(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  child: ListView(
+                    physics: const BouncingScrollPhysics(),
+                    padding: EdgeInsets.only(
+                      bottom: MediaQuery.of(context).size.height * 0.72 + kBottomNavigationBarHeight + 12,
+                    ),
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 18),
-                          SizedBox(width: 6),
-                          Text('Back', style: TextStyle(color: Colors.white, fontSize: 16)),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    const Center(
-                      child: Text(
-                        "Oops! That didn't work.",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    const Center(
-                      child: Text(
-                        'Your order was not placed.\nPlease try again.',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.white70, fontSize: 14, height: 1.4),
-                      ),
-                    ),
-                    const SizedBox(height: 18),
-                    LayoutBuilder(
-                      builder: (context, constraints) {
-                        final double btnW = constraints.maxWidth * 0.8; // bounded width
-                        return Center(
-                          child: SizedBox(
-                            width: btnW,
-                            height: 46,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                padding: EdgeInsets.zero,
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                backgroundColor: Colors.transparent,
-                                elevation: 0,
+                          GestureDetector(
+                            onTap: () => Navigator.pop(context),
+                            child: const Row(
+                              children: [
+                                Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 18),
+                                SizedBox(width: 6),
+                                Text('Back', style: TextStyle(color: Colors.white, fontSize: 16)),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 40),
+                          const Center(
+                            child: Text(
+                              "Oops! That didn't work.",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.w700,
                               ),
-                              onPressed: () {
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => PaymentGatewayPage(cartItems: cartItems),
-                                  ),
-                                );
-                              },
-                              child: Ink(
-                                decoration: BoxDecoration(
-                                  gradient: const RadialGradient(
-                                    center: Alignment(0.08, 0.08),
-                                    radius: 8,
-                                    colors: [
-                                      Color.fromRGBO(0, 0, 0, 0.8),
-                                      Color.fromRGBO(147, 51, 234, 0.4),
-                                    ],
-                                  ),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: const Center(
-                                  child: Text(
-                                    'RETRY PAYMENT',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 14,
-                                      letterSpacing: 0.6,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          const Center(
+                            child: Text(
+                              'Your order was not placed.\nPlease try again.',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: Colors.white70, fontSize: 14, height: 1.4),
+                            ),
+                          ),
+                          const SizedBox(height: 18),
+                          LayoutBuilder(
+                            builder: (context, constraints) {
+                              final double btnW = constraints.maxWidth * 0.8; // bounded width
+                              return Center(
+                                child: SizedBox(
+                                  width: btnW,
+                                  height: 46,
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      padding: EdgeInsets.zero,
+                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                      backgroundColor: Colors.transparent,
+                                      elevation: 0,
+                                    ),
+                                    onPressed: () {
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => PaymentGatewayPage(cartItems: cartItems),
+                                        ),
+                                      );
+                                    },
+                                    child: Ink(
+                                      decoration: BoxDecoration(
+                                        gradient: const RadialGradient(
+                                          center: Alignment(0.08, 0.08),
+                                          radius: 8,
+                                          colors: [
+                                            Color.fromRGBO(0, 0, 0, 0.8),
+                                            Color.fromRGBO(147, 51, 234, 0.4),
+                                          ],
+                                        ),
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: const Center(
+                                        child: Text(
+                                          'RETRY PAYMENT',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w700,
+                                            fontSize: 14,
+                                            letterSpacing: 0.6,
+                                          ),
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ),
+                              );
+                            },
                           ),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 12),
-                    LayoutBuilder(
-                      builder: (context, constraints) {
-                        final double btnW = constraints.maxWidth * 0.8; // bounded width
-                        return Center(
-                          child: SizedBox(
-                            width: btnW,
-                            height: 46,
-                            child: OutlinedButton(
-                              style: OutlinedButton.styleFrom(
-                                side: const BorderSide(color: Color(0x809333EA), width: 1),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                backgroundColor: Colors.transparent,
-                              ),
-                              onPressed: () => Navigator.pushReplacementNamed(context, '/marketplace'),
-                              child: const Text(
-                                'GO BACK HOME',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 14,
-                                  letterSpacing: 0.6,
+                          const SizedBox(height: 12),
+                          LayoutBuilder(
+                            builder: (context, constraints) {
+                              final double btnW = constraints.maxWidth * 0.8; // bounded width
+                              return Center(
+                                child: SizedBox(
+                                  width: btnW,
+                                  height: 46,
+                                  child: OutlinedButton(
+                                    style: OutlinedButton.styleFrom(
+                                      side: const BorderSide(color: Color(0x809333EA), width: 1),
+                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                      backgroundColor: Colors.transparent,
+                                    ),
+                                    onPressed: () => Navigator.pushReplacementNamed(context, '/marketplace'),
+                                    child: const Text(
+                                      'GO BACK HOME',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 14,
+                                        letterSpacing: 0.6,
+                                      ),
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ),
+                              );
+                            },
                           ),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    LayoutBuilder(
-                      builder: (context, constraints) {
-                        final double maxW = constraints.maxWidth;
-                        return Center(
-                          child: SvgPicture.asset(
-                            'assets/images/robo.svg',
-                            width: maxW - 24,
-                            fit: BoxFit.contain,
-                            alignment: Alignment.center,
-                          ),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 100),
-                  ],
+                          const SizedBox(height: 16),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 4),
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.72,
+                      width: double.infinity,
+                      child: Image.asset(
+                        'assets/images/robo.png',
+                        fit: BoxFit.contain,
+                        alignment: Alignment.bottomCenter,
+                        filterQuality: FilterQuality.high,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -191,7 +201,7 @@ class PaymentFailurePage extends StatelessWidget {
             Navigator.pushReplacementNamed(context, '/profile');
           }
         },
-        isMarketplace: false,
+        isMarketplace: true,
       ),
     );
   }

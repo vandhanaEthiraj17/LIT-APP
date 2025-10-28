@@ -53,7 +53,7 @@ class _NotificationBellState extends State<NotificationBell> with SingleTickerPr
             ScaleTransition(
               scale: _scaleAnimation,
               child: IconButton(
-                icon: Icon(Icons.notifications_none, 
+                icon: Icon(Icons.notifications, 
                   color: Colors.white,
                   size: widget.size,
                 ),

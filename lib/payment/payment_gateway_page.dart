@@ -156,7 +156,7 @@ class _PaymentGatewayPageState extends State<PaymentGatewayPage> {
       drawer: const AppDrawer(),
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Colors.black.withOpacity(0.6),
+        backgroundColor: Colors.transparent,
         elevation: 0,
         leading: Builder(
           builder: (context) => IconButton(
@@ -176,7 +176,7 @@ class _PaymentGatewayPageState extends State<PaymentGatewayPage> {
       bottomNavigationBar: CustomBottomNavBar(
         currentIndex: currentIndex,
         onTap: _onNavTapped,
-        isMarketplace: false,
+        isMarketplace: true,
       ),
       body: Stack(
         children: [

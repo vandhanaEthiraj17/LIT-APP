@@ -64,7 +64,7 @@ class OrderConfirmationPage extends StatelessWidget {
               Navigator.pushReplacementNamed(context, '/profile');
             }
           },
-          isMarketplace: false,
+          isMarketplace: true,
         ),
         body: Stack(
           children: [

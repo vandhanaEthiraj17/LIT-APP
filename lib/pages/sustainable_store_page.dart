@@ -10,6 +10,7 @@ import 'package:lit/ecommerce/wishlist_service.dart';
 import '../ecommerce/wishlist_page.dart';
 import '../ecommerce/buy_now_page.dart';
 import 'package:lit/global_data.dart'; // <-- added so cartItems is available
+import 'package:lit/ecommerce/product_detail_page.dart';
 
 class SustainableStorePage extends StatefulWidget {
   const SustainableStorePage({super.key});
@@ -379,7 +380,9 @@ class _SustainableStorePageState extends State<SustainableStorePage> {
       filteredArrivals = filteredArrivals.reversed.toList();
     }
     return Scaffold(
+      extendBodyBehindAppBar: true,
       drawer: const AppDrawer(),
+      drawerScrimColor: Colors.black.withOpacity(0.75),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -557,114 +560,131 @@ class _SustainableStorePageState extends State<SustainableStorePage> {
                         itemCount: filteredArrivals.length,
                         itemBuilder: (context, index) {
                           final item = filteredArrivals[index];
-                          return Container(
-                            width: 220,
-                            margin: const EdgeInsets.only(right: 16),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF1C1C1E),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Stack(
-                                  children: [
-                                    ClipRRect(
-                                      borderRadius: const BorderRadius.only(
-                                        topLeft: Radius.circular(20),
-                                        topRight: Radius.circular(20),
-                                      ),
-                                      child: Image.asset(
-                                        item['image'], // instead of 'assets/images/men.png'
-                                        width: double.infinity,
-                                        height: 180,
-                                        fit: BoxFit.cover,
-                                      ),
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => ProductDetailPage(product: item),
+                                ),
+                              );
+                            },
+                            child: Container(
+                              width: 220,
+                              margin: const EdgeInsets.only(right: 16),
+                              decoration: BoxDecoration(
+                                gradient: const RadialGradient(
+                                  center: Alignment(0.08, 0.08),
+                                  radius: 7.98,
+                                  colors: [
+                                    Color.fromRGBO(0, 0, 0, 0.8),
+                                    Color.fromRGBO(147, 51, 234, 0.4),
+                                  ],
+                                  stops: [0.0, 0.5],
+                                ),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Stack(
+                                    children: [
+                                      ClipRRect(
+                                        borderRadius: const BorderRadius.only(
+                                          topLeft: Radius.circular(20),
+                                          topRight: Radius.circular(20),
+                                        ),
+                                        child: Image.asset(
+                                          item['image'], // instead of 'assets/images/men.png'
+                                          width: double.infinity,
+                                          height: 180,
+                                          fit: BoxFit.cover,
+                                        ),
 
-                                    ),
-                                    Positioned(
-                                      top: 10,
-                                      right: 10,
-                                      child: GestureDetector(
-                                        onTap: () => _toggleWishlist(item),
-                                        child: Icon(
-                                          _isInWishlist(item) ? Icons.favorite : Icons.favorite_border,
-                                          color: _isInWishlist(item) ? Colors.red : Colors.white,
+                                      ),
+                                      Positioned(
+                                        top: 10,
+                                        right: 10,
+                                        child: GestureDetector(
+                                          onTap: () => _toggleWishlist(item),
+                                          child: Icon(
+                                            _isInWishlist(item) ? Icons.favorite : Icons.favorite_border,
+                                            color: _isInWishlist(item) ? Colors.red : Colors.white,
+                                          ),
                                         ),
                                       ),
-                                    ),
 
 
-                                  ],
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(12.0),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(item['brand'], style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
-                                      const SizedBox(height: 4),
-                                      Text(item['title'], style: const TextStyle(color: Colors.white, fontSize: 13, height: 1.2)),
-                                      const SizedBox(height: 8),
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text('Rs. ${item['price']}', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
-                                          Text(item['discount'], style: const TextStyle(color: Color(0xFF9333EA), fontWeight: FontWeight.bold, fontSize: 14)),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text('Rs. ${item['original']}', style: const TextStyle(color: Colors.white54, fontSize: 13, decoration: TextDecoration.lineThrough)),
-                                      const SizedBox(height: 10),
-                                      Row(
-                                        children: [
-                                          Expanded(
-                                            child: Container(
-                                              padding: const EdgeInsets.symmetric(vertical: 8),
-                                              decoration: BoxDecoration(
-                                                gradient: const RadialGradient(
-                                                  center: Alignment(0.08, 0.08),
-                                                  radius: 7.98,
-                                                  colors: [
-                                                    Color.fromRGBO(0, 0, 0, 0.8),
-                                                    Color.fromRGBO(147, 51, 234, 0.4),
-                                                  ],
-                                                  stops: [0.0, 0.5],
-                                                ),
-                                                borderRadius: BorderRadius.circular(16),
-                                                boxShadow: const [
-                                                  BoxShadow(
-                                                    color: Color(0x66000000),
-                                                    offset: Offset(0, 4),
-                                                    blurRadius: 4,
+                                    ],
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(12.0),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(item['brand'], style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
+                                        const SizedBox(height: 4),
+                                        Text(item['title'], style: const TextStyle(color: Colors.white, fontSize: 13, height: 1.2)),
+                                        const SizedBox(height: 8),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text('Rs. ${item['price']}', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                                            Text(item['discount'], style: const TextStyle(color: Color(0xFF9333EA), fontWeight: FontWeight.bold, fontSize: 14)),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text('Rs. ${item['original']}', style: const TextStyle(color: Colors.white54, fontSize: 13, decoration: TextDecoration.lineThrough)),
+                                        const SizedBox(height: 10),
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: Container(
+                                                padding: const EdgeInsets.symmetric(vertical: 8),
+                                                decoration: BoxDecoration(
+                                                  gradient: const RadialGradient(
+                                                    center: Alignment(0.08, 0.08),
+                                                    radius: 7.98,
+                                                    colors: [
+                                                      Color.fromRGBO(0, 0, 0, 0.8),
+                                                      Color.fromRGBO(147, 51, 234, 0.4),
+                                                    ],
+                                                    stops: [0.0, 0.5],
                                                   ),
-                                                ],
+                                                  borderRadius: BorderRadius.circular(16),
+                                                  boxShadow: const [
+                                                    BoxShadow(
+                                                      color: Color(0x66000000),
+                                                      offset: Offset(0, 4),
+                                                      blurRadius: 4,
+                                                    ),
+                                                  ],
+                                                ),
+                                                child: GestureDetector(
+                                                  onTap: () {
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (_) => BuyNowPage(buyNowItems: [item]),
+                                                      ),
+                                                    );
+                                                  },
+                                                  child: const Center(
+                                                    child: Text(
+                                                      'Buy Now',
+                                                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+                                                    ),
+                                                  ),
+                                                ),
+
                                               ),
+                                            ),
+                                            const SizedBox(width: 10),
+
+                                            // <-- ONLY change: add onTap that adds to cartItems and SnackBar
+                                            Expanded(
                                               child: GestureDetector(
                                                 onTap: () {
-                                                  Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (_) => BuyNowPage(item: item),
-                                                    ),
-                                                  );
-                                                },
-                                                child: const Center(
-                                                  child: Text(
-                                                    'Buy Now',
-                                                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
-                                                  ),
-                                                ),
-                                              ),
-
-                                            ),
-                                          ),
-                                          const SizedBox(width: 10),
-
-                                          // <-- ONLY change: add onTap that adds to cartItems and SnackBar
-                                          Expanded(
-                                            child: GestureDetector(
-                                              onTap: () {
   cart.add(item); // ✅ Uses CartService for reactive update
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
@@ -677,40 +697,30 @@ class _SustainableStorePageState extends State<SustainableStorePage> {
     ),
   );
 },
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                  borderRadius: BorderRadius.circular(18),
-                                                  gradient: const LinearGradient(
-                                                    colors: [Color(0xFF9333EA), Color(0xFF6B21A8)],
-                                                  ),
-                                                ),
-                                                padding: const EdgeInsets.all(1.5), // border thickness
                                                 child: Container(
+                                                  padding: const EdgeInsets.symmetric(vertical: 8),
                                                   decoration: BoxDecoration(
-                                                    color: const Color(0xFF1C1C1E), // match your card's background to blend in
-                                                    borderRadius: BorderRadius.circular(17),
+                                                    borderRadius: BorderRadius.circular(16),
+                                                    border: Border.all(color: const Color(0xFFB794F4), width: 1.6),
                                                   ),
                                                   child: const Center(
-                                                    child: Padding(
-                                                      padding: EdgeInsets.symmetric(vertical: 8),
-                                                      child: Text(
-                                                        'Add to Cart',
-                                                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
-                                                      ),
+                                                    child: Text(
+                                                      'Add to Cart',
+                                                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
                                                     ),
                                                   ),
                                                 ),
                                               ),
                                             ),
-                                          ),
 
 
-                                        ],
-                                      ),
-                                    ],
+                                          ],
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           );
                         },

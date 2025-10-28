@@ -55,30 +55,26 @@ class _AppDrawerState extends State<AppDrawer> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
     return Drawer(
+      width: screenWidth,
       backgroundColor: Colors.transparent,
       child: Stack(
         children: [
-          // 🔹 Glassmorphic Background
+          // 🔹 Strong black blur background
           ClipRRect(
-            borderRadius: const BorderRadius.only(
-              topRight: Radius.circular(16),
-              bottomRight: Radius.circular(16),
-            ),
+            borderRadius: BorderRadius.zero,
             child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+              filter: ImageFilter.blur(sigmaX: 28, sigmaY: 28),
               child: Container(
                 decoration: BoxDecoration(
-                  color: const Color.fromRGBO(255, 255, 255, 0.06),
-                  borderRadius: const BorderRadius.only(
-                    topRight: Radius.circular(16),
-                    bottomRight: Radius.circular(16),
-                  ),
+                  color: Colors.black.withOpacity(0.68),
+                  borderRadius: BorderRadius.zero,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 30,
-                      offset: const Offset(0, 4),
+                      color: Colors.black.withOpacity(0.35),
+                      blurRadius: 28,
+                      offset: const Offset(0, 8),
                     ),
                   ],
                 ),

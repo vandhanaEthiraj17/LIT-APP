@@ -31,7 +31,7 @@ class _GameModesPageState extends State<GameModesPage> {
   }
 
   void _onGameModeSelected(String mode) {
-    if (selectedCategory == null || selectedCategory == 'Category') {
+    if (selectedCategory == null) {
       setState(() {
         showCategoryError = true;
       });
@@ -66,6 +66,7 @@ class _GameModesPageState extends State<GameModesPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: const AppDrawer(),
+      drawerScrimColor: Colors.black.withOpacity(0.75),
       extendBodyBehindAppBar: true,
       body: Stack(
         children: [
@@ -214,7 +215,7 @@ class _GameModesPageState extends State<GameModesPage> {
           : null,
       child: Container(
         height: 42,
-        padding: const EdgeInsets.symmetric(horizontal: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(24),
           gradient: const RadialGradient(
@@ -236,12 +237,15 @@ class _GameModesPageState extends State<GameModesPage> {
         ),
         child: DropdownButtonHideUnderline(
           child: DropdownButton<String>(
-            dropdownColor: const Color(0xFF1E1E1E),
+            dropdownColor: Colors.black,
             icon: const Icon(Icons.keyboard_arrow_down, color: Colors.white),
             value: selectedCategory,
             hint: const Text(
               'Category',
-              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             onChanged: (String? newValue) {
               setState(() {
@@ -249,7 +253,7 @@ class _GameModesPageState extends State<GameModesPage> {
                 showCategoryError = false;
               });
             },
-            items: ['Category', 'All', 'Men', 'Women']
+            items: ['All', 'Men', 'Women']
                 .map((value) => DropdownMenuItem<String>(
               value: value,
               child: Text(
@@ -263,6 +267,25 @@ class _GameModesPageState extends State<GameModesPage> {
                 .toList(),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _gradientLabel(String text) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(14),
+        gradient: const LinearGradient(
+          colors: [Color(0xFF9333EA), Color(0xFF6B21A8)],
+        ),
+        boxShadow: const [
+          BoxShadow(color: Color(0x66000000), offset: Offset(0, 2), blurRadius: 3),
+        ],
+      ),
+      child: Text(
+        text,
+        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
       ),
     );
   }
