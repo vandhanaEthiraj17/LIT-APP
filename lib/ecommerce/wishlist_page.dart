@@ -210,7 +210,7 @@ class WishlistPage extends StatelessWidget {
                                       ),
                                     ),
                                     Padding(
-                                      padding: const EdgeInsets.all(12.0),
+                                      padding: const EdgeInsets.fromLTRB(12, 12, 12, 4),
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
@@ -244,7 +244,7 @@ class WishlistPage extends StatelessWidget {
                                               // Left: Add to Cart (gradient fill)
                                               Expanded(
                                                 child: Container(
-                                                  padding: const EdgeInsets.symmetric(vertical: 8),
+                                                  padding: const EdgeInsets.symmetric(vertical: 7),
                                                   decoration: BoxDecoration(
                                                     gradient: const RadialGradient(
                                                       center: Alignment(0.08, 0.08),
@@ -255,7 +255,7 @@ class WishlistPage extends StatelessWidget {
                                                       ],
                                                       stops: [0.0, 0.5],
                                                     ),
-                                                    borderRadius: BorderRadius.circular(16),
+                                                    borderRadius: BorderRadius.circular(14),
                                                   ),
                                                   child: GestureDetector(
                                                     onTap: () {
@@ -271,7 +271,11 @@ class WishlistPage extends StatelessWidget {
                                                     child: const Center(
                                                       child: Text(
                                                         'Add to Cart',
-                                                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                                                        style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontWeight: FontWeight.w500,
+                                                          fontSize: 11,
+                                                        ),
                                                       ),
                                                     ),
                                                   ),
@@ -281,9 +285,9 @@ class WishlistPage extends StatelessWidget {
                                               // Right: Remove (outlined)
                                               Expanded(
                                                 child: Container(
-                                                  padding: const EdgeInsets.symmetric(vertical: 8),
+                                                  padding: const EdgeInsets.symmetric(vertical: 7),
                                                   decoration: BoxDecoration(
-                                                    borderRadius: BorderRadius.circular(16),
+                                                    borderRadius: BorderRadius.circular(14),
                                                     border: Border.all(color: const Color(0xFFB794F4), width: 1.6),
                                                   ),
                                                   child: GestureDetector(
@@ -293,7 +297,11 @@ class WishlistPage extends StatelessWidget {
                                                     child: const Center(
                                                       child: Text(
                                                         'Remove',
-                                                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                                                        style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontWeight: FontWeight.w500,
+                                                          fontSize: 11,
+                                                        ),
                                                       ),
                                                     ),
                                                   ),

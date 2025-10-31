@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:lit/payment/payment_gateway_page.dart';
 import 'package:lit/widgets/app_drawer.dart';
+import 'package:lit/pages/sustainable_luxury.dart';
 import 'package:lit/widgets/notification_bell.dart';
 import 'package:lit/widgets/common_button.dart';
 
@@ -98,12 +99,7 @@ class PaymentFailurePage extends StatelessWidget {
                                       elevation: 0,
                                     ),
                                     onPressed: () {
-                                      Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (_) => PaymentGatewayPage(cartItems: cartItems),
-                                        ),
-                                      );
+                                      Navigator.pop(context);
                                     },
                                     child: Ink(
                                       decoration: BoxDecoration(
@@ -148,7 +144,14 @@ class PaymentFailurePage extends StatelessWidget {
                                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                       backgroundColor: Colors.transparent,
                                     ),
-                                    onPressed: () => Navigator.pushReplacementNamed(context, '/marketplace'),
+                                    onPressed: () {
+                                      Navigator.of(context).pushAndRemoveUntil(
+                                        MaterialPageRoute(
+                                          builder: (_) => const SustainableLuxuryPage(),
+                                        ),
+                                        (route) => false,
+                                      );
+                                    },
                                     child: const Text(
                                       'GO BACK HOME',
                                       style: TextStyle(
@@ -169,18 +172,21 @@ class PaymentFailurePage extends StatelessWidget {
                     ],
                   ),
                 ),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 4),
-                    child: SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.72,
-                      width: double.infinity,
-                      child: Image.asset(
-                        'assets/images/robo.png',
-                        fit: BoxFit.contain,
-                        alignment: Alignment.bottomCenter,
-                        filterQuality: FilterQuality.high,
+                IgnorePointer(
+                  ignoring: true,
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 4),
+                      child: SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.72,
+                        width: double.infinity,
+                        child: Image.asset(
+                          'assets/images/robo.png',
+                          fit: BoxFit.contain,
+                          alignment: Alignment.bottomCenter,
+                          filterQuality: FilterQuality.high,
+                        ),
                       ),
                     ),
                   ),

@@ -41,7 +41,7 @@ class _CategoryPageState extends State<CategoryPage> {
     }).toList();
 
     return Scaffold(
-      extendBodyBehindAppBar: true,
+      extendBodyBehindAppBar: false,
       backgroundColor: Colors.black,
       drawer: const AppDrawer(),
       appBar: AppBar(
@@ -113,9 +113,7 @@ class _CategoryPageState extends State<CategoryPage> {
           ),
 
           Padding(
-            padding: EdgeInsets.only(
-              top: kToolbarHeight + MediaQuery.of(context).padding.top,
-            ),
+            padding: EdgeInsets.zero,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -142,7 +140,7 @@ class _CategoryPageState extends State<CategoryPage> {
               ),
 
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0),
                 child: Text(
                   'Found ${filteredProducts.length} items',
                   style: const TextStyle(color: Colors.white70, fontSize: 13),
@@ -150,9 +148,9 @@ class _CategoryPageState extends State<CategoryPage> {
               ),
 
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 2),
                 child: Container(
-                  height: 50,
+                  height: 42,
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.06),
                     borderRadius: BorderRadius.circular(28),
@@ -192,46 +190,53 @@ class _CategoryPageState extends State<CategoryPage> {
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
-                  child: GridView.builder(
-                    itemCount: filteredProducts.length,
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 0.53,
-                      crossAxisSpacing: 12,
-                      mainAxisSpacing: 12,
-                    ),
-                    itemBuilder: (context, index) {
-                      final product = filteredProducts[index];
-                      return ProductCard(
-                        product: product,
-                        onBuyNow: () {
-                          // Navigate to buy now page with the selected product
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => BuyNowPage(buyNowItems: [product]),
-                            ),
-                          );
-                        },
-                        onAddToCart: () {
-                          Provider.of<CartService>(context, listen: false).add(product);
-
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              backgroundColor: Colors.white, // ✅ white background
-                              content: Text(
-                                'Item added to cart',
-                                style: TextStyle(
-                                  color: Colors.black, // ✅ black text
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              duration: Duration(seconds: 1),
-                            ),
-                          );
-                        },
-                      );
+                  child: NotificationListener<OverscrollIndicatorNotification>(
+                    onNotification: (overscroll) {
+                      overscroll.disallowIndicator();
+                      return false;
                     },
+                    child: GridView.builder(
+                      itemCount: filteredProducts.length,
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        childAspectRatio: 0.53,
+                        crossAxisSpacing: 12,
+                        mainAxisSpacing: 12,
+                      ),
+                      physics: const ClampingScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        final product = filteredProducts[index];
+                        return ProductCard(
+                          product: product,
+                          onBuyNow: () {
+                            // Navigate to buy now page with the selected product
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => BuyNowPage(buyNowItems: [product]),
+                              ),
+                            );
+                          },
+                          onAddToCart: () {
+                            Provider.of<CartService>(context, listen: false).add(product);
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                backgroundColor: Colors.white, // ✅ white background
+                                content: Text(
+                                  'Item added to cart',
+                                  style: TextStyle(
+                                    color: Colors.black, // ✅ black text
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                duration: Duration(seconds: 1),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
                   ),
                 ),
               ),

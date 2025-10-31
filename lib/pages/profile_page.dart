@@ -25,7 +25,7 @@ class _ProfilePageState extends State<ProfilePage> {
     if (index == 0) {
       Navigator.pushReplacementNamed(context, '/home');
     } else if (index == 1) {
-      Navigator.pushReplacementNamed(context, '/ir-icon');
+      Navigator.pushReplacementNamed(context, '/ir_icon');
     } else if (index == 2) {
       Navigator.pushReplacementNamed(context, '/profile');
     }

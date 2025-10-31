@@ -454,29 +454,32 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 margin: const EdgeInsets.only(right: 6),
                 child: GestureDetector(
                   onTap: () => setState(() => selectedSize = size),
-                                  child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 160),
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: Colors.transparent,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: Colors.white, 
-                      width: 1.0
+                  child: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: Colors.transparent,
+                      borderRadius: BorderRadius.circular(8),
+                      border: isSelected
+                          ? GradientBoxBorder(
+                              gradient: const LinearGradient(
+                                colors: [Color(0xFF9333EA), Color(0xFF7E22CE)],
+                              ),
+                              width: 1.6,
+                            )
+                          : Border.all(color: Colors.white, width: 1.0),
+                    ),
+                    child: Center(
+                      child: Text(
+                        size,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
                     ),
                   ),
-                  child: Center(
-                    child: Text(
-                      size, 
-                      style: const TextStyle(
-                        color: Colors.white, 
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                      )
-                    )
-                  ),
-                ),
                 ),
               ),
             );

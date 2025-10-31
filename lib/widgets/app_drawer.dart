@@ -49,7 +49,7 @@ class _AppDrawerState extends State<AppDrawer> {
     {
       'icon': Icons.info_outline,
       'label': 'IR Icon',
-      'page': const ComingSoonPage(),
+      'page': const IrIconPage(),
     },
   ];
 
@@ -133,6 +133,15 @@ class _AppDrawerState extends State<AppDrawer> {
                 ),
                 const SizedBox(height: 12),
 
+                // Horizontal separator between profile and items
+                const Divider(
+                  color: Colors.white,
+                  thickness: 2,
+                  height: 24,
+                  indent: 0,
+                  endIndent: 0,
+                ),
+
                 // Drawer Items
                 ...drawerItems.asMap().entries.map((entry) {
                   final index = entry.key;
@@ -191,7 +200,13 @@ class _AppDrawerState extends State<AppDrawer> {
                 }),
 
                 const Spacer(),
-                const Divider(color: Colors.white24),
+                const Divider(
+                  color: Colors.white,
+                  thickness: 2,
+                  height: 24,
+                  indent: 0,
+                  endIndent: 0,
+                ),
 
                 // Settings Option
                 ListTile(

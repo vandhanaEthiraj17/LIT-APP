@@ -89,7 +89,7 @@ class CustomBottomNavBar extends StatelessWidget {
                             ),
                           );
                         } else {
-                          Navigator.pushNamed(context, '/ir-icon');
+                          Navigator.pushNamed(context, '/ir_icon');
                         }
                       },
                       child: Stack(
